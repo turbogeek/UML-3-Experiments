@@ -1,0 +1,89 @@
+// UML3 IDL import fixture: covers the v1 scope (see docs/IDL-MAPPING.md)
+module Shop {
+    const long MAX_ITEMS = 50;
+    const string STORE_NAME = "UML3 Store";
+    const double TAX_RATE = 0.2;
+    const boolean OPEN = TRUE;
+
+    enum OrderStatus { PENDING, PAID, SHIPPED, CANCELLED };
+
+    typedef long Quantity;
+    typedef string<32> Sku;
+    typedef sequence<Sku> SkuList;
+    typedef sequence<long, 10> TopTen;
+    typedef double Matrix[3][4];
+    typedef fixed<12,2> Amount;
+
+    struct Money {
+        Amount amount;
+        string<3> currency;
+    };
+
+    @topic
+    struct OrderLine {
+        @key long lineNumber;
+        Sku sku;
+        @range(min=1, max=MAX_ITEMS) Quantity quantity;
+        Money unitPrice;
+    };
+
+    struct Order {
+        @key @id(1) string<36> orderId;
+        OrderStatus status;
+        sequence<OrderLine, 50> lines;
+        @optional string note;
+        wstring<64> customerName;
+        octet flags;
+        wchar initial;
+        any extension;
+        long double precisePrice;
+        unsigned long long sequenceNumber;
+        int8 small;
+        uint64 big;
+        @default(0) short priority;
+        long matrix[2][3];
+    };
+
+    struct PriorityOrder : Order {
+        boolean expedite;
+    };
+
+    struct Reserved {
+        string state;
+        long part;
+        boolean ref;
+    };
+
+    union PaymentDetail switch (long) {
+        case 1: string cardNumber;
+        case 2: case 3: string walletId;
+        default: boolean none;
+    };
+
+    exception NotFound {
+        string what;
+    };
+
+    exception InvalidState {
+        OrderStatus current;
+    };
+
+    interface Auditable {
+        readonly attribute string lastModified;
+    };
+
+    interface OrderService : Auditable {
+        attribute long timeoutSeconds;
+        Order getOrder(in string orderId) raises (NotFound);
+        void cancel(in string orderId, in string reason) raises (NotFound, InvalidState);
+        boolean update(inout Order order, out string message);
+        oneway void ping();
+    };
+
+    module Events {
+        struct OrderPlaced {
+            @key string orderId;
+            ::Shop::Money total;
+        };
+    };
+};

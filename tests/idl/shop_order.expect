@@ -1,0 +1,77 @@
+# Lines (whitespace-trimmed) that the generated SysML v2 MUST contain. Written 2026-09-16 BEFORE the importer.
+package shop_order {
+@IdlFile { fileName = "shop_order.idl"; }
+private import UML3IDL::*;
+package Shop {
+constant attribute MAX_ITEMS : Int32 = 50;
+constant attribute STORE_NAME : String = "UML3 Store";
+constant attribute TAX_RATE : Float64 = 0.2;
+constant attribute OPEN : Boolean = true;
+enum def OrderStatus {
+enum PENDING;
+enum CANCELLED;
+attribute def Quantity :> Int32;
+attribute def Sku :> String {
+@Facets { maxLength = 32; }
+attribute def SkuList {
+@IdlSequence;
+attribute items : Sku[0..*] ordered nonunique;
+@IdlSequence { bound = 10; }
+attribute items : Int32[0..10] ordered nonunique;
+attribute def Matrix {
+attribute items : Float64[12] ordered nonunique { @IdlArray { dimensions = (3, 4); } }
+attribute def Amount :> Decimal {
+@Facets { precision = 12; scale = 2; }
+#dataType attribute def Money {
+attribute amount : Amount;
+attribute currency : String { @Facets { maxLength = 3; } }
+@IdlAnnotation { text = "@topic"; }
+#id attribute lineNumber : Int32;
+attribute quantity : Quantity { @Facets { minInclusive = 1; maxInclusive = 50; } }
+#id attribute orderId : String { @Facets { maxLength = 36; } @IdlMemberId { memberId = 1; } }
+attribute status : OrderStatus;
+attribute lines : OrderLine[0..50] ordered nonunique;
+attribute note : String[0..1];
+attribute customerName : WString { @Facets { maxLength = 64; } }
+attribute flags : Octet;
+attribute initial : WChar;
+attribute extension : Any;
+attribute precisePrice : LongDouble;
+attribute sequenceNumber : UInt64;
+attribute small : Int8;
+attribute big : UInt64;
+attribute priority : Int16 default 0;
+attribute matrix : Int32[6] ordered nonunique { @IdlArray { dimensions = (2, 3); } }
+#dataType attribute def PriorityOrder :> Order {
+attribute 'state' : String;
+attribute 'part' : Int32;
+attribute 'ref' : Boolean;
+#union attribute def PaymentDetail {
+attribute discriminator : Int32 { @Discriminator; }
+attribute cardNumber : String[0..1] { @Case { labels = ("1"); } }
+attribute walletId : String[0..1] { @Case { labels = ("2", "3"); } }
+attribute none : Boolean[0..1] { @Case { isDefault = true; } }
+#exceptionType item def NotFound {
+#exceptionType item def InvalidState {
+#interfaceType item def Auditable {
+constant attribute lastModified : String;
+#interfaceType item def OrderService :> Auditable {
+attribute timeoutSeconds : Int32;
+abstract #operation action getOrder {
+in orderId : String;
+out result : Order { @IdlReturn; }
+abstract #operation action cancel {
+in reason : String;
+abstract #operation action update {
+inout order : Order;
+out message : String;
+out result : Boolean { @IdlReturn; }
+abstract #operation action ping {
+@IdlOneway;
+#raises dependency from OrderService::getOrder to NotFound;
+#raises dependency from OrderService::cancel to NotFound;
+#raises dependency from OrderService::cancel to InvalidState;
+package Events {
+#dataType attribute def OrderPlaced {
+#id attribute orderId : String;
+attribute total : Shop::Money;

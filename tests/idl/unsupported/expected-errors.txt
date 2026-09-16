@@ -1,0 +1,6 @@
+# file|substring the import error message must contain (written before the importer)
+valuetype.idl|unsupported IDL construct 'valuetype'
+map.idl|unsupported IDL construct 'map'
+nested_sequence.idl|anonymous nested sequence
+shift_const.idl|unsupported operator '<<' in constant expression
+nested_type_in_interface.idl|type declarations inside an interface

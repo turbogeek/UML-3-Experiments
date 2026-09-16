@@ -1,0 +1,5 @@
+module M {
+    valuetype Account {
+        public long balance;
+    };
+};

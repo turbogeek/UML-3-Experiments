@@ -1,0 +1,3 @@
+module M {
+    const long FLAGS = 1 << 3;
+};
