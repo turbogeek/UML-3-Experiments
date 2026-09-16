@@ -33,9 +33,10 @@ package Shop {
 | `library/UML3Types.sysml` | Sized and formatted software types (`Int8`–`UInt64`, `Float32/64`, `Decimal`, `Money`, `Uuid`, `EmailAddress`, `Timestamp`, `Bytes`...), `@Facets` (range, length, precision, pattern), `MapEntry`; collection kinds via native multiplicity |
 | `library/UML3Components.sysml` | Components, subsystems, services; `#provided` / `#required` (conjugated) ports bound to interface contracts; assembly and delegation connectors; layers, boundaries, technology tags; artifacts, nodes, devices, execution environments, deployment, manifestation, communication paths |
 | `library/UML3Messaging.sysml` | Message schemas with a standard header (`#command`, `#domainEvent`, `#queryMessage`, `#reply`, `#documentMessage`); topics, queues, brokers; producer / consumer / request-reply ports; serialization format and QoS (delivery, ordering, partitioning, retention, DLQ); `#publishes`, `#subscribes`, `#sends`, `#handles`, `#idempotent`; interactions (sequence diagrams) using native messages |
+| `library/UML3Views.sysml` | UML diagram kinds as SysML v2 views: `ClassDiagram`, `PackageDiagram`, `ComponentDiagram`, `DeploymentDiagram`, `EntityRelationshipDiagram`, `MessageSchemaView`, `SequenceDiagram`, `ClassTable`; they filter on UML3 keywords and hide leaked library elements |
 | `library/UML3Data.sysml` | Logical models (`#entity`, `#aggregateRoot`, `#valueObject`, `#relationship` with cardinality); keys and constraints (`#primaryKey`, `#foreignKey` + referential actions, `#unique`, `#indexed`, `@Index`); physical schemas (`#database`, `#table`, `#column` + `@Column`, `#dbView`); governance (`#audited`, `#transient`, `@Sensitivity`); logical-to-physical `#mapsTo` |
 
-`examples/` models one online store four ways: class model, architecture and deployment, messaging, and database. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
+`examples/` models one online store: class model, architecture and deployment, messaging, database, and a set of views (diagrams) over them. `tools/check_rules.py` checks 12 design rules, e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ### Keyword naming rules
 * Keywords are lowerCamelCase.
@@ -55,18 +56,22 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 |---|---|---|
 | Syntax | `sysml-validator` (ANTLR) | library and examples pass |
 | Names, lint, keyword applicability | `tools/check_names.py` | library and examples pass; 19 negative tests fail as expected |
+| Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 12 rules proven to fire; clean control stays clean |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
-| Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 9/9 files load; validation engine reports 0 failures |
+| Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 11/11 files load; validation engine reports 0 failures |
+| View contents (expose + filter) | CATIA Magic `exposedElement` | 9/9 views match predicted includes and excludes |
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
 | Keyword labels | CATIA Magic label functions | 19/19 render `«#keyword»` |
 | Keyword semantics (implied specialization) | CATIA Magic API | 42/42 against the recorded baseline (1 case is a known Cameo deviation, see Known issues) |
 
-Every Cameo run loads files in dependency order, undoes its own loads (confirmed by an inspection with a positive control) and then shuts the harness down. Experiments record their predictions in git before they run (`tests/cameo*/`).
+Every Cameo run loads files in dependency order and undoes only its own harness-load commands. It stops and fails if any other command is on the undo stack, and cleanup is confirmed by an inspection with a positive control. The harness is then shut down. Experiments record their predictions in git before they run (`tests/cameo*/`).
 
 ## Known issues and open work
 
 * **Stacked semantic keywords: CATIA Magic applies only the first one.** Confirmed by experiments E02 and E03 (predictions committed before each run; 8/9 and 3/3 held). Of the semantic keywords on one element (prefix or body form), only the **first** gets its implied specialization. The rest still show as labels, and the validation engine does not report the gap. KerML says every keyword applies, so this is a CATIA Magic deviation.
   **Usage rule:** put the keyword whose meaning matters most for queries first (e.g. `#primaryKey #column` when key membership matters). The regression baseline (`M15`) records the current behaviour and will flag it when Cameo is fixed.
+* **Base of `Class` (decision pending):** `item def` today. Experiment E05 shows an `occurrence def` base would also allow behavior classes (`#classType action def`), at the cost of flow and payload protection. See `docs/DESIGN.md`.
+* **Views are model elements, not yet opened diagrams:** CATIA Magic evaluates their content, but creating or opening the diagram for a view is still to be done.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 
@@ -81,6 +86,7 @@ Every Cameo run loads files in dependency order, undoes its own loads (confirmed
 | `tests/cameo-negative/` | Misapplied-keyword probes, validation-engine baseline |
 | `tests/cameo-experiments/` | Design experiments with recorded predictions |
 | `tools/check_names.py` | Name resolution, lint, keyword-applicability checker |
+| `tools/check_rules.py`, `tests/rules/` | Design-rules checker and per-rule tests |
 | `tools/run_tests.py` | Regression harness |
 | `tools/cameo_check.py`, `tools/cameo-scripts/` | CATIA Magic REST runner and Groovy scripts (synced to the harness) |
 | `tools/check_groovy.groovy` | Pre-flight check for scripts that run inside MagicDraw |

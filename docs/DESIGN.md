@@ -124,6 +124,8 @@ Collection kinds need no new types:
 | Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **21/21 hypotheses hold, including 7 negative controls** |
 | Validation engine (KerML/SysML constraint suites) | `validateUML3Packages.groovy` | **0 failures on library + examples** |
 | Diagram keyword labels | `probeKeywordDisplay.groovy` | semantic keywords render `«#keyword»`; plain metadata is not in the label |
+| View contents (expose + filter) | `probeViewContents.groovy` | 9/9 views match predicted includes and excludes |
+| Design rules | `tools/check_rules.py` | examples 0 errors; 12 rules each proven to fire |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
 | Name resolution, lint and keyword applicability | `tools/check_names.py` | Library and examples pass; 16 negative tests fail as expected; 0 false positives on 251 official OMG models |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
@@ -229,6 +231,56 @@ Predictions were committed first (`16401eb`), and all held. A semantic keyword o
 * both marked ends show `«#navigable»`.
 
 `UML3Core::Navigable` was therefore converted (`b0e277a`). The full run passes with 42/42 specializations, 19/19 labels and 0 validation failures. Every marker keyword in the library is now semantic. Only dependency/package keywords and valued configuration metadata remain plain.
+
+## Design-rules checker (`tools/check_rules.py`)
+
+These are model-level rules for designs that are valid SysML v2 but inconsistent. ERROR findings fail the run; WARNINGs are only reported.
+
+| Rule | Severity | Check |
+|---|---|---|
+| R01 | ERROR | `#table` has a `#primaryKey` |
+| R02 | WARNING | `#entity` / `#aggregateRoot` has an identity (`#primaryKey` or `#id`) |
+| R03 | ERROR / WARNING | a `#foreignKey` ref points to an entity/table; a column's `referencedTable` exists (WARNING when missing) |
+| R04 | WARNING | associations are binary |
+| R05 | WARNING | interface operations are abstract |
+| R06 | ERROR | a concrete realization redefines every abstract interface operation |
+| R07 | ERROR | `#provided` ports are not conjugated; `#required` ports are |
+| R08 | WARNING | `#required` ports of parts are connected |
+| R09 | WARNING | message types have payload attributes |
+| R10 | WARNING | topics and queues declare `@QualityOfService` |
+| R11 | WARNING | `#dbView` sets `queryText` |
+| R12 | WARNING | usages stacking several semantic keywords (CATIA Magic applies only the first, E02/E03) |
+
+Evidence: each of `tests/rules/r01`-`r12` produces exactly its rule, and the clean control `r00` produces none. The examples give 0 errors and 5 R12 warnings, all correct.
+
+## UML diagrams as SysML v2 views (`library/UML3Views.sysml`)
+
+View definitions specialize the standard views and filter on UML3 keyword metadata: `PackageDiagram`, `ClassDiagram`, `ComponentDiagram` (interconnection), `DeploymentDiagram`, `EntityRelationshipDiagram`, `MessageSchemaView`, `SequenceDiagram` (sequence view) and `ClassTable` (grid). A usage only exposes content: `view domainClassDiagram : ClassDiagram { expose OnlineStoreDomain::*; }` (see `examples/05`).
+
+**CATIA Magic evaluates the views.** `ViewUsage.getExposedElement()` returns the filtered content. All 9 views matched their predicted includes and excludes. The deployment view, for example, contains exactly the artifact, pod, node and communication path.
+
+**Import leak and fix (E06).** An `expose` is an import with *import all*, so exposing a package also exposes what it imports. Library elements appeared in views (`AggregationKind`; library port and connection bases). A reflective filter `not (as KerML::Element).isLibraryElement` removes them; the E06 predictions, including two at low confidence, all held. Every view def now carries it. Imported *user* elements (e.g. domain interfaces in the component view) remain by design.
+
+**Rendering.** A view in the model is not yet an opened diagram in CATIA Magic. None of the harness operations (load, view evaluation, validation) created a diagram (E07). Opening or creating the diagram for a view is the next step.
+
+## Occurrence vs Item as the base of `Class` (E05)
+
+In the kernel, `Item :> Object :> Occurrence`, `Performance :> Occurrence`, `Object` is disjoint from `Performance`, and `Occurrence` is disjoint from `DataValue`. Predictions were committed first (`c54cf69`).
+
+| Question | Item-based `Class` (current) | Occurrence-based `Class` |
+|---|---|---|
+| `#classType` on `item def`, `part def`, `connection def` | yes | yes (verified) |
+| `#classType` on `action def` (UML: Behavior is a Class) | no: CATIA Magic ERROR `validateBehaviorSpecialization` and UML3 `APPLICABILITY` | yes: 0 validation failures; the behavior class is still an `Action` (verified) |
+| `#classType` on `occurrence def` (sessions, lifetimes, time slices) | no (an item is narrower) | yes (verified) |
+| `#classType` on `attribute def` | no | no (CATIA Magic `validateDataTypeSpecialization`, UML3 `APPLICABILITY`) |
+| An instance can flow, be a port item or be a message payload | yes: every class is an `Item` | only if the class is also an item def; an occurrence-only class is not an `Item` (verified) |
+| Protection when an occurrence-only class is used as an `item` | n/a | none in CATIA Magic: `out item msg : OMessage` passes validation, so a UML3 rule would be needed |
+
+**Consequence of switching.** `Class` becomes an `occurrence def`. Kinds that must flow or persist become explicit item defs under it: `Signal`, `MessageType`, `ExceptionType`, `Entity`, `Table`, `Artifact`. `InterfaceType` becomes an occurrence def, so behaviors can realize interfaces; `ServicePort.contract` then changes from `ref item` to `ref occurrence`. A new rule would flag item usages typed by non-item classes. Semantic-keyword applicability widens accordingly (the occurrence family is compatible with both structures and behaviors).
+
+## Harness safety incident and guard (E07)
+
+An audit of the command history found two commands, "General View" and "Multiple add", interleaved with harness loads. The old undo script had undone them together with the loads. E07 showed that none of the harness operations create such commands, so they were probably GUI actions in CATIA Magic during the run. The undo script now undoes only `SysMLv2TestHarness: REST Load SysML` commands. It stops and reports on any other command, and `cameo_check.py` then fails.
 
 ## Validator findings (sysml-validator issues found during this work)
 
