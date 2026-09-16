@@ -1,0 +1,27 @@
+{
+  "description": "E05 predictions, recorded 2026-09-16 BEFORE running: implications of an occurrence-based UML Class vs the current item-based Class. Local = UML3 check_names APPLICABILITY; Cameo = load, validation engine, implied specializations.",
+  "load": {"expected": "OK", "confidence": "medium"},
+  "localApplicability": {
+    "UML3ExperimentOccurrenceClass": {"expectedFindings": 0, "confidence": "high", "why": "occurrence base is compatible with item, part, action, occurrence and connection"},
+    "UML3ExperimentOccurrenceDataType": {"expectedFindings": 1, "confidence": "high", "why": "DataValue disjoint from Occurrence"},
+    "UML3ExperimentItemClassOnAction": {"expectedFindings": 1, "confidence": "high", "why": "Object disjoint from Performance"}
+  },
+  "validationEngineFlagged": {
+    "UML3ExperimentOccurrenceClass": {"expected": false, "confidence": "medium"},
+    "UML3ExperimentOccurrenceItemTyping": {"expected": true, "confidence": "low", "why": "an item usage typed by a non-Structure occurrence def"},
+    "UML3ExperimentOccurrenceDataType": {"expected": true, "confidence": "high", "why": "validateDataTypeSpecialization: data type specializing a class"},
+    "UML3ExperimentItemClassOnAction": {"expected": false, "confidence": "medium", "why": "E-probes: the engine checks datatype/class but not Object/Performance disjointness"}
+  },
+  "specializes": [
+    {"id": "O1", "why": "#oclass item def is an OClass", "subject": ["UML3ExperimentOccurrenceClass", "CustomerItem"], "general": ["UML3ExperimentOccurrenceClass", "OClass"], "expected": true},
+    {"id": "O2", "why": "#oclass action def (behavior) is an OClass - impossible with an item-based Class", "subject": ["UML3ExperimentOccurrenceClass", "ProcessOrder"], "general": ["UML3ExperimentOccurrenceClass", "OClass"], "expected": true},
+    {"id": "O3", "why": "the behavior class is still an Action", "subject": ["UML3ExperimentOccurrenceClass", "ProcessOrder"], "general": ["Actions", "Action"], "expected": true},
+    {"id": "O4", "why": "#oclass occurrence def is an OClass", "subject": ["UML3ExperimentOccurrenceClass", "Session"], "general": ["UML3ExperimentOccurrenceClass", "OClass"], "expected": true},
+    {"id": "O5", "why": "#oclass connection def is an OClass", "subject": ["UML3ExperimentOccurrenceClass", "Knows"], "general": ["UML3ExperimentOccurrenceClass", "OClass"], "expected": true},
+    {"id": "O6", "why": "item-kind class is an Item", "subject": ["UML3ExperimentOccurrenceClass", "CustomerItem"], "general": ["Items", "Item"], "expected": true},
+    {"id": "O7", "why": "control: occurrence-kind class is NOT an Item (cannot be a flow payload item)", "subject": ["UML3ExperimentOccurrenceClass", "Session"], "general": ["Items", "Item"], "expected": false},
+    {"id": "O8", "why": "#oclass usage subsets oclasses", "subject": ["UML3ExperimentOccurrenceClass", "customerInstance"], "general": ["UML3ExperimentOccurrenceClass", "oclasses"], "expected": true},
+    {"id": "O9", "why": "current item-based #classType on an action def still builds the (disjoint) specialization", "subject": ["UML3ExperimentItemClassOnAction", "PlaceOrderBehavior"], "general": ["UML3Core", "Class"], "expected": true}
+  ],
+  "inheritsFeature": []
+}
