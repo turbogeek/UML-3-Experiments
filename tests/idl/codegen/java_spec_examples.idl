@@ -1,0 +1,53 @@
+// The examples of the OMG IDL4 to Java Language Mapping 1.0 (ptc/2019-07-02), clause 7, as one IDL file.
+// java_spec_examples.java.expect lists the Java declarations the spec shows for them (see the notes there).
+module MyMath {
+    const double pi_value = 3.141592;
+    const double PI_VALUE_CONSTANT = 3.14;
+    const double myConstant = 34.5;
+    const double constantexample = 22.4;
+    const double EValue = 2.718282;
+};
+module Spec {
+    struct Foo { long x; };
+    struct MyType {
+        sequence<long> long_sequence;
+        sequence<Foo> foo_sequence;
+    };
+    struct S1 {
+        long long_variable;
+        short short_variable;
+        long long longLongVariable;
+        string URL;
+    };
+    union U1 switch (octet) {
+        case 1: long long_variable;
+        case 2:
+        case 3: short short_variable;
+        default: octet octet_variable;
+    };
+    union U2 switch (long) {
+        case 1: short short_variable;
+        case 2: long long_variable;
+    };
+    enum AnEnum { @value(1) ONE, @value(2) TWO };
+    const long foo_array_length = 200;
+    struct Bar { long y; };
+    struct S2 {
+        long array1[100];
+        short array2[10];
+        Foo array3[foo_array_length];
+        Bar array4[12];
+    };
+    typedef long Length;
+    struct S3 { Length member_length; };
+    interface AnInterface {
+        attribute long long_attribute;
+        readonly attribute long long_ro_attribute;
+        void op1(in long inParam, inout long inOutParam, out long outParam);
+    };
+    exception CustomException { long error_code; };
+    interface InterfaceException {
+        void op1(in long in_param) raises (CustomException);
+    };
+    struct S5 : S1 { float float_variable; };
+};

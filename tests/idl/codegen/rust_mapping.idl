@@ -1,0 +1,56 @@
+// Rust mapping fixture: one construct per mapping rule of docs/IDL-CODEGEN.md (rust_mapping.rs.expect).
+module Telemetry {
+    const string SOURCE = "probe\x41";
+    const char SEPARATOR = ';';
+    const boolean ENABLED = TRUE;
+    const float GAIN = 2;
+    const long MAX_SAMPLES = 64;
+
+    enum Level { @value(10) LOW, HIGH, CRITICAL };
+    const Level DEFAULT_LEVEL = HIGH;
+
+    typedef string<16> Tag;
+    typedef sequence<double, MAX_SAMPLES> Samples;
+    typedef float Matrix3[3][3];
+
+    struct Header {
+        @key long id;
+        Tag tag;
+    };
+
+    struct Reading : Header {
+        @optional string note;
+        Samples values;
+        Matrix3 rotation;
+        fixed<9, 3> amount;
+        long double precise;
+        boolean type;
+        long self;
+    };
+
+    union Payload switch (Level) {
+        case LOW: long counter;
+        case HIGH:
+        case CRITICAL: string message;
+    };
+
+    union Flag switch (boolean) {
+        case TRUE: long on;
+        default: short off;
+    };
+
+    exception SensorFault { string reason; };
+    exception Timeout { unsigned long ms; };
+
+    interface Sensor {
+        readonly attribute Level level;
+        attribute Tag name;
+        Reading read(in long channel) raises (SensorFault);
+        void calibrate(inout Matrix3 rotation, out double error) raises (SensorFault, Timeout);
+        oneway void reset();
+    };
+
+    module sub_module {
+        struct Wrapped { ::Telemetry::Reading inner; };
+    };
+};

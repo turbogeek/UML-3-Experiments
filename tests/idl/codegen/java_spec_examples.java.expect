@@ -1,0 +1,56 @@
+# file|line that must appear (whitespace-trimmed). Taken from the Java the spec shows; "{...}" bodies replaced by
+# the generated opening brace. Spec typos not used: S5 example constructor named "S2", setErrorCode() without a
+# parameter, CharSeq "List<Char>", constructors inside Java interfaces (7.4 example), Constants "double" for a long.
+MyMath/Constants.java|public static final double PI_VALUE = 3.141592;
+MyMath/Constants.java|public static final double PI_VALUE_CONSTANT = 3.14;
+MyMath/Constants.java|public static final double MY_CONSTANT = 34.5;
+MyMath/Constants.java|public static final double CONSTANTEXAMPLE = 22.4;
+MyMath/Constants.java|public static final double E_VALUE = 2.718282;
+Spec/MyType.java|public class MyType implements java.io.Serializable {
+Spec/MyType.java|public java.util.List<Spec.Foo> getFooSequence() {
+Spec/MyType.java|public void setFooSequence(java.util.List<Spec.Foo> fooSequence) {
+Spec/S1.java|public S1() {
+# spec example writes the parameter as 'URL'; its own Camel Case rule (7.1.1.1.2: "CAMELCASE" -> "cAMELCASE") gives 'uRL'
+Spec/S1.java|public S1(int longVariable, short shortVariable, long longLongVariable, String uRL) {
+Spec/S1.java|public int getLongVariable() {
+Spec/S1.java|public void setLongVariable(int longVariable) {
+Spec/S1.java|public short getShortVariable() {
+Spec/S1.java|public long getLongLongVariable() {
+Spec/S1.java|public void setLongLongVariable(long longLongVariable) {
+Spec/S1.java|public String getURL() {
+Spec/S1.java|public void setURL(String uRL) {
+Spec/U1.java|public final class U1 implements java.io.Serializable {
+Spec/U1.java|public U1() {
+Spec/U1.java|public byte getDiscriminator() {
+Spec/U1.java|public int getLongVariable() {
+Spec/U1.java|public short getShortVariable() {
+Spec/U1.java|public void setShortVariable(short shortVariable) {
+Spec/U1.java|public void setShortVariable(short shortVariable, byte discriminator) {
+Spec/U1.java|public byte getOctetVariable() {
+Spec/U1.java|public void setOctetVariable(byte octetVariable) {
+Spec/U1.java|public void setOctetVariable(byte octetVariable, byte discriminator) {
+Spec/U2.java|public int getDiscriminator() {
+Spec/U2.java|public void setShortVariable(short shortVariable) {
+Spec/U2.java|public void __default() {
+Spec/U2.java|public void __default(int discriminator) {
+Spec/AnEnum.java|public enum AnEnum {
+Spec/AnEnum.java|ONE(1),
+Spec/AnEnum.java|TWO(2);
+Spec/AnEnum.java|public int getValue() {
+Spec/AnEnum.java|public static AnEnum valueOf(int v) {
+Spec/S2.java|public S2(int[] array1, short[] array2, Spec.Foo[] array3, Spec.Bar[] array4) {
+Spec/S2.java|public Spec.Foo[] getArray3() {
+Spec/S3.java|public S3(int memberLength) {
+Spec/S3.java|public int getMemberLength() {
+Spec/AnInterface.java|public interface AnInterface {
+Spec/AnInterface.java|int getLongAttribute();
+Spec/AnInterface.java|void setLongAttribute(int longAttribute);
+Spec/AnInterface.java|int getLongRoAttribute();
+Spec/AnInterface.java|void op1(int inParam, org.omg.type.Holder<Integer> inOutParam, org.omg.type.Holder<Integer> outParam);
+Spec/CustomException.java|public class CustomException extends java.lang.RuntimeException implements java.io.Serializable {
+Spec/CustomException.java|public CustomException(int errorCode) {
+Spec/CustomException.java|public int getErrorCode() {
+Spec/InterfaceException.java|void op1(int inParam) throws Spec.CustomException;
+Spec/S5.java|public class S5 extends Spec.S1 implements java.io.Serializable {
+Spec/S5.java|public S5(Spec.S1 parent, float floatVariable) {
+Spec/S5.java|public float getFloatVariable() {

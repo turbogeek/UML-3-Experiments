@@ -1,0 +1,36 @@
+# lines that must appear (trimmed) in the generated lib.rs; one per Rust mapping rule (docs/IDL-CODEGEN.md)
+pub mod telemetry {
+pub const SOURCE: &str = "probe\u{41}";
+pub const SEPARATOR: char = ';';
+pub const ENABLED: bool = true;
+pub const GAIN: f32 = 2.0;
+#[repr(i64)]
+LOW = 10,
+HIGH = 11,
+pub const DEFAULT_LEVEL: crate::telemetry::Level = crate::telemetry::Level::HIGH;
+/// IDL bound: string<16>
+pub type Tag = String;
+/// IDL bound: at most 64 elements
+pub type Samples = Vec<f64>;
+pub type Matrix3 = [[f32; 3]; 3];
+/// @key
+/// IDL: struct Reading : Header (base members flattened)
+pub note: Option<String>,
+pub amount: i128,
+pub precise: f64,
+pub r#type: bool,
+pub self_: i32,
+Counter(i32),
+Message(crate::telemetry::Level, String),
+Payload::Counter(_) => crate::telemetry::Level::LOW,
+Payload::Message(d, _) => *d,
+Flag::On(_) => true,
+Off(bool, i16),
+impl ::std::error::Error for SensorFault {}
+pub trait Sensor {
+fn get_level(&self) -> crate::telemetry::Level;
+fn set_name(&mut self, value: crate::telemetry::Tag);
+fn read(&mut self, channel: i32) -> Result<crate::telemetry::Reading, crate::telemetry::SensorFault>;
+fn calibrate(&mut self, rotation: &mut crate::telemetry::Matrix3, error: &mut f64) -> Result<(), Box<dyn ::std::error::Error>>;
+pub mod sub_module {
+pub inner: crate::telemetry::Reading,

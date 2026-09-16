@@ -1,0 +1,2 @@
+# file (relative to tests/idl)|target|substring the generator error must contain
+shop_order.idl|rust|'any' has no Rust mapping

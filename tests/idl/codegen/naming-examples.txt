@@ -1,0 +1,39 @@
+# OMG IDL4 to Java 1.0, 7.1.1.1 name transformation examples: transform|IDL name|spec result|our result if different (spec inconsistency)
+# The spec's rules conflict for an uppercase run followed by lowercase: "PASCALcase" -> "PASCALCase" (new word at the
+# lowercase letter) but "CAMELCase" -> "cAMELCase" and "ALLUppercase" -> "ALL_UPPERCASE" / "EValue" -> "E_VALUE" (new
+# word at the last capital). One rule is implemented (new word at the last capital); the two examples it cannot meet
+# are recorded with the result it gives.
+pascal|pascalcase|Pascalcase|
+pascal|PASCALCASE|PASCALCASE|
+pascal|Pascal_Case|PascalCase|
+pascal|pascal_case|PascalCase|
+pascal|Pascal_case|PascalCase|
+pascal|PASCAL_case|PASCALCase|
+pascal|PASCAL_CASE|PASCALCASE|
+pascal|pascalCase|PascalCase|
+pascal|PascalCase|PascalCase|
+pascal|PASCALcase|PASCALCase|PASCALcase
+camel|camelcase|camelcase|
+camel|CAMELCASE|cAMELCASE|
+camel|Camel_Case|camelCase|
+camel|camel_case|camelCase|
+camel|Camel_case|camelCase|
+camel|CAMEL_case|cAMELCase|
+camel|CAMEL_CASE|cAMELCASE|
+camel|camelCase|camelCase|
+camel|CamelCase|camelCase|
+camel|CAMELcase|cAMELCase|cAMELcase
+camel|CAMELCase|cAMELCase|
+upperSnake|ALL|ALL|
+upperSnake|ALL_UPPERCASE|ALL_UPPERCASE|
+upperSnake|all|ALL|
+upperSnake|all_uppercase|ALL_UPPERCASE|
+upperSnake|allUppercase|ALL_UPPERCASE|
+upperSnake|AllUppercase|ALL_UPPERCASE|
+upperSnake|ALLUppercase|ALL_UPPERCASE|
+upperSnake|pi_value|PI_VALUE|
+upperSnake|PI_VALUE_CONSTANT|PI_VALUE_CONSTANT|
+upperSnake|myConstant|MY_CONSTANT|
+upperSnake|constantexample|CONSTANTEXAMPLE|
+upperSnake|EValue|E_VALUE|
+upperSnake|foo_array_length|FOO_ARRAY_LENGTH|

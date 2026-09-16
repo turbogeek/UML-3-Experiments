@@ -147,7 +147,7 @@ class IdlTypedef extends IdlDefinition { IdlTypeRef type; IdlDeclarator decl }
 class IdlStruct extends IdlDefinition { String base; List<IdlMember> members = [] }
 class IdlUnionCase { List<String> labels = []; boolean isDefault; IdlMember member }
 class IdlUnion extends IdlDefinition { IdlTypeRef discriminator; List<IdlUnionCase> cases = [] }
-class IdlEnum extends IdlDefinition { List<String> literals = [] }
+class IdlEnum extends IdlDefinition { List<String> literals = []; Map<String, Long> values = [:] }   // values: explicit @value(n)
 class IdlExceptionDef extends IdlDefinition { List<IdlMember> members = [] }
 class IdlAttribute { List<IdlAnnotation> annotations = []; boolean readonly; IdlTypeRef type; String name; int line }
 class IdlParam { String direction; IdlTypeRef type; String name; List<IdlAnnotation> annotations = [] }
@@ -551,11 +551,22 @@ class IdlParser {
         expectWord("enum")
         IdlEnum e = new IdlEnum(kind: "enum", name: identifier(), line: line)
         expectPunct("{")
-        annotations()
-        e.literals << identifier()
-        while (isPunct(",")) { next(); annotations(); e.literals << identifier() }
+        enumerator(e)
+        while (isPunct(",")) { next(); enumerator(e) }
         expectPunct("}")
         return e
+    }
+
+    private void enumerator(IdlEnum e) {
+        List<IdlAnnotation> anns = annotations()
+        String lit = identifier()
+        e.literals << lit
+        IdlAnnotation v = anns.find { it.name == "value" }
+        if (v != null) {
+            Object n = evaluate(v.args.collect { new IdlToken(kind: it ==~ /-?\d+|0[xX][0-9a-fA-F]+/ ? "INT" : (it ==~ /[A-Za-z_].*/ ? "ID" : "PUNCT"), text: it, line: peek().line) }, peek().line)
+            if (!(n instanceof Long)) throw new IdlException("@value of enumerator '" + lit + "' is not an integer constant", peek().line)
+            e.values[lit] = (Long) n
+        }
     }
 
     IdlExceptionDef exceptionDef() {
@@ -1092,7 +1103,8 @@ class IdlWriter {
                 IdlConst c = (IdlConst) d
                 line(ind, "const " + type(c.type, scope) + " " + id(c.name) + " = " + constValue(c.value, c.type) + ";")
             } else if (d instanceof IdlEnum) {
-                line(ind, "enum " + id(d.name) + " { " + ((IdlEnum) d).literals.collect { id(it) }.join(", ") + " };")
+                IdlEnum en = (IdlEnum) d
+                line(ind, "enum " + id(d.name) + " { " + en.literals.collect { (en.values.containsKey(it) ? "@value(" + en.values[it] + ") " : "") + id(it) }.join(", ") + " };")
             } else if (d instanceof IdlTypedef) {
                 IdlTypedef td = (IdlTypedef) d
                 line(ind, annotations(td.annotations) + "typedef " + type(td.type, scope) + " " + id(td.name) + dims(td.decl) + ";")

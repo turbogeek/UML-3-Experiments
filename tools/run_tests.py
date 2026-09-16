@@ -220,6 +220,51 @@ def main() -> int:
     report["suites"]["idl-import"] = {"passed": bool(idl_cases) and all(c["passed"] for c in idl_cases),
                                       "cases": idl_cases}
 
+    # 4c2. IDL code generation (Java: OMG IDL4-Java 1.0, Rust: docs/IDL-CODEGEN.md): spec naming examples; every
+    #      tests/idl/codegen fixture generates, compiles (javac in-process; rustc when on PATH) and contains its
+    #      .java.expect / .rs.expect lines; tests/idl/*.idl Java compiles; expected generator errors occur
+    gen_cases = []
+    g = run([groovy, str(ROOT / "tools" / "idl" / "codegen_selftest.groovy"), str(ROOT / "tests" / "idl" / "codegen" / "naming-examples.txt")])
+    gen_cases.append({"case": "naming-examples", "result": next((l for l in g.stdout.splitlines() if l.startswith("RESULT|")), g.stderr[-300:]),
+                      "failures": [l for l in g.stdout.splitlines() if l.startswith("CASE|FAIL")]})
+    gen_cases[-1]["passed"] = gen_cases[-1]["result"].startswith("RESULT|OK")
+    code_dir = LOGS / "codegen"
+    for idl in sorted((ROOT / "tests" / "idl" / "codegen").glob("*.idl")):
+        out = code_dir / idl.stem
+        g = run([groovy, str(ROOT / "tools" / "idl" / "idl2code.groovy"), str(idl), str(out), "java", "rust", "compile"])
+        lines = g.stdout.splitlines()
+        case = {"case": "codegen/" + idl.name, "result": next((l for l in lines if l.startswith("RESULT|")), g.stderr[-300:]),
+                "compile": [l for l in lines if l.startswith(("JAVAC|", "RUSTC|"))], "missing": []}
+        jx = idl.with_name(idl.stem + ".java.expect")
+        if jx.exists():
+            for e in jx.read_text(encoding="utf-8").splitlines():
+                if e.strip() and not e.startswith("#"):
+                    rel, want = e.split("|", 1)
+                    f = out / "java" / rel
+                    if not f.exists() or want.strip() not in {x.strip() for x in f.read_text(encoding="utf-8").splitlines()}:
+                        case["missing"].append(e)
+        rx = idl.with_name(idl.stem + ".rs.expect")
+        if rx.exists():
+            rs = out / "rust" / "lib.rs"
+            have = {x.strip() for x in rs.read_text(encoding="utf-8").splitlines()} if rs.exists() else set()
+            case["missing"] += [e for e in rx.read_text(encoding="utf-8").splitlines() if e.strip() and not e.startswith("#") and e.strip() not in have]
+        case["passed"] = case["result"].startswith("RESULT|OK") and not case["missing"]
+        gen_cases.append(case)
+    for idl in sorted((ROOT / "tests" / "idl").glob("*.idl")):
+        g = run([groovy, str(ROOT / "tools" / "idl" / "idl2code.groovy"), str(idl), str(code_dir / idl.stem), "java", "compile"])
+        res = next((l for l in g.stdout.splitlines() if l.startswith("RESULT|")), g.stderr[-300:])
+        gen_cases.append({"case": "java/" + idl.name, "result": res, "compile": [l for l in g.stdout.splitlines() if l.startswith("JAVAC|")],
+                          "passed": res.startswith("RESULT|OK")})
+    for e in (ROOT / "tests" / "idl" / "codegen" / "expected-errors.txt").read_text(encoding="utf-8").splitlines():
+        if not e.strip() or e.startswith("#"):
+            continue
+        rel, target, want = e.split("|", 2)
+        g = run([groovy, str(ROOT / "tools" / "idl" / "idl2code.groovy"), str(ROOT / "tests" / "idl" / rel), str(code_dir / ("err-" + target)), target])
+        res = next((l for l in g.stdout.splitlines() if l.startswith("RESULT|")), g.stderr[-300:])
+        gen_cases.append({"case": f"error/{rel}/{target}", "result": res, "expected": want,
+                          "passed": res.startswith("RESULT|FAIL") and want in res})
+    report["suites"]["idl-codegen"] = {"passed": all(c["passed"] for c in gen_cases), "cases": gen_cases}
+
     # 4d. IDL corpus: the core against 701 third-party IDL files (git submodules in external/idl); invariants and
     #     per-file baseline in tools/idl_corpus_check.py
     cc = run([sys.executable, str(ROOT / "tools" / "idl_corpus_check.py"), "--report", str(LOGS / "idl-corpus" / "report.json")],
