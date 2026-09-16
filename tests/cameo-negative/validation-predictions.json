@@ -150,7 +150,7 @@
       "why": "native SysML v2 behaviors copied from official training patterns; prediction recorded 2026-09-16 before any CATIA Magic run",
       "observed": false,
       "observedRules": [],
-      "observedNote": "NOT YET OBSERVED - 'observed' mirrors the prediction until the first harness run"
+      "observedOn": "2026-09-16 CATIA Magic MSoSA 2026x Refresh1: loads with 0 errors, validation engine 0 failures (prediction held)"
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"

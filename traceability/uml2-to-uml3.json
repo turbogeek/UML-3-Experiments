@@ -80,7 +80,7 @@
         "file": "examples/01-OnlineStoreDomain.sysml",
         "contains": "attribute email : EmailAddress;"
       },
-      "notes": "An attribute of a class is an attribute USAGE. Type it with an attribute def only when the value type is reused or published; otherwise nest attribute usages."
+      "notes": "An attribute of a class is an attribute USAGE, typed directly by a value type. An attribute def is the better choice when the attribute is complex, i.e. insufficiently described by its type alone (e.g. it needs its own nested features, a built-in multiplicity other than the normal one, facets or defaults), or when the value type is reused or published. This is modeler judgment; UML3 deliberately has no rule enforcing it."
     },
     {
       "area": "Classification",
@@ -314,7 +314,7 @@
         "file": "examples/01-OnlineStoreDomain.sysml",
         "contains": "#dataType attribute def Price"
       },
-      "notes": "Only for reused/published value types; single-use structure can be nested attribute usages."
+      "notes": "Use an attribute def for complex or reused value types; see Property (attribute)."
     },
     {
       "area": "Classification",
