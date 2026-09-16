@@ -289,6 +289,16 @@ In the kernel, `Item :> Object :> Occurrence`, `Performance :> Occurrence`, `Obj
 
 An audit of the command history found two commands, "General View" and "Multiple add", interleaved with harness loads. The old undo script had undone them together with the loads. E07 showed that none of the harness operations create such commands, so they were probably GUI actions in CATIA Magic during the run. The undo script now undoes only `SysMLv2TestHarness: REST Load SysML` commands. It stops and reports on any other command, and `cameo_check.py` then fails.
 
+## IDL import and export (E08, E09)
+
+The full mapping and tool usage are in [`IDL-MAPPING.md`](IDL-MAPPING.md). Design points:
+
+* **The core is pure Groovy.** It holds no MagicDraw classes, so the same parser, emitter and writer run in local tests and inside CATIA Magic. The Cameo scripts only add the build and the model reading around it. The model reader is duck-typed (`respondsTo`), because the KerML API is not homogeneous across element kinds.
+* **Import goes through the SysML v2 text builder** as one command. A build error cancels everything, so a partial import cannot exist, and the guarded undo can remove the import like a harness load.
+* **Nothing is lost on export.** IDL details that SysML v2 has no native concept for (sequence bounds, array dimensions, member ids, discriminator/case labels, `oneway`, `@IdlReturn`, other annotations) live in `UML3IDL` metadata.
+* **E08 (`const`).** The first mapping used package-level `constant attribute`. The CATIA Magic validation engine reported 4 `validateFeatureConstantIsVariable` errors, because KerML requires a constant feature to be variable. Constants now map to a bound attribute (`attribute N : T = v;`), and `check_rules.py` R14 catches the old form. It flags exactly 4 on the old output and 0 on the new.
+* **E09 (export).** The first export from the live model failed. Inside a closure, a bare `call(...)` resolved to `Closure.call`, not to the helper method of the same name. Renaming the helper to `callOn` fixed it. The exported IDL is identical to the canonical original, and the command history is unchanged, which shows export is read-only. `cameo_check.py --idl` now repeats this for every `tests/idl/*.idl` in each `--cameo` run.
+
 ## Validator findings (sysml-validator issues found during this work)
 
 * **No name resolution.** Unresolved types, imports and specializations pass.

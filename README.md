@@ -37,6 +37,7 @@ package Shop {
 | `library/UML3Messaging.sysml` | Message schemas with a standard header (`#command`, `#domainEvent`, `#queryMessage`, `#reply`, `#documentMessage`); topics, queues, brokers; producer / consumer / request-reply ports; serialization format and QoS (delivery, ordering, partitioning, retention, DLQ); `#publishes`, `#subscribes`, `#sends`, `#handles`, `#idempotent`; interactions (sequence diagrams) using native messages |
 | `library/UML3Views.sysml` | UML diagram kinds as SysML v2 views: `ClassDiagram`, `PackageDiagram`, `ComponentDiagram`, `DeploymentDiagram`, `EntityRelationshipDiagram`, `MessageSchemaView`, `SequenceDiagram`, `ClassTable`; they filter on UML3 keywords and hide leaked library elements |
 | `library/UML3Data.sysml` | Logical models (`#entity`, `#aggregateRoot`, `#valueObject`, `#relationship` with cardinality); keys and constraints (`#primaryKey`, `#foreignKey` + referential actions, `#unique`, `#indexed`, `@Index`); physical schemas (`#database`, `#table`, `#column` + `@Column`, `#dbView`); governance (`#audited`, `#transient`, `@Sensitivity`); logical-to-physical `#mapsTo` |
+| `library/UML3IDL.sysml` + `tools/idl/` | OMG IDL 4.2 **import and export** (Groovy, inside CATIA Magic or on the command line): modules, structs, typedefs, sequences, arrays, bounded strings, fixed, enums, unions (`#union`, `@Discriminator`, `@Case`), exceptions, interfaces with operations, `oneway` and `raises`, constants and common annotations. IDL basic types `Octet`, `WChar`, `WString`, `LongDouble`, `Any`. Mapping: [`docs/IDL-MAPPING.md`](docs/IDL-MAPPING.md) |
 
 `examples/` models one online store: class model, architecture and deployment, messaging, database, native behaviors (activity, state machine, use cases, instances; example 06), and a set of views (diagrams) over them. `tools/check_rules.py` checks 12 design rules, e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
 
@@ -61,10 +62,11 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Names, lint, keyword applicability | `tools/check_names.py` | library and examples pass; 19 negative tests fail as expected |
 | Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 12 rules proven to fire; clean control stays clean |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
-| Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 12/12 files load; validation engine reports 0 failures |
+| Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 13/13 files load (7 libraries, 6 examples); validation engine reports 0 failures, including the IDL import |
 | View contents (expose + filter) | CATIA Magic `exposedElement` | 9/9 views match predicted includes and excludes |
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
 | Keyword labels | CATIA Magic label functions | 19/19 render `«#keyword»` |
+| IDL import/export | `tools/idl/`, `run_tests.py` suite `idl-import` and `cameo_check.py --idl` | fixture imports as expected, 5 unsupported constructs rejected with clear messages; in CATIA Magic: 0 build errors, 0 validation failures, export from the model identical to the canonical original |
 | Keyword semantics (implied specialization) | CATIA Magic API | 42/42 against the recorded baseline (1 case is a known Cameo deviation, see Known issues) |
 
 Every Cameo run loads files in dependency order and undoes only its own harness-load commands. It stops and fails if any other command is on the undo stack, and cleanup is confirmed by an inspection with a positive control. The harness is then shut down. Experiments record their predictions in git before they run (`tests/cameo*/`).
@@ -76,13 +78,14 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 * **ANTLR validator gaps:** example 06 (native behaviors) is exempt from the ANTLR syntax suite, because the validator also rejects the official OMG training models that use the same constructs. CATIA Magic loads it with 0 errors and 0 validation failures (`tests/validator-known-gaps.json`).
 * **Views are model elements, not yet opened diagrams:** CATIA Magic evaluates their content, but creating or opening the diagram for a view is still to be done.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
+* **IDL v1 scope:** valuetypes, maps, anonymous nested sequences, shift operators in constants, types nested in interfaces, and IDL CCM constructs are rejected on import. Export writes canonical IDL (qualified names, resolved constants), not the original text.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 
 ## Layout
 
 | Path | Contents |
 |---|---|
-| `library/` | The five UML3 libraries |
+| `library/` | The seven UML3 libraries |
 | `examples/` | Online-store models using every keyword |
 | `tests/negative/` | Models that must fail locally (`EXPECT:` header) |
 | `tests/cameo/` | Cameo hypotheses: implied specializations, label expectations |
@@ -93,6 +96,8 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 | `traceability/uml2-to-uml3.json`, `tools/check_traceability.py` | UML 2.x -> UML3 traceability (source + verifier + doc generator) |
 | `docs/UML2-to-UML3-Traceability.md` | Generated traceability document |
 | `tools/run_tests.py` | Regression harness |
+| `tools/idl/`, `tests/idl/` | IDL importer/exporter core and CLI; IDL fixtures, expected SysML, unsupported-construct tests |
+| `docs/IDL-MAPPING.md` | IDL ↔ UML3 mapping and tool usage |
 | `tools/cameo_check.py`, `tools/cameo-scripts/` | CATIA Magic REST runner and Groovy scripts (synced to the harness) |
 | `tools/check_groovy.groovy` | Pre-flight check for scripts that run inside MagicDraw |
 | `docs/DESIGN.md` | Design, mapping, verification history and findings |

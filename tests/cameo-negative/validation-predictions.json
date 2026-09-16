@@ -159,6 +159,14 @@
       "why": "IDL-imported package after the E08 const fix (re-run prediction recorded before the re-run)",
       "observed": false,
       "observedRules": []
+    },
+    {
+      "package": "UML3IDL",
+      "flagged": false,
+      "confidence": "high",
+      "why": "library package; loaded and validated in every --cameo run since the IDL work (observed 0 failures before this entry was added)",
+      "observed": false,
+      "observedRules": []
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"
