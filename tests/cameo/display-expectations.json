@@ -136,6 +136,22 @@
       "expected": false,
       "why": "control: attribute without keyword",
       "confidence": "high"
+    },
+    {
+      "id": "X18",
+      "subject": "OnlineStoreDomain::Places::customer",
+      "contains": "\u00ab#navigable\u00bb",
+      "expected": true,
+      "why": "@Navigable converted to semantic (E04)",
+      "confidence": "high"
+    },
+    {
+      "id": "X19",
+      "subject": "OnlineStoreDomain::Review::reviewer",
+      "contains": "\u00ab#",
+      "expected": false,
+      "why": "control: unmarked end",
+      "confidence": "high"
     }
   ]
 }

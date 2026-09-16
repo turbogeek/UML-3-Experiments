@@ -105,9 +105,9 @@ library package UML3Core {
 		/*
 		 * UML Association. Binary associations declare two 'end' features whose
 		 * multiplicities are the UML end multiplicities. Attributes declared in
-		 * the body make it an AssociationClass. Mark navigable ends in the end's
-		 * body with @Navigable; navigable ends are usually mirrored as 'ref'
-		 * features on the opposite participant.
+		 * the body make it an AssociationClass. Mark navigable ends with @Navigable
+		 * (end body) or #navigable (prefix); navigable ends are usually mirrored as
+		 * 'ref' features on the opposite participant.
 		 */
 	}
 	abstract connection associations : Association[0..*] nonunique;
@@ -212,13 +212,18 @@ library package UML3Core {
 		:>> baseType = identifierFeatures meta SysML::Usage;
 	}
 
-	metadata def Navigable {
+	abstract ref navigableEnds : Anything[0..*] nonunique;
+
+	metadata def <navigable> Navigable :> SemanticMetadata {
 		doc
 		/*
-		 * Marks an association end as navigable from the opposite end. Use in the end body: @Navigable;
-		 * Kept as plain metadata: making an 'end' feature subset a package-level feature is untested
-		 * against connector end rules.
+		 * Marks an association end as navigable from the opposite end.
+		 *   body form:   end [1] ref customer : Customer { @Navigable; }
+		 *   prefix form: end [1] #navigable item customer : Customer;
+		 * Verified in CATIA Magic (experiment E04): ends join navigableEnds, show «#navigable»,
+		 * and connection usages binding the ends remain valid.
 		 */
+		:>> baseType = navigableEnds meta SysML::Usage;
 	}
 
 	metadata def <singleton> Singleton :> SemanticMetadata {

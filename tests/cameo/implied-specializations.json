@@ -515,6 +515,48 @@
         "primaryKeyFeatures"
       ],
       "expected": false
+    },
+    {
+      "id": "M16",
+      "why": "@Navigable (now semantic) on Places::customer end joins navigableEnds",
+      "subject": [
+        "OnlineStoreDomain",
+        "Places",
+        "customer"
+      ],
+      "general": [
+        "UML3Core",
+        "navigableEnds"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M17",
+      "why": "@Navigable on Review::reviewed end joins navigableEnds",
+      "subject": [
+        "OnlineStoreDomain",
+        "Review",
+        "reviewed"
+      ],
+      "general": [
+        "UML3Core",
+        "navigableEnds"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N18",
+      "why": "control: unmarked Review::reviewer end is not navigable",
+      "subject": [
+        "OnlineStoreDomain",
+        "Review",
+        "reviewer"
+      ],
+      "general": [
+        "UML3Core",
+        "navigableEnds"
+      ],
+      "expected": false
     }
   ],
   "inheritsFeature": [
