@@ -25,6 +25,7 @@ import argparse
 import datetime as dt
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -119,6 +120,8 @@ def main() -> int:
     ap.add_argument("--validate", action="store_true",
                     help="run CATIA Magic's KerML/SysML validation engine on loaded packages and compare "
                          "with tests/cameo-negative/validation-predictions.json")
+    ap.add_argument("--idl", action="store_true",
+                    help="IDL round trip in CATIA Magic for each tests/idl/*.idl (import, export, compare)")
     ap.add_argument("--views", action="store_true",
                     help="check view contents against tests/cameo/view-predictions.json (needs examples loaded)")
     ap.add_argument("--display", action="store_true",
@@ -193,6 +196,48 @@ def main() -> int:
             for e in errors[:6]:
                 print(f"    {e}")
         report["probes"] = probe_results
+
+    # IDL round trip inside CATIA Magic: import (Groovy, one undoable session) -> export (read-only) -> compare
+    #     with the canonical form of the original. Runs before validation so imported packages are validated too.
+    if args.idl and not failed:
+        core = (ROOT / "tools" / "idl" / "UML3IdlCore.groovy").as_posix()
+        idl_logs = ROOT / "logs" / "idl"
+        idl_logs.mkdir(parents=True, exist_ok=True)
+        fixtures = sorted((ROOT / "tests" / "idl").glob("*.idl"))
+        # packages the importer creates are named after the file; register them for the guarded undo
+        (HARNESS_SCRIPTS / "uml3-undo-extra.txt").write_text(
+            "\n".join(re.sub(r"[^A-Za-z0-9_]", "_", f.stem) for f in fixtures) + "\n", encoding="utf-8")
+        rows = []
+        for f in fixtures:
+            pkg = re.sub(r"[^A-Za-z0-9_]", "_", f.stem)
+            canonical = idl_logs / (f.stem + ".canonical.idl")
+            subprocess.run(["groovy", str(ROOT / "tools" / "idl" / "idl2sysml.groovy"), str(f),
+                            str(idl_logs / (f.stem + ".sysml")), str(canonical)], capture_output=True, text=True,
+                           shell=(os.name == "nt"))
+            (HARNESS_SCRIPTS / "uml3-idl-request.txt").write_text(
+                f"idl={f.as_posix()}\ncore={core}\nsysmlOut={(idl_logs / ('cameo-' + f.stem + '.sysml')).as_posix()}\n",
+                encoding="utf-8")
+            _, imp = call(args.port, "/run-script", {"scriptName": "importIdl.groovy"})
+            imp_text = imp.get("result") or imp.get("error") or ""
+            exported = idl_logs / ("cameo-export-" + f.stem + ".idl")
+            if exported.exists():
+                exported.unlink()
+            (HARNESS_SCRIPTS / "uml3-idl-export-request.txt").write_text(
+                f"package={pkg}\ncore={core}\nidlOut={exported.as_posix()}\n", encoding="utf-8")
+            _, exp = call(args.port, "/run-script", {"scriptName": "exportIdl.groovy"})
+            exp_text = exp.get("result") or exp.get("error") or ""
+            identical = exported.exists() and canonical.exists() and \
+                exported.read_text(encoding="utf-8") == canonical.read_text(encoding="utf-8")
+            row = {"file": f.name, "import": next((l for l in imp_text.splitlines() if l.startswith("RESULT|")), imp_text[:300]),
+                   "export": next((l for l in exp_text.splitlines() if l.startswith("RESULT|")), exp_text[:300]),
+                   "warnings": [l for l in (imp_text + "\n" + exp_text).splitlines() if l.startswith(("WARN|", "DIAG|ERROR"))],
+                   "identical": identical}
+            row["passed"] = row["import"].startswith("RESULT|OK") and row["export"].startswith("RESULT|OK") and identical
+            rows.append(row)
+            print(f"{'PASS' if row['passed'] else 'FAIL'}  IDL round trip {f.name}: import {row['import'][:60]} | "
+                  f"export {row['export'][:40]} | identical={identical}")
+        report["idlRoundTrip"] = {"passed": bool(rows) and all(r["passed"] for r in rows), "results": rows}
+        failed = failed or not report["idlRoundTrip"]["passed"]
 
     # CATIA Magic validation engine on every loaded UML3*/OnlineStore* package
     if args.validate and not failed:

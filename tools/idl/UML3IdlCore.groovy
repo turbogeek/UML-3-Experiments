@@ -1136,19 +1136,20 @@ class IdlFromModel {
     Map<Object, List<String>> raisesByOperation = new IdentityHashMap<>()
 
     // ---- reflective helpers (respondsTo + fallbacks)
-    static Object call(Object o, String m) {
+    // named callOn, not call: inside closures a bare call(...) resolves to Closure.call (E09 bug)
+    static Object callOn(Object o, String m) {
         try { return (o != null && o.respondsTo(m)) ? o."$m"() : null } catch (Throwable t) { return null }
     }
     static List list(Object o, String m) {
-        Object v = call(o, m)
+        Object v = callOn(o, m)
         return v == null ? [] : (v instanceof Collection ? new ArrayList((Collection) v) : [v])
     }
     static String kind(Object o) { return o == null ? "" : o.getClass().getSimpleName().replaceAll(/Impl$/, "") }
-    static String nameOf(Object o) { Object n = call(o, "getName"); return n == null ? null : n.toString() }
-    static boolean isLibrary(Object o) { return call(o, "isLibraryElement") == Boolean.TRUE }
+    static String nameOf(Object o) { Object n = callOn(o, "getName"); return n == null ? null : n.toString() }
+    static boolean isLibrary(Object o) { return callOn(o, "isLibraryElement") == Boolean.TRUE }
 
     List metadataUsages(Object e) { return list(e, "getOwnedElement").findAll { kind(it) == "MetadataUsage" } }
-    static String metadataName(Object mu) { return nameOf(call(mu, "getMetadataDefinition")) }
+    static String metadataName(Object mu) { return nameOf(callOn(mu, "getMetadataDefinition")) }
     Object metadata(Object e, String defName) { return metadataUsages(e).find { metadataName(it) == defName } }
     boolean has(Object e, String defName) { return metadata(e, defName) != null }
 
@@ -1163,17 +1164,17 @@ class IdlFromModel {
         if (expr == null) return null
         String k = kind(expr)
         switch (k) {
-            case "LiteralInteger": return (call(expr, "getValue") as Number)?.longValue()
-            case "LiteralRational": return (call(expr, "getValue") as Number)?.doubleValue()
-            case "LiteralString": return call(expr, "getValue")?.toString()
-            case "LiteralBoolean": return call(expr, "isValue") == Boolean.TRUE
+            case "LiteralInteger": return (callOn(expr, "getValue") as Number)?.longValue()
+            case "LiteralRational": return (callOn(expr, "getValue") as Number)?.doubleValue()
+            case "LiteralString": return callOn(expr, "getValue")?.toString()
+            case "LiteralBoolean": return callOn(expr, "isValue") == Boolean.TRUE
             case "LiteralInfinity": return "*"
             case "FeatureReferenceExpression":
-                Object ref = call(expr, "getReferent")
+                Object ref = callOn(expr, "getReferent")
                 return new IdlScopedValue(name: scoped(ref))
         }
         if (k.contains("OperatorExpression")) {
-            String op = call(expr, "getOperator")?.toString()
+            String op = callOn(expr, "getOperator")?.toString()
             List args = list(expr, "getArgument")
             if (args.isEmpty()) args = list(expr, "getOperand")
             if (args.isEmpty()) args = list(expr, "getOwnedMember").findAll { kind(it).startsWith("Literal") || kind(it).contains("Expression") }
@@ -1194,7 +1195,7 @@ class IdlFromModel {
     }
 
     String scoped(Object dfn) {
-        String q = call(dfn, "getQualifiedName")?.toString() ?: nameOf(dfn)
+        String q = callOn(dfn, "getQualifiedName")?.toString() ?: nameOf(dfn)
         if (q != null && filePrefix && q.startsWith(filePrefix)) return q.substring(filePrefix.length())
         if (!isLibrary(dfn)) warnings << ("type '" + q + "' is outside the exported package; written with its qualified name")
         return q
@@ -1205,10 +1206,10 @@ class IdlFromModel {
     }
 
     List<Object> bounds(Object u) {
-        Object m = call(u, "getMultiplicity")
+        Object m = callOn(u, "getMultiplicity")
         if (m == null) return [1L, 1L]
-        Object lo = value(call(m, "getLowerBound"))
-        Object hi = value(call(m, "getUpperBound"))
+        Object lo = value(callOn(m, "getLowerBound"))
+        Object hi = value(callOn(m, "getUpperBound"))
         if (lo == null && hi != null) lo = hi
         if (hi == null && lo != null) hi = lo
         return [lo, hi]
@@ -1247,8 +1248,8 @@ class IdlFromModel {
         IdlTypeRef t = typeOf(dfn, f)
         IdlMember m = new IdlMember(type: t, decl: new IdlDeclarator(name: nameOf(u)))
         List<Object> b = bounds(u)
-        boolean ordered = call(u, "isOrdered") == Boolean.TRUE
-        boolean unique = call(u, "isUnique") != Boolean.FALSE
+        boolean ordered = callOn(u, "isOrdered") == Boolean.TRUE
+        boolean unique = callOn(u, "isUnique") != Boolean.FALSE
         Object arr = metadata(u, "IdlArray")
         if (arr != null) {
             Object dims = metaValue(arr, "dimensions")
@@ -1268,8 +1269,8 @@ class IdlFromModel {
             m.annotations << new IdlAnnotation(name: "range", args: args)
         }
         Object fv = featureValue(u)
-        if (fv != null && call(fv, "isDefault") == Boolean.TRUE) {
-            Object v = value(call(fv, "getValue"))
+        if (fv != null && callOn(fv, "isDefault") == Boolean.TRUE) {
+            Object v = value(callOn(fv, "getValue"))
             m.annotations << new IdlAnnotation(name: "default", args: [v instanceof Boolean ? (v ? "TRUE" : "FALSE") : String.valueOf(v)])
         }
         metadataUsages(u).findAll { metadataName(it) == "IdlAnnotation" }.each { mu ->
@@ -1285,7 +1286,7 @@ class IdlFromModel {
     List attributeUsages(Object d) { return list(d, "getOwnedMember").findAll { kind(it) == "AttributeUsage" } }
 
     IdlFile build(Object filePackage) {
-        filePrefix = (call(filePackage, "getQualifiedName") ?: nameOf(filePackage)) + "::"
+        filePrefix = (callOn(filePackage, "getQualifiedName") ?: nameOf(filePackage)) + "::"
         Object fileMeta = metadata(filePackage, "IdlFile")
         IdlFile file = new IdlFile(fileName: fileMeta != null ? metaValue(fileMeta, "fileName") : nameOf(filePackage) + ".idl")
         file.defs = definitions(filePackage)
@@ -1314,11 +1315,11 @@ class IdlFromModel {
                     break
                 case "AttributeUsage":
                     Object fv = featureValue(el)
-                    if (fv == null || call(fv, "isDefault") == Boolean.TRUE) { warnings << ("package-level attribute '" + n + "' without a bound value skipped"); break }
+                    if (fv == null || callOn(fv, "isDefault") == Boolean.TRUE) { warnings << ("package-level attribute '" + n + "' without a bound value skipped"); break }
                     IdlConst c = new IdlConst(kind: "const", name: n)
                     Object dfn = list(el, "getDefinition") ? list(el, "getDefinition")[0] : null
                     c.type = typeOf(dfn, facets(el))
-                    c.value = value(call(fv, "getValue"))
+                    c.value = value(callOn(fv, "getValue"))
                     out << c
                     break
                 case "EnumerationDefinition":
@@ -1351,7 +1352,7 @@ class IdlFromModel {
 
     IdlDefinition attributeDefinition(Object d) {
         String n = nameOf(d)
-        List<Object> supers = list(d, "getOwnedSubclassification").collect { call(it, "getSuperclassifier") }.findAll { it != null }
+        List<Object> supers = list(d, "getOwnedSubclassification").collect { callOn(it, "getSuperclassifier") }.findAll { it != null }
         if (has(d, "UnionMetadata")) {
             IdlUnion u = new IdlUnion(kind: "union", name: n, annotations: defAnnotations(d))
             attributeUsages(d).each { a ->
@@ -1403,18 +1404,18 @@ class IdlFromModel {
 
     IdlInterface interfaceDefinition(Object d) {
         IdlInterface itf = new IdlInterface(kind: "interface", name: nameOf(d), annotations: defAnnotations(d))
-        itf.bases = list(d, "getOwnedSubclassification").collect { call(it, "getSuperclassifier") }.findAll { it != null && !isLibrary(it) }.collect { scoped(it) }
+        itf.bases = list(d, "getOwnedSubclassification").collect { callOn(it, "getSuperclassifier") }.findAll { it != null && !isLibrary(it) }.collect { scoped(it) }
         list(d, "getOwnedMember").each { el ->
             String k = kind(el)
             if (k == "AttributeUsage") {
                 IdlMember m = member(el, false)
-                itf.exports << new IdlAttribute(readonly: call(el, "isConstant") == Boolean.TRUE, type: m.type, name: m.decl.name, annotations: m.annotations)
+                itf.exports << new IdlAttribute(readonly: callOn(el, "isConstant") == Boolean.TRUE, type: m.type, name: m.decl.name, annotations: m.annotations)
             } else if (k == "ActionUsage") {
                 IdlOperation op = new IdlOperation(name: nameOf(el), oneway: has(el, "IdlOneway"), annotations: defAnnotations(el))
-                list(el, "getOwnedMember").findAll { call(it, "getDirection") != null }.each { p ->
+                list(el, "getOwnedMember").findAll { callOn(it, "getDirection") != null }.each { p ->
                     IdlMember pm = member(p, false)
                     if (has(p, "IdlReturn")) { op.returnType = pm.type; return }
-                    op.params << new IdlParam(direction: String.valueOf(call(p, "getDirection")).toLowerCase(), type: pm.type, name: pm.decl.name)
+                    op.params << new IdlParam(direction: String.valueOf(callOn(p, "getDirection")).toLowerCase(), type: pm.type, name: pm.decl.name)
                 }
                 List<String> raises = raisesByOperation.get(el)
                 if (raises) op.raises.addAll(raises)

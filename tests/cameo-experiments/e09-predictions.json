@@ -1,7 +1,30 @@
 {
   "description": "E09 predictions, recorded 2026-09-16 BEFORE running: IDL round trip through CATIA Magic. tests/idl/shop_order.idl -> importIdl.groovy (model) -> exportIdl.groovy (reads the model) -> canonical IDL, compared with the canonical form of the original (parse + write).",
-  "exportResult": {"expected": "OK", "confidence": "medium"},
-  "identicalCanonicalIdl": {"expected": true, "confidence": "low", "why": "first run of a duck-typed reader over a live model; most likely differences: sequence/optional inference from multiplicity, union labels from OperatorExpression, enum-typed constants, raises order"},
-  "warnings": {"expected": "none", "confidence": "low"},
-  "modelTouched": {"expected": false, "confidence": "high", "why": "export opens no session; command history must not change"}
+  "exportResult": {
+    "expected": "OK",
+    "confidence": "medium"
+  },
+  "identicalCanonicalIdl": {
+    "expected": true,
+    "confidence": "low",
+    "why": "first run of a duck-typed reader over a live model; most likely differences: sequence/optional inference from multiplicity, union labels from OperatorExpression, enum-typed constants, raises order"
+  },
+  "warnings": {
+    "expected": "none",
+    "confidence": "low"
+  },
+  "modelTouched": {
+    "expected": false,
+    "confidence": "high",
+    "why": "export opens no session; command history must not change"
+  },
+  "observed": {
+    "on": "2026-09-16 CATIA Magic MSoSA 2026x Refresh1",
+    "firstAttempt": "FAIL - script bug: inside closures a bare call(...) resolved to Closure.call; helper renamed callOn",
+    "exportResult": "OK (after fix)",
+    "identicalCanonicalIdl": true,
+    "warnings": "none",
+    "modelTouched": false,
+    "log": "logs/cameo/e09-export.txt, logs/idl/cameo-export-shop_order.idl"
+  }
 }

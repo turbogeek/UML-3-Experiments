@@ -151,6 +151,14 @@
       "observed": false,
       "observedRules": [],
       "observedOn": "2026-09-16 CATIA Magic MSoSA 2026x Refresh1: loads with 0 errors, validation engine 0 failures (prediction held)"
+    },
+    {
+      "package": "shop_order",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "IDL-imported package after the E08 const fix (re-run prediction recorded before the re-run)",
+      "observed": false,
+      "observedRules": []
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"
