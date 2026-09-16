@@ -28,6 +28,24 @@ class IdlCodegenContext {
         }
     }
 
+    // IDL modules may be reopened; generated packages / Rust modules must be emitted once
+    static List<IdlDefinition> mergeModules(List<IdlDefinition> defs) {
+        List<IdlDefinition> out = []
+        Map<String, IdlModule> seen = [:]
+        defs.each { d ->
+            if (d instanceof IdlModule) {
+                IdlModule first = seen[d.name]
+                if (first == null) {
+                    first = new IdlModule(kind: "module", name: d.name, line: d.line, annotations: d.annotations)
+                    seen[d.name] = first
+                    out << first
+                }
+                first.defs.addAll(((IdlModule) d).defs)
+            } else out << d
+        }
+        return out
+    }
+
     IdlDefinition lookup(String name, List<String> scope) {
         return names.byQualified[names.resolve(name, scope)]
     }
@@ -135,6 +153,7 @@ class IdlNaming {
     // names mapped from different IDL names must stay distinct (IDL4-Java footnote 2); applies to Rust as well
     static void checkDistinct(Map<String, String> mappedToIdl, String mapped, String idl, String what, int line) {
         String prior = mappedToIdl[mapped]
+        if (prior != null && prior == idl) throw new IdlException("duplicate " + what + " '" + idl + "'", line)
         if (prior != null && prior != idl) {
             throw new IdlException(what + " '" + idl + "' and '" + prior + "' map to the same name '" + mapped + "'", line)
         }
@@ -174,6 +193,7 @@ class IdlToJava {
     }
 
     void emit(List<String> scope, String simpleName, String body) {
+        currentScope = scope
         String path = (scope ? scope.collect { esc(it) }.join("/") + "/" : "") + simpleName + ".java"
         if (files.containsKey(path)) throw new IdlException("two IDL definitions map to the Java class " + path, 0)
         files[path] = header(scope) + body
@@ -181,8 +201,13 @@ class IdlToJava {
 
     // ---- types
 
+    List<String> currentScope = []
+
     String qualified(IdlDefinition d) {
         List<String> scope = ctx.scopeOf[d]
+        if (scope.isEmpty() && !currentScope.isEmpty()) {
+            throw new IdlException("'" + d.name + "' is declared outside any module (Java unnamed package, IDL4-Java 7.2.2) and cannot be referenced from package " + pkg(currentScope), d.line)
+        }
         return (scope ? pkg(scope) + "." : "") + typeName(d.name)
     }
 
@@ -236,7 +261,11 @@ class IdlToJava {
         List r = ctx.resolveAlias(m.type, scope)
         IdlTypeRef base = (IdlTypeRef) r[0]
         List<Long> dims = new ArrayList<Long>(m.decl.dims) + (List<Long>) r[1]
-        if (!dims.isEmpty()) return "new " + jt.substring(0, jt.indexOf("[")) + dims.collect { "[" + it + "]" }.join("")
+        if (!dims.isEmpty()) {
+            String elem = jt.substring(0, jt.length() - 2 * dims.size())
+            String sizes = dims.collect { "[" + it + "]" }.join("")
+            return elem.contains("<") ? "(" + jt + ") new " + elem.substring(0, elem.indexOf("<")) + sizes : "new " + elem + sizes
+        }
         switch (base.kind) {
             case "string": case "wstring": return '""'
             case "sequence": return "new java.util.ArrayList<>()"
@@ -253,8 +282,8 @@ class IdlToJava {
 
     // element initialisation for arrays of objects ("elements initialized with their default constructor")
     List<String> fillArray(IdlMember m, List<String> scope, String field, String jt) {
-        if (!jt.contains("[")) return []
-        String elem = jt.substring(0, jt.indexOf("["))
+        if (!jt.endsWith("[]")) return []
+        String elem = jt.replaceAll(/(\[\])+$/, "")
         String init
         if (elem == "String") init = '""'
         else if (elem == "java.math.BigDecimal") init = "java.math.BigDecimal.ZERO"
@@ -269,7 +298,7 @@ class IdlToJava {
                 init = d instanceof IdlEnum ? elem + "." + esc(((IdlEnum) d).literals[0]) : "new " + elem + "()"
             } else return []
         }
-        int depth = jt.count("[]")
+        int depth = (jt.length() - elem.length()) / 2
         List<String> lines = []
         String target = field
         String indent = "        "
@@ -316,7 +345,7 @@ class IdlToJava {
         if (base.kind == "string" || base.kind == "wstring") return '"' + javaEscape(String.valueOf(v)) + '"'
         if (base.kind == "fixed" || base.name == "long double") return 'new java.math.BigDecimal("' + v + '")'
         String jt = elementType(base, (List<String>) r[2], false)
-        if (jt == "char") return "'" + javaEscape(String.valueOf(v)) + "'"
+        if (jt == "char") return v instanceof Number ? "(char) " + v : "'" + javaEscape(String.valueOf(v)) + "'"
         if (jt == "boolean") return String.valueOf(v).toLowerCase()
         if (jt == "long") return v + "L"
         if (jt == "float") return (v instanceof Double ? v : ((Number) v).doubleValue()) + "F"
@@ -333,11 +362,14 @@ class IdlToJava {
 
     // ---- definitions
 
-    void definitions(List<IdlDefinition> defs, List<String> scope) {
+    void definitions(List<IdlDefinition> rawDefs, List<String> scope) {
+        List<IdlDefinition> defs = IdlCodegenContext.mergeModules(rawDefs)
         List<IdlConst> consts = defs.findAll { it instanceof IdlConst } as List<IdlConst>
+        currentScope = scope
         if (consts) constants(consts, scope)
         Map<String, String> typeNames = [:]
         defs.each { d ->
+            currentScope = scope
             if (!(d instanceof IdlModule) && !(d instanceof IdlConst) && !(d instanceof IdlTypedef)) {
                 IdlNaming.checkDistinct(typeNames, typeName(d.name), d.name, "type", d.line)
             }
@@ -593,14 +625,18 @@ class IdlToJava {
                 IdlAttribute a = (IdlAttribute) e
                 String jt = javaType(a.type, [], scope, false)
                 String prop = IdlNaming.pascal(a.name)
+                if (OBJECT_METHODS.contains("get" + prop)) prop = "_" + prop
                 IdlNaming.checkDistinct(methods, "get" + prop, a.name, "attribute", a.line)
                 b.append("    ").append(jt).append(" get").append(prop).append("();\n")
                 if (!a.readonly) b.append("    void set").append(prop).append("(").append(jt).append(" ").append(esc(IdlNaming.camel(a.name))).append(");\n")
             } else {
                 IdlOperation op = (IdlOperation) e
                 String mn = esc(IdlNaming.camel(op.name))
+                if (OBJECT_METHODS.contains(mn)) mn = "_" + mn
                 IdlNaming.checkDistinct(methods, mn, op.name, "operation", op.line)
+                Map<String, String> paramNames = [:]
                 List<String> params = op.params.collect { p ->
+                    IdlNaming.checkDistinct(paramNames, esc(IdlNaming.camel(p.name)), p.name, "parameter", op.line)
                     String pt = p.direction == "in" ? javaType(p.type, [], scope, false) : holder(javaType(p.type, [], scope, true))
                     pt + " " + esc(IdlNaming.camel(p.name))
                 }
@@ -702,7 +738,8 @@ class IdlToRust {
         return d
     }
 
-    void definitions(List<IdlDefinition> defs, List<String> scope, int ind) {
+    void definitions(List<IdlDefinition> rawDefs, List<String> scope, int ind) {
+        List<IdlDefinition> defs = IdlCodegenContext.mergeModules(rawDefs)
         Map<String, String> typeNames = [:], valueNames = [:]
         defs.each { d ->
             if (d instanceof IdlModule) {
@@ -802,7 +839,7 @@ class IdlToRust {
         if (v instanceof Boolean) return v.toString()
         if (base.kind in ["string", "wstring"]) return '"' + String.valueOf(v).replaceAll(/\\x([0-9a-fA-F]{1,2})/) { all, h -> "\\u{" + h + "}" } + '"'
         String rt = elementType(base, (List<String>) r[2])
-        if (rt == "char") return "'" + v + "'"
+        if (rt == "char") return v instanceof Number ? "'\\u{" + Long.toHexString(((Number) v).longValue()) + "}'" : "'" + v + "'"
         if (rt in ["f32", "f64"]) { String s = String.valueOf(v instanceof Double ? v : ((Number) v).doubleValue()); return s.contains("E") ? s.replace("E", "e") : s }
         if (rt == "bool") return String.valueOf(v).toLowerCase()
         return String.valueOf(v) + (rt == "i128" ? "" : "")
@@ -877,7 +914,9 @@ class IdlToRust {
                 IdlOperation op = (IdlOperation) e
                 String fn = fieldName(op.name)
                 IdlNaming.checkDistinct(seen, fn, op.name, "operation", op.line)
+                Map<String, String> paramNames = [:]
                 List<String> params = ["&mut self"] + op.params.collect { p ->
+                    IdlNaming.checkDistinct(paramNames, fieldName(p.name), p.name, "parameter", op.line)
                     String t = rustType(p.type, [], scope)
                     fieldName(p.name) + ": " + (p.direction == "in" ? t : "&mut " + t)
                 }
