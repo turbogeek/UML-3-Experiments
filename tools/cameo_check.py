@@ -302,6 +302,10 @@ def main() -> int:
         _, clean = call(args.port, "/run-script", {"scriptName": INSPECT_SCRIPT})
         report["inspectAfterUndo"] = clean.get("result", clean)
         print("UNDO: " + str(report["undo"]).strip().replace("\n", " | "))
+        if "STOPPED" in str(report["undo"]) or "myPackagesAfter=0" not in str(report["undo"]):
+            print("FAIL  undo did not complete safely (foreign command on the undo stack or packages remain) "
+                  "- inspect CATIA Magic before continuing")
+            failed = True
         print("AFTER UNDO: " + str(report["inspectAfterUndo"]).strip().replace("\n", " | "))
 
     if args.shutdown:

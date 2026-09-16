@@ -1,32 +1,157 @@
 {
-  "description": "Predictions for CATIA Magic's evaluation of UML3 views (ViewUsage exposedElement = expose + filter), recorded 2026-09-16 BEFORE running. 'includes' must be in the view content, 'excludes' must not (excludes prove the filter is applied). Filters test metadata presence, so they are not affected by the stacked-keyword deviation (E02/E03).",
-  "apiAvailable": {"expected": true, "confidence": "medium"},
-  "filtersEvaluated": {"expected": true, "confidence": "low", "why": "commercial tools may not evaluate model-level filter expressions"},
+  "description": "Predictions for CATIA Magic's evaluation of UML3 views (ViewUsage exposedElement = expose + filter), recorded 2026-09-16 BEFORE running. 'includes' must be in the view content, 'excludes' must not (excludes prove the filter is applied). Filters test metadata presence, so they are not affected by the stacked-keyword deviation (E02/E03). Library-leak excludes (AggregationKind, library port/connection bases) added 2026-09-16 before the run that adopts the E06 filter.",
+  "apiAvailable": {
+    "expected": true,
+    "confidence": "medium"
+  },
+  "filtersEvaluated": {
+    "expected": true,
+    "confidence": "low",
+    "why": "commercial tools may not evaluate model-level filter expressions"
+  },
   "views": [
-    {"id": "VW1", "view": "OnlineStoreViews::domainClassDiagram",
-     "includes": ["Customer", "Order", "PaymentGateway", "StripeGateway", "Address", "OrderStatus", "PaymentDeclined", "Places", "Contains", "Repository", "StoreSettings", "checkoutUsesGateway"],
-     "excludes": []},
-    {"id": "VW2", "view": "OnlineStoreViews::architectureComponents",
-     "includes": ["WebStorefront", "OrderService", "PaymentService", "StoreSystem", "OrderApiPort", "OrderManagement"],
-     "excludes": ["OrderServiceImage", "KubernetesPod", "WorkerNode", "productionCluster", "Presentation"]},
-    {"id": "VW3", "view": "OnlineStoreViews::deploymentDiagram",
-     "includes": ["OrderServiceImage", "KubernetesPod", "WorkerNode", "ClusterNetwork"],
-     "excludes": ["OrderService", "StoreSystem", "OrderApiPort"]},
-    {"id": "VW4", "view": "OnlineStoreViews::logicalDataModel",
-     "includes": ["PostalAddress", "CustomerAccount", "PurchaseOrder", "PurchaseOrderLine", "AccountOrders", "Tag", "OrderTagging"],
-     "excludes": []},
-    {"id": "VW5", "view": "OnlineStoreViews::physicalSchema",
-     "includes": ["StoreDb", "CUSTOMER_ACCOUNT", "PURCHASE_ORDER", "OPEN_ORDERS_V", "customerMapping", "orderMapping"],
-     "excludes": []},
-    {"id": "VW6", "view": "OnlineStoreViews::messageSchemas",
-     "includes": ["OrderPlaced", "CapturePayment", "PaymentResult", "PaymentCaptured", "OrderEventsTopic", "KafkaCluster"],
-     "excludes": ["OrderEventsOut", "CheckoutService", "eventDrivenStore", "CheckoutInteraction"]},
-    {"id": "VW7", "view": "OnlineStoreViews::storePackages",
-     "includes": ["Logical", "Physical"], "excludes": []},
-    {"id": "VW8", "view": "OnlineStoreViews::checkoutSequence",
-     "includes": ["CheckoutInteraction"], "excludes": []},
-    {"id": "VW9", "view": "OnlineStoreViews::domainClassTable",
-     "includes": ["Customer", "Address", "OrderStatus", "PaymentGateway"],
-     "excludes": ["Places", "Contains", "checkoutUsesGateway"]}
+    {
+      "id": "VW1",
+      "view": "OnlineStoreViews::domainClassDiagram",
+      "includes": [
+        "Customer",
+        "Order",
+        "PaymentGateway",
+        "StripeGateway",
+        "Address",
+        "OrderStatus",
+        "PaymentDeclined",
+        "Places",
+        "Contains",
+        "Repository",
+        "StoreSettings",
+        "checkoutUsesGateway"
+      ],
+      "excludes": [
+        "AggregationKind"
+      ]
+    },
+    {
+      "id": "VW2",
+      "view": "OnlineStoreViews::architectureComponents",
+      "includes": [
+        "WebStorefront",
+        "OrderService",
+        "PaymentService",
+        "StoreSystem",
+        "OrderApiPort",
+        "OrderManagement"
+      ],
+      "excludes": [
+        "OrderServiceImage",
+        "KubernetesPod",
+        "WorkerNode",
+        "productionCluster",
+        "Presentation",
+        "associations",
+        "aggregations",
+        "compositions",
+        "ServicePort",
+        "servicePorts",
+        "assemblyConnectors",
+        "delegationConnectors",
+        "communicationPaths",
+        "deployments",
+        "manifestations"
+      ]
+    },
+    {
+      "id": "VW3",
+      "view": "OnlineStoreViews::deploymentDiagram",
+      "includes": [
+        "OrderServiceImage",
+        "KubernetesPod",
+        "WorkerNode",
+        "ClusterNetwork"
+      ],
+      "excludes": [
+        "OrderService",
+        "StoreSystem",
+        "OrderApiPort"
+      ]
+    },
+    {
+      "id": "VW4",
+      "view": "OnlineStoreViews::logicalDataModel",
+      "includes": [
+        "PostalAddress",
+        "CustomerAccount",
+        "PurchaseOrder",
+        "PurchaseOrderLine",
+        "AccountOrders",
+        "Tag",
+        "OrderTagging"
+      ],
+      "excludes": []
+    },
+    {
+      "id": "VW5",
+      "view": "OnlineStoreViews::physicalSchema",
+      "includes": [
+        "StoreDb",
+        "CUSTOMER_ACCOUNT",
+        "PURCHASE_ORDER",
+        "OPEN_ORDERS_V",
+        "customerMapping",
+        "orderMapping"
+      ],
+      "excludes": []
+    },
+    {
+      "id": "VW6",
+      "view": "OnlineStoreViews::messageSchemas",
+      "includes": [
+        "OrderPlaced",
+        "CapturePayment",
+        "PaymentResult",
+        "PaymentCaptured",
+        "OrderEventsTopic",
+        "KafkaCluster"
+      ],
+      "excludes": [
+        "OrderEventsOut",
+        "CheckoutService",
+        "eventDrivenStore",
+        "CheckoutInteraction"
+      ]
+    },
+    {
+      "id": "VW7",
+      "view": "OnlineStoreViews::storePackages",
+      "includes": [
+        "Logical",
+        "Physical"
+      ],
+      "excludes": []
+    },
+    {
+      "id": "VW8",
+      "view": "OnlineStoreViews::checkoutSequence",
+      "includes": [
+        "CheckoutInteraction"
+      ],
+      "excludes": []
+    },
+    {
+      "id": "VW9",
+      "view": "OnlineStoreViews::domainClassTable",
+      "includes": [
+        "Customer",
+        "Address",
+        "OrderStatus",
+        "PaymentGateway"
+      ],
+      "excludes": [
+        "Places",
+        "Contains",
+        "checkoutUsesGateway",
+        "AggregationKind"
+      ]
+    }
   ]
 }
