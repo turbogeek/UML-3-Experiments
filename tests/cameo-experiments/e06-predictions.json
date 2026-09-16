@@ -1,0 +1,9 @@
+{
+  "description": "E06 predictions, recorded 2026-09-16 BEFORE running: filter 'not (as KerML::Element).isLibraryElement' removes library elements leaked into views through Expose isImportAll.",
+  "load": {"expected": "OK", "confidence": "medium"},
+  "views": [
+    {"id": "VF1", "view": "UML3ExperimentViewFilters::classesWithLeak", "includes": ["Customer", "AggregationKind"], "excludes": [], "confidence": "high", "why": "control reproduces the leak"},
+    {"id": "VF2", "view": "UML3ExperimentViewFilters::classesFiltered", "includes": ["Customer", "Order", "OrderStatus", "Places"], "excludes": ["AggregationKind"], "confidence": "low", "why": "metaclass cast + isLibraryElement evaluated in filters"},
+    {"id": "VF3", "view": "UML3ExperimentViewFilters::componentsFiltered", "includes": ["OrderService", "WebStorefront", "OrderApiPort"], "excludes": ["associations", "ServicePort", "servicePorts", "assemblyConnectors"], "confidence": "low", "why": "same filter in a usage body combines with inherited filters"}
+  ]
+}
