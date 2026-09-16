@@ -150,10 +150,17 @@ def main() -> int:
         r = run(cmd)
         cameo_report = ROOT / "logs" / "cameo" / "cameo-report.json"
         details = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
+        # Surface every failing check, not just load errors (M15 previously showed an empty error).
+        errors = [f'{Path(x["file"]).name}: {e}' for x in details.get("loads", []) for e in x["errors"]]
+        errors += [f'hypothesis {h["id"]}: expected {h["expected"]}, observed {h["observed"]} {h.get("detail", "")}'
+                   for h in details.get("impliedSpecializations", {}).get("results", []) if h.get("status") != "PASS"]
+        errors += [f'label {k["id"]} {k["subject"]}: observed {k["observedText"]!r}'
+                   for k in details.get("keywordDisplay", {}).get("results", []) if not k["passed"]]
+        errors += details.get("validationEngine", {}).get("mismatches", [])
+        if r.returncode and not errors:
+            errors = [r.stderr.strip() or f"cameo_check exit code {r.returncode}"]
         report["suites"]["cameo"] = {
-            "passed": r.returncode == 0, "exitCode": r.returncode,
-            "errors": [f'{Path(x["file"]).name}: {e}' for x in details.get("loads", []) for e in x["errors"]]
-                      or ([r.stderr.strip()] if r.returncode else []),
+            "passed": r.returncode == 0, "exitCode": r.returncode, "errors": errors,
             "inspectAfterUndo": details.get("inspectAfterUndo")}
 
     report["finished"] = dt.datetime.now().isoformat(timespec="seconds")

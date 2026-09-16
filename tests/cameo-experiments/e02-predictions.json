@@ -1,0 +1,15 @@
+{
+  "description": "E02 predictions, recorded 2026-09-16 BEFORE running, under hypothesis H-first: CATIA Magic applies only the FIRST prefix semantic keyword's implied specialization. Body-form usage (C) is predicted to be applied independently (medium). If B shows the reverse of A, H-first is supported; if A and B both miss the same keyword, the cause is keyword-specific instead.",
+  "specializes": [
+    {"id": "S-A1", "why": "A: first keyword #column applied", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "A"], "general": ["UML3Data", "columns"], "expected": true},
+    {"id": "S-A2", "why": "A: second keyword #primaryKey NOT applied (reproduces M15)", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "A"], "general": ["UML3Data", "primaryKeyFeatures"], "expected": false},
+    {"id": "S-B1", "why": "B: first keyword #primaryKey applied", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "B"], "general": ["UML3Data", "primaryKeyFeatures"], "expected": true},
+    {"id": "S-B2", "why": "B: second keyword #column NOT applied", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "B"], "general": ["UML3Data", "columns"], "expected": false},
+    {"id": "S-C1", "why": "C: prefix #column applied", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "C"], "general": ["UML3Data", "columns"], "expected": true},
+    {"id": "S-C2", "why": "C: body-form @PrimaryKey applied (medium)", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "C"], "general": ["UML3Data", "primaryKeyFeatures"], "expected": true},
+    {"id": "S-D1", "why": "D: single #primaryKey applied (control)", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "D"], "general": ["UML3Data", "primaryKeyFeatures"], "expected": true},
+    {"id": "S-E1", "why": "E: first marker #unique applied", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "E"], "general": ["UML3Data", "uniqueFeatures"], "expected": true},
+    {"id": "S-E2", "why": "E: second marker #indexed NOT applied", "subject": ["UML3ExperimentStackedKeywords", "STACKED", "E"], "general": ["UML3Data", "indexedFeatures"], "expected": false}
+  ],
+  "inheritsFeature": []
+}
