@@ -1,28 +1,541 @@
 {
-  "description": "Hypotheses about specializations implied by UML3 semantic-metadata keywords (KerML 9.2.16). 'expected' is the prediction; negative controls (expected=false) prove the check can fail. Verified in CATIA Magic by verifyImpliedSpecializations.groovy.",
+  "description": "Hypotheses about specializations implied by UML3 semantic-metadata keywords (KerML 9.2.16). 'expected' is the prediction; negative controls (expected=false) prove the check can fail. Verified in CATIA Magic by verifyImpliedSpecializations.groovy. M*/N* cases (added 2026-09-16, before running) cover marker keywords converted to semantic metadata.",
   "specializes": [
-    {"id": "H01", "why": "#service part def (no explicit :>) -> Service :> Component", "subject": ["OnlineStoreArchitecture", "OrderService"], "general": ["UML3Components", "Component"], "expected": true},
-    {"id": "H02", "why": "#service chain reaches UML3Core::ActiveClass", "subject": ["OnlineStoreArchitecture", "OrderService"], "general": ["UML3Core", "ActiveClass"], "expected": true},
-    {"id": "H03", "why": "#classType item def -> Class", "subject": ["OnlineStoreDomain", "Customer"], "general": ["UML3Core", "Class"], "expected": true},
-    {"id": "N03", "why": "control: #classType does NOT make an Entity", "subject": ["OnlineStoreDomain", "Customer"], "general": ["UML3Data", "Entity"], "expected": false},
-    {"id": "H04", "why": "#aggregateRoot -> AggregateRoot", "subject": ["OnlineStoreDatabase", "Logical", "PurchaseOrder"], "general": ["UML3Data", "AggregateRoot"], "expected": true},
-    {"id": "H05", "why": "#aggregateRoot -> Entity (transitive)", "subject": ["OnlineStoreDatabase", "Logical", "PurchaseOrder"], "general": ["UML3Data", "Entity"], "expected": true},
-    {"id": "N05", "why": "control: #entity is not an AggregateRoot", "subject": ["OnlineStoreDatabase", "Logical", "Tag"], "general": ["UML3Data", "AggregateRoot"], "expected": false},
-    {"id": "H06", "why": "#domainEvent -> DomainEvent", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "general": ["UML3Messaging", "DomainEvent"], "expected": true},
-    {"id": "H07", "why": "#domainEvent -> Signal (transitive via MessageType)", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "general": ["UML3Core", "Signal"], "expected": true},
-    {"id": "N07", "why": "control: a domain event is not a Command", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "general": ["UML3Messaging", "Command"], "expected": false},
-    {"id": "C08", "why": "control: explicit ':>' realization is reported", "subject": ["OnlineStoreDomain", "StripeGateway"], "general": ["OnlineStoreDomain", "PaymentGateway"], "expected": true},
-    {"id": "H08", "why": "realizing an #interfaceType reaches InterfaceType", "subject": ["OnlineStoreDomain", "StripeGateway"], "general": ["UML3Core", "InterfaceType"], "expected": true},
-    {"id": "H09", "why": "#operation action (feature) subsets operations", "subject": ["OnlineStoreDomain", "Order", "cancel"], "general": ["UML3Core", "operations"], "expected": true},
-    {"id": "H10", "why": "#query calc subsets queries", "subject": ["OnlineStoreDomain", "Order", "total"], "general": ["UML3Core", "queries"], "expected": true},
-    {"id": "N10", "why": "control: a plain attribute is not an operation", "subject": ["OnlineStoreDomain", "Order", "placedAt"], "general": ["UML3Core", "operations"], "expected": false},
-    {"id": "H11", "why": "#column attribute subsets columns", "subject": ["OnlineStoreDatabase", "Physical", "CUSTOMER_ACCOUNT", "ACCOUNT_ID"], "general": ["UML3Data", "columns"], "expected": true},
-    {"id": "H12", "why": "#association connection def -> Association", "subject": ["OnlineStoreDomain", "Places"], "general": ["UML3Core", "Association"], "expected": true},
-    {"id": "H13", "why": "#composition -> Composition", "subject": ["OnlineStoreDomain", "Contains"], "general": ["UML3Core", "Composition"], "expected": true},
-    {"id": "N13", "why": "control: composition is not aggregation (siblings)", "subject": ["OnlineStoreDomain", "Contains"], "general": ["UML3Core", "Aggregation"], "expected": false}
+    {
+      "id": "H01",
+      "why": "#service part def (no explicit :>) -> Service :> Component",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService"
+      ],
+      "general": [
+        "UML3Components",
+        "Component"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H02",
+      "why": "#service chain reaches UML3Core::ActiveClass",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService"
+      ],
+      "general": [
+        "UML3Core",
+        "ActiveClass"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H03",
+      "why": "#classType item def -> Class",
+      "subject": [
+        "OnlineStoreDomain",
+        "Customer"
+      ],
+      "general": [
+        "UML3Core",
+        "Class"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N03",
+      "why": "control: #classType does NOT make an Entity",
+      "subject": [
+        "OnlineStoreDomain",
+        "Customer"
+      ],
+      "general": [
+        "UML3Data",
+        "Entity"
+      ],
+      "expected": false
+    },
+    {
+      "id": "H04",
+      "why": "#aggregateRoot -> AggregateRoot",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder"
+      ],
+      "general": [
+        "UML3Data",
+        "AggregateRoot"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H05",
+      "why": "#aggregateRoot -> Entity (transitive)",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder"
+      ],
+      "general": [
+        "UML3Data",
+        "Entity"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N05",
+      "why": "control: #entity is not an AggregateRoot",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "Tag"
+      ],
+      "general": [
+        "UML3Data",
+        "AggregateRoot"
+      ],
+      "expected": false
+    },
+    {
+      "id": "H06",
+      "why": "#domainEvent -> DomainEvent",
+      "subject": [
+        "OnlineStoreMessaging",
+        "OrderPlaced"
+      ],
+      "general": [
+        "UML3Messaging",
+        "DomainEvent"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H07",
+      "why": "#domainEvent -> Signal (transitive via MessageType)",
+      "subject": [
+        "OnlineStoreMessaging",
+        "OrderPlaced"
+      ],
+      "general": [
+        "UML3Core",
+        "Signal"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N07",
+      "why": "control: a domain event is not a Command",
+      "subject": [
+        "OnlineStoreMessaging",
+        "OrderPlaced"
+      ],
+      "general": [
+        "UML3Messaging",
+        "Command"
+      ],
+      "expected": false
+    },
+    {
+      "id": "C08",
+      "why": "control: explicit ':>' realization is reported",
+      "subject": [
+        "OnlineStoreDomain",
+        "StripeGateway"
+      ],
+      "general": [
+        "OnlineStoreDomain",
+        "PaymentGateway"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H08",
+      "why": "realizing an #interfaceType reaches InterfaceType",
+      "subject": [
+        "OnlineStoreDomain",
+        "StripeGateway"
+      ],
+      "general": [
+        "UML3Core",
+        "InterfaceType"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H09",
+      "why": "#operation action (feature) subsets operations",
+      "subject": [
+        "OnlineStoreDomain",
+        "Order",
+        "cancel"
+      ],
+      "general": [
+        "UML3Core",
+        "operations"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H10",
+      "why": "#query calc subsets queries",
+      "subject": [
+        "OnlineStoreDomain",
+        "Order",
+        "total"
+      ],
+      "general": [
+        "UML3Core",
+        "queries"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N10",
+      "why": "control: a plain attribute is not an operation",
+      "subject": [
+        "OnlineStoreDomain",
+        "Order",
+        "placedAt"
+      ],
+      "general": [
+        "UML3Core",
+        "operations"
+      ],
+      "expected": false
+    },
+    {
+      "id": "H11",
+      "why": "#column attribute subsets columns",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Physical",
+        "CUSTOMER_ACCOUNT",
+        "ACCOUNT_ID"
+      ],
+      "general": [
+        "UML3Data",
+        "columns"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H12",
+      "why": "#association connection def -> Association",
+      "subject": [
+        "OnlineStoreDomain",
+        "Places"
+      ],
+      "general": [
+        "UML3Core",
+        "Association"
+      ],
+      "expected": true
+    },
+    {
+      "id": "H13",
+      "why": "#composition -> Composition",
+      "subject": [
+        "OnlineStoreDomain",
+        "Contains"
+      ],
+      "general": [
+        "UML3Core",
+        "Composition"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N13",
+      "why": "control: composition is not aggregation (siblings)",
+      "subject": [
+        "OnlineStoreDomain",
+        "Contains"
+      ],
+      "general": [
+        "UML3Core",
+        "Aggregation"
+      ],
+      "expected": false
+    },
+    {
+      "id": "M01",
+      "why": "#static attribute joins staticFeatures",
+      "subject": [
+        "OnlineStoreDomain",
+        "Customer",
+        "registeredCount"
+      ],
+      "general": [
+        "UML3Core",
+        "staticFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M02",
+      "why": "#id attribute joins identifierFeatures",
+      "subject": [
+        "OnlineStoreDomain",
+        "Customer",
+        "customerId"
+      ],
+      "general": [
+        "UML3Core",
+        "identifierFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M03",
+      "why": "#templateParameter ref item joins templateParameters",
+      "subject": [
+        "OnlineStoreDomain",
+        "Repository",
+        "entity"
+      ],
+      "general": [
+        "UML3Core",
+        "templateParameters"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M04",
+      "why": "#provided port joins providedPorts",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService",
+        "orderApi"
+      ],
+      "general": [
+        "UML3Components",
+        "providedPorts"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M05",
+      "why": "#required (conjugated) port joins requiredPorts",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService",
+        "paymentApi"
+      ],
+      "general": [
+        "UML3Components",
+        "requiredPorts"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N15",
+      "why": "control: provided port is not in requiredPorts",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService",
+        "orderApi"
+      ],
+      "general": [
+        "UML3Components",
+        "requiredPorts"
+      ],
+      "expected": false
+    },
+    {
+      "id": "M06",
+      "why": "#publishes flow joins publishingFlows (flow = connector; riskiest case)",
+      "subject": [
+        "OnlineStoreMessaging",
+        "eventDrivenStore",
+        "publishOrderPlaced"
+      ],
+      "general": [
+        "UML3Messaging",
+        "publishingFlows"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M07",
+      "why": "#subscribes flow joins subscribingFlows",
+      "subject": [
+        "OnlineStoreMessaging",
+        "eventDrivenStore",
+        "consumeOrderPlaced"
+      ],
+      "general": [
+        "UML3Messaging",
+        "subscribingFlows"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M08",
+      "why": "#sends flow joins sendingFlows",
+      "subject": [
+        "OnlineStoreMessaging",
+        "eventDrivenStore",
+        "sendCapturePayment"
+      ],
+      "general": [
+        "UML3Messaging",
+        "sendingFlows"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M09",
+      "why": "#handles flow joins handlingFlows",
+      "subject": [
+        "OnlineStoreMessaging",
+        "eventDrivenStore",
+        "returnPaymentResult"
+      ],
+      "general": [
+        "UML3Messaging",
+        "handlingFlows"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N16",
+      "why": "control: publishing flow is not a subscribing flow",
+      "subject": [
+        "OnlineStoreMessaging",
+        "eventDrivenStore",
+        "publishOrderPlaced"
+      ],
+      "general": [
+        "UML3Messaging",
+        "subscribingFlows"
+      ],
+      "expected": false
+    },
+    {
+      "id": "M10",
+      "why": "#primaryKey attribute joins primaryKeyFeatures",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder",
+        "orderId"
+      ],
+      "general": [
+        "UML3Data",
+        "primaryKeyFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M11",
+      "why": "#foreignKey ref item joins foreignKeyFeatures",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder",
+        "account"
+      ],
+      "general": [
+        "UML3Data",
+        "foreignKeyFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M12",
+      "why": "#unique attribute joins uniqueFeatures",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "CustomerAccount",
+        "email"
+      ],
+      "general": [
+        "UML3Data",
+        "uniqueFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M13",
+      "why": "#indexed attribute joins indexedFeatures",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder",
+        "placedAt"
+      ],
+      "general": [
+        "UML3Data",
+        "indexedFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M14",
+      "why": "#transient attribute joins transientFeatures",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder",
+        "lineCount"
+      ],
+      "general": [
+        "UML3Data",
+        "transientFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "M15",
+      "why": "#column #primaryKey column joins both columns and primaryKeyFeatures (primaryKey part)",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Physical",
+        "CUSTOMER_ACCOUNT",
+        "ACCOUNT_ID"
+      ],
+      "general": [
+        "UML3Data",
+        "primaryKeyFeatures"
+      ],
+      "expected": true
+    },
+    {
+      "id": "N17",
+      "why": "control: indexed attribute is not a primary key",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder",
+        "placedAt"
+      ],
+      "general": [
+        "UML3Data",
+        "primaryKeyFeatures"
+      ],
+      "expected": false
+    }
   ],
   "inheritsFeature": [
-    {"id": "H14", "why": "domain events inherit the MessageHeader 'header' from MessageType", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "feature": "header", "expected": true},
-    {"id": "N14", "why": "control: a plain class has no 'header'", "subject": ["OnlineStoreDomain", "Customer"], "feature": "header", "expected": false}
+    {
+      "id": "H14",
+      "why": "domain events inherit the MessageHeader 'header' from MessageType",
+      "subject": [
+        "OnlineStoreMessaging",
+        "OrderPlaced"
+      ],
+      "feature": "header",
+      "expected": true
+    },
+    {
+      "id": "N14",
+      "why": "control: a plain class has no 'header'",
+      "subject": [
+        "OnlineStoreDomain",
+        "Customer"
+      ],
+      "feature": "header",
+      "expected": false
+    }
   ]
 }

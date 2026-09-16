@@ -99,12 +99,14 @@ package OnlineStoreMessaging {
 		part fulfillment : FulfillmentService;
 		part paymentProcessor : PaymentProcessor;
 
-		#publishes flow of OrderPlaced from checkout.events.outboundMessages
+		#publishes flow publishOrderPlaced of OrderPlaced from checkout.events.outboundMessages
 			to kafka.ordersTopic.inbound.inboundMessages;
-		#subscribes flow of OrderPlaced from kafka.ordersTopic.outbound.outboundMessages
+		#subscribes flow consumeOrderPlaced of OrderPlaced from kafka.ordersTopic.outbound.outboundMessages
 			to fulfillment.events.inboundMessages;
-		#sends flow of CapturePayment from checkout.payments.request
+		#sends flow sendCapturePayment of CapturePayment from checkout.payments.request
 			to paymentProcessor.payments.request;
+		#handles flow returnPaymentResult of PaymentResult from paymentProcessor.payments.response
+			to checkout.payments.response;
 	}
 
 	/* --- Interaction (UML sequence diagram) --------------------------- */

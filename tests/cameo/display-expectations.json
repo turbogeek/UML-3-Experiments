@@ -1,0 +1,141 @@
+{
+  "description": "Regression expectations for CATIA Magic keyword labels (ModelTextCreator.createMetadataKeywordsText(element, PlainTextBuilder, ' ', true, true)), checked by tools/cameo_check.py --display. Recorded 2026-09-16 BEFORE running, after converting marker keywords to semantic metadata. X11 reverses the earlier D4 observation (plain #primaryKey was not shown).",
+  "cases": [
+    {
+      "id": "X01",
+      "subject": "OnlineStoreDomain::Customer::registeredCount",
+      "contains": "\u00ab#static\u00bb",
+      "expected": true,
+      "why": "converted marker on attribute",
+      "confidence": "high"
+    },
+    {
+      "id": "X02",
+      "subject": "OnlineStoreDomain::StripeGateway",
+      "contains": "\u00ab#final\u00bb",
+      "expected": true,
+      "why": "converted marker on a definition, alongside #classType",
+      "confidence": "high"
+    },
+    {
+      "id": "X03",
+      "subject": "OnlineStoreDomain::StripeGateway",
+      "contains": "\u00ab#classType\u00bb",
+      "expected": true,
+      "why": "existing semantic keyword still shown",
+      "confidence": "high"
+    },
+    {
+      "id": "X04",
+      "subject": "OnlineStoreDomain::StoreSettings",
+      "contains": "\u00ab#singleton\u00bb",
+      "expected": true,
+      "why": "converted marker on item def",
+      "confidence": "high"
+    },
+    {
+      "id": "X05",
+      "subject": "OnlineStoreDomain::Repository",
+      "contains": "\u00ab#template\u00bb",
+      "expected": true,
+      "why": "converted marker on abstract item def",
+      "confidence": "high"
+    },
+    {
+      "id": "X06",
+      "subject": "OnlineStoreDomain::Repository::entity",
+      "contains": "\u00ab#templateParameter\u00bb",
+      "expected": true,
+      "why": "converted marker on abstract ref item",
+      "confidence": "high"
+    },
+    {
+      "id": "X07",
+      "subject": "OnlineStoreArchitecture::WebStorefront",
+      "contains": "\u00ab#boundary\u00bb",
+      "expected": true,
+      "why": "converted marker on part def",
+      "confidence": "high"
+    },
+    {
+      "id": "X08",
+      "subject": "OnlineStoreArchitecture::OrderService::orderApi",
+      "contains": "\u00ab#provided\u00bb",
+      "expected": true,
+      "why": "converted marker on port usage",
+      "confidence": "high"
+    },
+    {
+      "id": "X09",
+      "subject": "OnlineStoreArchitecture::OrderService::paymentApi",
+      "contains": "\u00ab#required\u00bb",
+      "expected": true,
+      "why": "converted marker on conjugated port usage",
+      "confidence": "high"
+    },
+    {
+      "id": "X10",
+      "subject": "OnlineStoreMessaging::FulfillmentService",
+      "contains": "\u00ab#idempotent\u00bb",
+      "expected": true,
+      "why": "marker applied in BODY form '@Idempotent;'",
+      "confidence": "medium"
+    },
+    {
+      "id": "X11",
+      "subject": "OnlineStoreDatabase::Logical::PurchaseOrder::orderId",
+      "contains": "\u00ab#primaryKey\u00bb",
+      "expected": true,
+      "why": "converted marker; was absent as plain metadata (D4)",
+      "confidence": "high"
+    },
+    {
+      "id": "X12",
+      "subject": "OnlineStoreDatabase::Logical::PurchaseOrder::account",
+      "contains": "\u00ab#foreignKey\u00bb",
+      "expected": true,
+      "why": "converted marker on ref item",
+      "confidence": "high"
+    },
+    {
+      "id": "X13",
+      "subject": "OnlineStoreDatabase::Logical::CustomerAccount::email",
+      "contains": "\u00ab#unique\u00bb",
+      "expected": true,
+      "why": "converted marker on attribute",
+      "confidence": "high"
+    },
+    {
+      "id": "X14",
+      "subject": "OnlineStoreDatabase::Logical::CustomerAccount",
+      "contains": "\u00ab#audited\u00bb",
+      "expected": true,
+      "why": "marker applied in BODY form '@Audited;'",
+      "confidence": "medium"
+    },
+    {
+      "id": "X15",
+      "subject": "OnlineStoreMessaging::eventDrivenStore::publishOrderPlaced",
+      "contains": "\u00ab#publishes\u00bb",
+      "expected": true,
+      "why": "converted marker on flow usage",
+      "confidence": "medium"
+    },
+    {
+      "id": "X16",
+      "subject": "OnlineStoreDomain::OrderStatus",
+      "contains": "\u00ab#",
+      "expected": false,
+      "why": "control: no keyword",
+      "confidence": "high"
+    },
+    {
+      "id": "X17",
+      "subject": "OnlineStoreDomain::Customer::email",
+      "contains": "\u00ab#",
+      "expected": false,
+      "why": "control: attribute without keyword",
+      "confidence": "high"
+    }
+  ]
+}

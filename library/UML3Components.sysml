@@ -13,6 +13,7 @@ library package UML3Components {
 	 */
 
 	private import ScalarValues::*;
+	private import Base::Anything;
 	private import Metaobjects::SemanticMetadata;
 	private import UML3Core::*;
 
@@ -144,14 +145,20 @@ library package UML3Components {
 	}
 
 	/* ---------------------------------------------------------------------
-	 * Annotation-only keywords
+	 * Marker keywords (semantic, shown as labels; baseType typed by Anything - see UML3Core)
 	 * --------------------------------------------------------------------- */
 
-	metadata def <provided> Provided {
+	abstract ref providedPorts : Anything[0..*] nonunique;
+	abstract ref requiredPorts : Anything[0..*] nonunique;
+	abstract ref boundaryElements : Anything[0..*] nonunique;
+
+	metadata def <provided> Provided :> SemanticMetadata {
 		doc /* The port offers its contract to others (UML provided interface / lollipop). */
+		:>> baseType = providedPorts meta SysML::Usage;
 	}
-	metadata def <required> Required {
+	metadata def <required> Required :> SemanticMetadata {
 		doc /* The port needs its contract from others (UML required interface / socket). Type it with ~PortDef. */
+		:>> baseType = requiredPorts meta SysML::Usage;
 	}
 
 	enum def ArchitectureStyle {
@@ -169,8 +176,9 @@ library package UML3Components {
 		attribute style : ArchitectureStyle[0..1];
 	}
 
-	metadata def <boundary> Boundary {
+	metadata def <boundary> Boundary :> SemanticMetadata {
 		doc /* Hexagonal / clean-architecture boundary element (adapter, port, gateway). */
+		:>> baseType = boundaryElements meta SysML::Usage;
 	}
 
 	metadata def Technology {

@@ -31,7 +31,7 @@ package OnlineStoreArchitecture {
 
 	/* --- Components ------------------------------------------------------ */
 
-	#component part def WebStorefront {
+	#component #boundary part def WebStorefront {
 		@Technology { technologyName = "React"; technologyVersion = "19"; }
 		#required port orderApi : ~OrderApiPort;
 	}

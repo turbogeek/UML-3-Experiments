@@ -12,6 +12,7 @@ library package UML3Messaging {
 	 */
 
 	private import ScalarValues::*;
+	private import Base::Anything;
 	private import Metaobjects::SemanticMetadata;
 	private import UML3Core::*;
 	private import UML3Types::*;
@@ -157,8 +158,11 @@ library package UML3Messaging {
 		attribute deadLetterChannel : String[0..1];
 	}
 
-	metadata def <idempotent> Idempotent {
+	abstract ref idempotentElements : Anything[0..*] nonunique;
+
+	metadata def <idempotent> Idempotent :> SemanticMetadata {
 		doc /* Handling the same message more than once has the same effect as handling it once. */
+		:>> baseType = idempotentElements meta SysML::Usage;
 	}
 
 	/* ---------------------------------------------------------------------
@@ -196,9 +200,23 @@ library package UML3Messaging {
 		:>> baseType = messageBrokers meta SysML::Usage;
 	}
 
-	/* Role keywords for flows / connections (flows are not always Types, so plain metadata). */
-	metadata def <publishes> Publishes;
-	metadata def <subscribes> Subscribes;
-	metadata def <sends> Sends;
-	metadata def <handles> Handles;
+	/* Role keywords for flows / connections. Flow usages are connectors (Features, hence Types),
+	 * so these are semantic markers too; baseType typed by Anything (see UML3Core). */
+	abstract ref publishingFlows : Anything[0..*] nonunique;
+	abstract ref subscribingFlows : Anything[0..*] nonunique;
+	abstract ref sendingFlows : Anything[0..*] nonunique;
+	abstract ref handlingFlows : Anything[0..*] nonunique;
+
+	metadata def <publishes> Publishes :> SemanticMetadata {
+		:>> baseType = publishingFlows meta SysML::Usage;
+	}
+	metadata def <subscribes> Subscribes :> SemanticMetadata {
+		:>> baseType = subscribingFlows meta SysML::Usage;
+	}
+	metadata def <sends> Sends :> SemanticMetadata {
+		:>> baseType = sendingFlows meta SysML::Usage;
+	}
+	metadata def <handles> Handles :> SemanticMetadata {
+		:>> baseType = handlingFlows meta SysML::Usage;
+	}
 }

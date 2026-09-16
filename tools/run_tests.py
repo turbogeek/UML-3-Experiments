@@ -144,7 +144,7 @@ def main() -> int:
             report["suites"]["cameo-probes"]["errors"] += details["validationEngine"]["mismatches"]
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
-        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate"]
+        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display"]
         if not args.keep_harness:
             cmd.append("--shutdown")
         r = run(cmd)

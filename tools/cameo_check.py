@@ -39,6 +39,8 @@ UNDO_SCRIPT = "undoUML3Loads.groovy"
 INSPECT_SCRIPT = "inspectUML3Roots.groovy"
 VERIFY_SCRIPT = "verifyImpliedSpecializations.groovy"
 VALIDATE_SCRIPT = "validateUML3Packages.groovy"
+DISPLAY_SCRIPT = "probeKeywordDisplay.groovy"
+DISPLAY_EXPECTED = ROOT / "tests" / "cameo" / "display-expectations.json"
 VALIDATION_EXPECTED = ROOT / "tests" / "cameo-negative" / "validation-predictions.json"
 REPO_SCRIPTS = ROOT / "tools" / "cameo-scripts"
 HYPOTHESES = ROOT / "tests" / "cameo" / "implied-specializations.json"
@@ -115,6 +117,8 @@ def main() -> int:
     ap.add_argument("--validate", action="store_true",
                     help="run CATIA Magic's KerML/SysML validation engine on loaded packages and compare "
                          "with tests/cameo-negative/validation-predictions.json")
+    ap.add_argument("--display", action="store_true",
+                    help="check keyword labels against tests/cameo/display-expectations.json (needs examples loaded)")
     ap.add_argument("--hypotheses", help="hypotheses JSON to verify (default tests/cameo/implied-specializations.json)")
     ap.add_argument("files", nargs="*")
     args = ap.parse_args()
@@ -216,6 +220,36 @@ def main() -> int:
               f"({len(flagged)} packages, {sum(flagged.values())} flagged as expected)" if val_ok else
               f"FAIL  CATIA Magic validation engine: {mismatches or text[:300]}")
         failed = failed or not val_ok
+
+    # Keyword labels as CATIA Magic's diagram shapes render them
+    if args.display and not failed:
+        cases = json.loads(DISPLAY_EXPECTED.read_text(encoding="utf-8"))["cases"]
+        subjects = sorted({c["subject"] for c in cases})
+        (HARNESS_SCRIPTS / "uml3-display-subjects.txt").write_text("\n".join(subjects) + "\n", encoding="utf-8")
+        _, disp = call(args.port, "/run-script", {"scriptName": DISPLAY_SCRIPT})
+        text = disp.get("result") or disp.get("error") or ""
+        (LOGS / "keyword-display.txt").write_text(text, encoding="utf-8")
+        labels: dict[str, str] = {}
+        for ln in text.splitlines():
+            f = ln.split("|")
+            if f[0] == "ELEM" and len(f) >= 5 and f[3] == "metadataKeywordsText(true,true)":
+                labels[f[1]] = f[4]
+            elif f[0] == "ELEM" and len(f) >= 3 and f[2] == "NOT_FOUND":
+                labels[f[1]] = "NOT_FOUND"
+        results = []
+        for c in cases:
+            observed_text = labels.get(c["subject"])
+            observed = observed_text is not None and observed_text != "NOT_FOUND" and c["contains"] in observed_text
+            ok = observed_text not in (None, "NOT_FOUND") and observed == c["expected"]
+            results.append({"id": c["id"], "subject": c["subject"], "expected": c["expected"],
+                            "observedText": observed_text, "passed": ok})
+        disp_ok = bool(results) and all(r["passed"] for r in results)
+        report["keywordDisplay"] = {"passed": disp_ok, "results": results}
+        print(f"{'PASS' if disp_ok else 'FAIL'}  keyword labels ({sum(r['passed'] for r in results)}/{len(results)})")
+        for r in results:
+            if not r["passed"]:
+                print(f"    {r}")
+        failed = failed or not disp_ok
 
     # Implied-specialization hypotheses (only meaningful when every default file loaded)
     if not failed and not args.files and (not args.library_only or args.hypotheses):

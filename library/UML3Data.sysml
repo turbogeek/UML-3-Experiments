@@ -15,6 +15,7 @@ library package UML3Data {
 	 */
 
 	private import ScalarValues::*;
+	private import Base::Anything;
 	private import Metaobjects::SemanticMetadata;
 	private import UML3Core::*;
 
@@ -116,29 +117,42 @@ library package UML3Data {
 	 * Key, constraint and physical-detail metadata
 	 * --------------------------------------------------------------------- */
 
-	metadata def <primaryKey> PrimaryKey {
+	/* Marker keywords are semantic so they show as labels («#primaryKey») and form queryable
+	 * sets; baseType typed by Anything (see UML3Core), valid on attributes and ref items. */
+	abstract ref primaryKeyFeatures : Anything[0..*] nonunique;
+	abstract ref foreignKeyFeatures : Anything[0..*] nonunique;
+	abstract ref uniqueFeatures : Anything[0..*] nonunique;
+	abstract ref indexedFeatures : Anything[0..*] nonunique;
+	abstract ref transientFeatures : Anything[0..*] nonunique;
+	abstract ref auditedElements : Anything[0..*] nonunique;
+
+	metadata def <primaryKey> PrimaryKey :> SemanticMetadata {
 		doc /* The attribute is (part of) the primary key. Several #primaryKey attributes form a composite key. */
+		:>> baseType = primaryKeyFeatures meta SysML::Usage;
 		attribute generation : KeyGeneration default KeyGeneration::assigned;
 	}
 
-	metadata def <foreignKey> ForeignKey {
+	metadata def <foreignKey> ForeignKey :> SemanticMetadata {
 		doc
 		/*
 		 * Applied to a 'ref' feature (logical) or a #column (physical) that refers to
 		 * another entity/table. Referential actions via @ForeignKey { onDelete = ...; }.
 		 */
+		:>> baseType = foreignKeyFeatures meta SysML::Usage;
 		attribute onDelete : ReferentialAction default ReferentialAction::noAction;
 		attribute onUpdate : ReferentialAction default ReferentialAction::noAction;
 		attribute referencedTable : String[0..1];
 		attribute referencedColumn : String[0..1];
 	}
 
-	metadata def <unique> Unique {
+	metadata def <unique> Unique :> SemanticMetadata {
 		doc /* Values of the attribute are unique across all instances. */
+		:>> baseType = uniqueFeatures meta SysML::Usage;
 	}
 
-	metadata def <indexed> Indexed {
+	metadata def <indexed> Indexed :> SemanticMetadata {
 		doc /* A single-column index exists on the attribute. */
+		:>> baseType = indexedFeatures meta SysML::Usage;
 	}
 
 	metadata def Index {
@@ -155,12 +169,14 @@ library package UML3Data {
 		attribute columnDefault : String[0..1];
 	}
 
-	metadata def <transient> Transient {
+	metadata def <transient> Transient :> SemanticMetadata {
 		doc /* Attribute is derived / computed and not persisted. */
+		:>> baseType = transientFeatures meta SysML::Usage;
 	}
 
-	metadata def <audited> Audited {
+	metadata def <audited> Audited :> SemanticMetadata {
 		doc /* Changes to the element are recorded in an audit trail. */
+		:>> baseType = auditedElements meta SysML::Usage;
 	}
 
 	metadata def Sensitivity {

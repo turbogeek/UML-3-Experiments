@@ -115,6 +115,10 @@ package OnlineStoreDomain {
 		calc :>> lastModified;
 	}
 
+	#classType #singleton item def StoreSettings {
+		attribute defaultCurrency : CurrencyCode;
+	}
+
 	#exceptionType item def PaymentDeclined {
 		attribute declineCode : String;
 	}

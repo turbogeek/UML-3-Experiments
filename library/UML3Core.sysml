@@ -19,6 +19,7 @@ library package UML3Core {
 	 */
 
 	private import ScalarValues::*;
+	private import Base::Anything;
 	private import Metaobjects::SemanticMetadata;
 
 	/* =====================================================================
@@ -179,40 +180,65 @@ library package UML3Core {
 	}
 
 	/* =====================================================================
-	 * Annotation-only keywords (UML properties with no SysML v2 equivalent)
+	 * Marker keywords (UML properties with no SysML v2 equivalent)
+	 *
+	 * These are SEMANTIC keywords so CATIA Magic shows them as labels («#static»)
+	 * and they can be queried as sets. Their baseType is a reference usage typed by
+	 * Base::Anything, which belongs to no disjoint family, so a marker is valid on
+	 * attributes, ref items, actions and definitions alike (experiment E01). On a
+	 * definition the implied specialization is just Anything (no semantic effect);
+	 * on a usage it subsets the marker set, e.g. staticFeatures.
 	 * ===================================================================== */
 
-	metadata def <static> Static {
+	abstract ref staticFeatures : Anything[0..*] nonunique;
+	abstract ref finalElements : Anything[0..*] nonunique;
+	abstract ref identifierFeatures : Anything[0..*] nonunique;
+	abstract ref singletonElements : Anything[0..*] nonunique;
+	abstract ref templateElements : Anything[0..*] nonunique;
+	abstract ref templateParameters : Anything[0..*] nonunique;
+
+	metadata def <static> Static :> SemanticMetadata {
 		doc /* UML isStatic: the feature belongs to the classifier, not to each instance. */
+		:>> baseType = staticFeatures meta SysML::Usage;
 	}
 
-	metadata def <final> Final {
+	metadata def <final> Final :> SemanticMetadata {
 		doc /* UML isLeaf: the classifier may not be specialized / the operation not redefined. */
+		:>> baseType = finalElements meta SysML::Usage;
 	}
 
-	metadata def <id> Identifier {
+	metadata def <id> Identifier :> SemanticMetadata {
 		doc /* UML isID: the attribute participates in the identity of instances of its owner. */
+		:>> baseType = identifierFeatures meta SysML::Usage;
 	}
 
 	metadata def Navigable {
-		doc /* Marks an association end as navigable from the opposite end. Use in the end body: @Navigable; */
+		doc
+		/*
+		 * Marks an association end as navigable from the opposite end. Use in the end body: @Navigable;
+		 * Kept as plain metadata: making an 'end' feature subset a package-level feature is untested
+		 * against connector end rules.
+		 */
 	}
 
-	metadata def <singleton> Singleton {
+	metadata def <singleton> Singleton :> SemanticMetadata {
 		doc /* The class has at most one instance at runtime. */
+		:>> baseType = singletonElements meta SysML::Usage;
 	}
 
-	metadata def <template> Template {
+	metadata def <template> Template :> SemanticMetadata {
 		doc
 		/*
 		 * UML templateable classifier. Template parameters are abstract features
 		 * marked #templateParameter; binding is done by specializing the template
 		 * and redefining (':>>') each parameter with a concrete type.
 		 */
+		:>> baseType = templateElements meta SysML::Usage;
 	}
 
-	metadata def <templateParameter> TemplateParameter {
+	metadata def <templateParameter> TemplateParameter :> SemanticMetadata {
 		doc /* An abstract feature that stands for a template parameter; bind it with ':>>'. */
+		:>> baseType = templateParameters meta SysML::Usage;
 	}
 
 	enum def AggregationKind {
