@@ -13,6 +13,11 @@ standard library plus project files and verifies, per file:
   LINT        constraints the ANTLR validator accepts but CATIA Magic / Pilot reject:
               member prefix order (visibility, direction, derived, abstract, constant,
               ref/end, #keywords) and integer literals beyond 32-bit int
+  APPLICABILITY  a #keyword applied to an incompatible element kind. Derived from the library:
+              SemanticMetadata -> kind of its baseType usage (item allows part, attribute
+              allows enum, ...), non-Types rejected; plain metadata -> its annotatedElement
+              restriction (inherited through metadata specialization). CATIA Magic's builder
+              accepts such models silently (tests/cameo-negative), so this check is required.
 
 Visibility model (deliberately approximate, documented so results are interpretable):
   visible(file) = names declared anywhere in the file
@@ -117,6 +122,54 @@ NOT_A_NAME = {
     "crosses", "start", "done", "this", "self", "that",
 } | DECL_KEYWORDS - {"def"}
 
+# Construct keywords that determine an element's kind (for keyword applicability).
+CONSTRUCT_KINDS = {
+    "item", "part", "attribute", "action", "calc", "connection", "allocation", "port", "occurrence",
+    "enum", "interface", "flow", "state", "requirement", "concern", "constraint", "case", "analysis",
+    "verification", "use", "view", "viewpoint", "rendering", "metadata", "package", "dependency",
+    "event", "message", "snapshot", "timeslice", "connect", "allocate",
+}
+# Kinds whose usages/definitions may specialize a base of the key kind (SysML kind hierarchy).
+SUBKINDS = {
+    "occurrence": {"occurrence", "item", "part", "connection", "allocation", "interface", "port", "action",
+                   "calc", "state", "flow", "event", "requirement", "concern", "constraint", "case",
+                   "analysis", "verification", "use", "view", "viewpoint", "rendering", "metadata"},
+    "item": {"item", "part", "connection", "allocation", "interface", "metadata"},
+    "part": {"part", "connection", "allocation", "interface", "view", "viewpoint", "rendering"},
+    "connection": {"connection", "allocation", "interface"},
+    "allocation": {"allocation"},
+    "interface": {"interface"},
+    "port": {"port"},
+    "attribute": {"attribute", "enum"},
+    "enum": {"enum"},
+    "action": {"action", "calc", "state", "case", "analysis", "verification", "use"},
+    "calc": {"calc", "case", "analysis", "verification", "use"},
+    "state": {"state"},
+    "flow": {"flow"},
+    "constraint": {"constraint", "requirement", "concern"},
+    "requirement": {"requirement", "concern"},
+    "concern": {"concern"},
+    "case": {"case", "analysis", "verification", "use"},
+}
+NON_TYPE_KINDS = {"package", "dependency"}
+# Type families for SemanticMetadata compatibility. Implied specialization ADDS a supertype, so it
+# is only invalid when it joins disjoint families. Normative disjointness in the Kernel library:
+#   Occurrences::Occurrence disjoint from Base::DataValue
+#   Performances::Performance disjoint from Objects::Object
+# (e.g. '#goal constraint' with a requirement baseType is legal: both are Performances.)
+KIND_FAMILY = {
+    "attribute": "data", "enum": "data",
+    "item": "object", "part": "object", "connection": "object", "allocation": "object",
+    "interface": "object", "port": "object", "metadata": "object", "view": "object", "rendering": "object",
+    "action": "performance", "calc": "performance", "state": "performance", "constraint": "performance",
+    "requirement": "performance", "concern": "performance", "case": "performance", "analysis": "performance",
+    "verification": "performance", "use": "performance", "viewpoint": "performance",
+    "occurrence": "occurrence", "event": "occurrence", "flow": "occurrence",
+}
+DISJOINT_FAMILIES = [{"data", "object"}, {"data", "performance"}, {"data", "occurrence"}, {"object", "performance"}]
+APPLICATION_ALIASES = {"connect": "connection", "allocate": "allocation", "message": "flow",
+                       "snapshot": "occurrence", "timeslice": "occurrence"}
+
 
 # ---------------------------------------------------------------------------
 # Indexing
@@ -131,6 +184,11 @@ class Scope:
     metadata_names: set[str] = field(default_factory=set)  # names of metadata defs declared here
     reexports: list[tuple[str, str]] = field(default_factory=list)  # non-private imports: (target, mode)
     closed: bool = False  # package / enum def: member list is complete (nothing inherited)
+    decl_kind: str | None = None  # construct keyword: item, part, attribute, action, metadata, package...
+    is_def: bool = False
+    is_metadata_def: bool = False
+    supers: list[str] = field(default_factory=list)  # names after ':>' / 'specializes' in the declaration
+    body: list[Tok] = field(default_factory=list)    # tokens between the declaration's braces
 
 
 @dataclass
@@ -159,16 +217,21 @@ def index_file(path: Path) -> FileModel:
     root = Scope("", "")
     fm = FileModel(path, toks, root)
     stack: list[Scope] = [root]
+    body_starts: list[int] = [-1]
     pending: Scope | None = None  # scope to push on next '{'
     i = 0
     while i < len(toks):
         t = toks[i]
         if t.text == "{":
             stack.append(pending if pending is not None else Scope(stack[-1].qname, ""))
+            body_starts.append(i)
             pending = None
         elif t.text == "}":
             if len(stack) > 1:
-                stack.pop()
+                closed_scope = stack.pop()
+                start = body_starts.pop()
+                if closed_scope.name:
+                    closed_scope.body = toks[start + 1:i]
         elif t.text == ";":
             pending = None
         elif t.kind == "ident" and t.text == "import":
@@ -231,6 +294,21 @@ def index_file(path: Path) -> FileModel:
                 # lists are complete and a missing member is a real error.
                 if t.text == "package" or (t.text == "enum" and i + 1 < len(toks) and toks[i + 1].text == "def"):
                     child.closed = True
+                words = [t.text] + [x.text for x in toks[i + 1:j] if x.kind == "ident"]
+                child.decl_kind = next((w for w in words if w in CONSTRUCT_KINDS), child.decl_kind)
+                child.is_def = child.is_def or "def" in words
+                child.is_metadata_def = child.is_metadata_def or is_metadata_def
+                if name:
+                    k = j + 1
+                    if k < len(toks) and toks[k].text in (":>", "specializes"):
+                        k += 1
+                        while k < len(toks) and toks[k].kind == "ident":
+                            sup, k = parse_qualified(toks, k)
+                            child.supers.append(sup)
+                            if k < len(toks) and toks[k].text == ",":
+                                k += 1
+                            else:
+                                break
                 pending = child
             i = j + (1 if name else 0)
             continue
@@ -305,6 +383,58 @@ class Index:
             if not changed:
                 return n
         return max_passes
+
+    # ---- keyword applicability -------------------------------------------------------
+
+    def metadata_defs(self, name: str) -> list[Scope]:
+        """All metadata defs declared with this name or short name."""
+        if not hasattr(self, "_meta_by_name"):
+            self._meta_by_name: dict[str, list[Scope]] = {}
+            for s in self._scopes:
+                for key, c in s.children.items():
+                    if c.is_metadata_def and c not in self._meta_by_name.setdefault(key, []):
+                        self._meta_by_name[key].append(c)
+        return self._meta_by_name.get(name, [])
+
+    def _parent(self, scope: Scope) -> Scope | None:
+        return self._by_qname.get(scope.qname.rpartition("::")[0])
+
+    def keyword_rule(self, scope: Scope, _seen: set[int] | None = None) -> dict:
+        """Applicability rule of a metadata def, inheriting from its supertypes:
+        {semantic: bool, baseKind: str|None, restrictions: [(kind|None, isDef|None)]}."""
+        seen = _seen if _seen is not None else set()
+        if id(scope) in seen:
+            return {"semantic": False, "baseKind": None, "restrictions": []}
+        seen.add(id(scope))
+        rule = {"semantic": False, "baseKind": None, "restrictions": []}
+        parent = self._parent(scope)
+        ctx = parent.qname if parent is not None else ""
+        body = scope.body
+        for k in range(len(body) - 3):
+            # ':>> baseType = X meta ...'  or  ':>> baseType default X meta ...'
+            if body[k].text == ":>>" and body[k + 1].text == "baseType" and body[k + 2].text in ("=", "default"):
+                if body[k + 3].kind == "ident":
+                    base_name, _ = parse_qualified(body, k + 3)
+                    base = self.lookup(base_name, ctx)
+                    rule["baseKind"] = base.decl_kind if base is not None else None
+            # ':>> annotatedElement : SysML::X'  or  ':> annotatedElement : SysML::X'
+            if body[k].text in (":>>", ":>") and body[k + 1].text == "annotatedElement" and body[k + 2].text == ":":
+                if body[k + 3].kind == "ident":
+                    mc, _ = parse_qualified(body, k + 3)
+                    rule["restrictions"].append(metaclass_kind(mc.rpartition("::")[2]))
+        for sup in scope.supers:
+            if sup.rpartition("::")[2] == "SemanticMetadata":
+                rule["semantic"] = True
+                continue
+            sup_scope = self.lookup(sup, ctx)
+            if sup_scope is None:
+                continue
+            inherited = self.keyword_rule(sup_scope, seen)
+            rule["semantic"] = rule["semantic"] or inherited["semantic"]
+            rule["baseKind"] = rule["baseKind"] or inherited["baseKind"]
+            if not rule["restrictions"]:
+                rule["restrictions"] = inherited["restrictions"]
+        return rule
 
     def child(self, scope: Scope, name: str) -> Scope | None:
         eff = self._eff.get(id(scope))
@@ -455,6 +585,7 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
 
     toks = fm.tokens
     findings.extend(lint_file(toks))
+    findings.extend(applicability_findings(toks, idx))
     i = 0
     while i < len(toks):
         t = toks[i]
@@ -528,6 +659,82 @@ PREFIX_RANK = {
     "#": 6,
 }
 MAX_INT_LITERAL = 2147483647  # CATIA Magic stores integer literals as Java int
+
+
+def metaclass_kind(metaclass: str) -> tuple[str | None, bool | None]:
+    """SysML metaclass name -> (kind, isDef). 'PartDefinition' -> ('part', True); 'Dependency' ->
+    ('dependency', None); 'Usage' -> (None, False); 'Element'/'Type' -> (None, None)."""
+    if metaclass == "Dependency":
+        return "dependency", None
+    if metaclass == "Package":
+        return "package", None
+    for suffix, is_def in (("Definition", True), ("Usage", False)):
+        if metaclass.endswith(suffix):
+            stem = metaclass[: -len(suffix)]
+            if not stem:
+                return None, is_def
+            kind = {"Calculation": "calc", "Enumeration": "enum", "Reference": None, "Occurrence": "occurrence",
+                    "EventOccurrence": "event", "UseCase": "use", "AnalysisCase": "analysis",
+                    "VerificationCase": "verification", "Flow": "flow"}.get(stem, stem.lower())
+            return kind, is_def
+    return None, None
+
+
+def applicability_findings(toks: list[Tok], idx: "Index") -> list[Finding]:
+    """At each '#kw ... construct', check the keyword may annotate that kind of element."""
+    findings: list[Finding] = []
+    i = 0
+    while i < len(toks):
+        if toks[i].text != "#" or i + 1 >= len(toks) or toks[i + 1].kind != "ident":
+            i += 1
+            continue
+        # collect a run of '#kw' prefixes
+        keywords: list[tuple[str, int]] = []
+        j = i
+        while j + 1 < len(toks) and toks[j].text == "#" and toks[j + 1].kind == "ident":
+            qn, j = parse_qualified(toks, j + 1)
+            keywords.append((qn.rpartition("::")[2], toks[i].line))
+        construct = toks[j].text if j < len(toks) else ""
+        if construct in ("library", "standard"):  # 'library #kw package' has keywords after 'library'
+            construct = "package"
+        kind = APPLICATION_ALIASES.get(construct, construct)
+        is_def = j + 1 < len(toks) and toks[j + 1].text == "def"
+        if kind in CONSTRUCT_KINDS or kind in SUBKINDS:
+            for kw, line in keywords:
+                candidates = idx.metadata_defs(kw)
+                if not candidates:
+                    continue  # unknown keyword: reported by the KEYWORD check
+                problems = []
+                for cand in candidates:
+                    problem = _rule_violation(idx.keyword_rule(cand), kind, is_def)
+                    if problem is None:
+                        problems = []
+                        break
+                    problems.append(problem)
+                if problems:
+                    target = f"{construct}{' def' if is_def else ''}"
+                    findings.append(Finding("APPLICABILITY", line, f"#{kw} cannot be applied to '{target}': {problems[0]}"))
+        i = max(j, i + 1)
+    return findings
+
+
+def _rule_violation(rule: dict, kind: str, is_def: bool) -> str | None:
+    if rule["semantic"]:
+        if kind in NON_TYPE_KINDS:
+            return "semantic metadata requires a Type (not a package or dependency)"
+        base = rule["baseKind"]
+        fam_base, fam_elem = KIND_FAMILY.get(base or ""), KIND_FAMILY.get(kind)
+        if fam_base and fam_elem and {fam_base, fam_elem} in DISJOINT_FAMILIES:
+            return (f"its baseType is a '{base}' usage ({fam_base}), which is disjoint from a "
+                    f"'{kind}' ({fam_elem}) - the implied specialization would make an empty type")
+        return None
+    for r_kind, r_def in rule["restrictions"]:
+        if (r_kind is None or kind in SUBKINDS.get(r_kind, {r_kind})) and (r_def is None or r_def == is_def):
+            return None
+    if rule["restrictions"]:
+        allowed = ", ".join(f"{k or 'any'}{'' if d is None else (' def' if d else ' usage')}" for k, d in rule["restrictions"])
+        return f"annotatedElement is restricted to {allowed}"
+    return None
 
 
 def lint_file(toks: list[Tok]) -> list[Finding]:

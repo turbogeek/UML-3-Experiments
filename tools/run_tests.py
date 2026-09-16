@@ -37,7 +37,7 @@ JAR = Path(os.environ.get("SYSML_VALIDATOR_JAR",
                           ROOT.parent / "sysml-validator" / "validator-cli" / "target" / "sysml-validator.jar"))
 CHECKER = ROOT / "tools" / "check_names.py"
 LOGS = ROOT / "logs"
-EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|LINT)")
+EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|LINT|APPLICABILITY)")
 
 
 def run(cmd: list[str], timeout: int = 600) -> subprocess.CompletedProcess:
@@ -124,6 +124,22 @@ def main() -> int:
 
     # 5. authoritative check in CATIA Magic (optional; needs the harness running)
     if args.cameo:
+        # 5a. probes: library + tests/cameo-negative, verify what Cameo builds, undo (harness stays up)
+        probes = sorted((ROOT / "tests" / "cameo-negative").glob("*.sysml"))
+        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--library-only", "--undo",
+                 "--hypotheses", str(ROOT / "tests" / "cameo-negative" / "probe-effects.json"),
+                 "--probes", *map(str, probes)])
+        cameo_report = ROOT / "logs" / "cameo" / "cameo-report.json"
+        details = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
+        (ROOT / "logs" / "cameo" / "cameo-probes-report.json").write_text(json.dumps(details, indent=2), encoding="utf-8")
+        probe_rows = details.get("probes", [])
+        report["suites"]["cameo-probes"] = {
+            "passed": r.returncode == 0 and bool(probe_rows) and all(p["matchesPrediction"] for p in probe_rows),
+            "errors": [f'{p["file"]}: expected {p["expected"]}, observed {p["observed"]}'
+                       for p in probe_rows if not p["matchesPrediction"]] or ([r.stderr.strip()] if r.returncode else []),
+            "inspectAfterUndo": details.get("inspectAfterUndo")}
+
+        # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
         cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo"]
         if not args.keep_harness:
             cmd.append("--shutdown")
