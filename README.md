@@ -10,6 +10,8 @@ The approach uses only the extension mechanisms SysML v2 already standardizes:
 
 The KerML/SysML grammar is not changed, so UML3 models are ordinary SysML v2.
 
+**Design principle: UML3 is not a copy of UML 2.x.** Where SysML v2 or KerML already has the concept, the native element is **used as-is, without a UML3 label**. Examples: `action def` for activities and behaviors, `state def` for state machines, `use case def`, `individual`/`snapshot` for instance specifications. UML3 adds library elements and keywords only where SysML v2 has no equivalent or where a KerML capability improves on UML. Every UML 2.x concept is traced to its UML3 realization in [`docs/UML2-to-UML3-Traceability.md`](docs/UML2-to-UML3-Traceability.md), which is generated from `traceability/uml2-to-uml3.json` and verified by the tests.
+
 ```sysml
 package Shop {
     private import ScalarValues::*;
@@ -36,7 +38,7 @@ package Shop {
 | `library/UML3Views.sysml` | UML diagram kinds as SysML v2 views: `ClassDiagram`, `PackageDiagram`, `ComponentDiagram`, `DeploymentDiagram`, `EntityRelationshipDiagram`, `MessageSchemaView`, `SequenceDiagram`, `ClassTable`; they filter on UML3 keywords and hide leaked library elements |
 | `library/UML3Data.sysml` | Logical models (`#entity`, `#aggregateRoot`, `#valueObject`, `#relationship` with cardinality); keys and constraints (`#primaryKey`, `#foreignKey` + referential actions, `#unique`, `#indexed`, `@Index`); physical schemas (`#database`, `#table`, `#column` + `@Column`, `#dbView`); governance (`#audited`, `#transient`, `@Sensitivity`); logical-to-physical `#mapsTo` |
 
-`examples/` models one online store: class model, architecture and deployment, messaging, database, and a set of views (diagrams) over them. `tools/check_rules.py` checks 12 design rules, e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
+`examples/` models one online store: class model, architecture and deployment, messaging, database, native behaviors (activity, state machine, use cases, instances; example 06), and a set of views (diagrams) over them. `tools/check_rules.py` checks 12 design rules, e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ### Keyword naming rules
 * Keywords are lowerCamelCase.
@@ -55,6 +57,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Suite | Tool | Current result |
 |---|---|---|
 | Syntax | `sysml-validator` (ANTLR) | library and examples pass |
+| UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, UML3 elements, views and examples verified |
 | Names, lint, keyword applicability | `tools/check_names.py` | library and examples pass; 19 negative tests fail as expected |
 | Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 12 rules proven to fire; clean control stays clean |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
@@ -70,7 +73,7 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 
 * **Stacked semantic keywords: CATIA Magic applies only the first one.** Confirmed by experiments E02 and E03 (predictions committed before each run; 8/9 and 3/3 held). Of the semantic keywords on one element (prefix or body form), only the **first** gets its implied specialization. The rest still show as labels, and the validation engine does not report the gap. KerML says every keyword applies, so this is a CATIA Magic deviation.
   **Usage rule:** put the keyword whose meaning matters most for queries first (e.g. `#primaryKey #column` when key membership matters). The regression baseline (`M15`) records the current behaviour and will flag it when Cameo is fixed.
-* **Base of `Class` (decision pending):** `item def` today. Experiment E05 shows an `occurrence def` base would also allow behavior classes (`#classType action def`), at the cost of flow and payload protection. See `docs/DESIGN.md`.
+* **Example 06 (native behaviors) has not been loaded in CATIA Magic yet.** It is exempt from the ANTLR syntax suite because the validator also rejects the official OMG training models that use the same constructs (`tests/validator-known-gaps.json`).
 * **Views are model elements, not yet opened diagrams:** CATIA Magic evaluates their content, but creating or opening the diagram for a view is still to be done.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
@@ -87,6 +90,8 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 | `tests/cameo-experiments/` | Design experiments with recorded predictions |
 | `tools/check_names.py` | Name resolution, lint, keyword-applicability checker |
 | `tools/check_rules.py`, `tests/rules/` | Design-rules checker and per-rule tests |
+| `traceability/uml2-to-uml3.json`, `tools/check_traceability.py` | UML 2.x -> UML3 traceability (source + verifier + doc generator) |
+| `docs/UML2-to-UML3-Traceability.md` | Generated traceability document |
 | `tools/run_tests.py` | Regression harness |
 | `tools/cameo_check.py`, `tools/cameo-scripts/` | CATIA Magic REST runner and Groovy scripts (synced to the harness) |
 | `tools/check_groovy.groovy` | Pre-flight check for scripts that run inside MagicDraw |

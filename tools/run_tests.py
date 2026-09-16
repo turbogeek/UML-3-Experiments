@@ -85,9 +85,22 @@ def main() -> int:
     report: dict = {"started": dt.datetime.now().isoformat(timespec="seconds"),
                     "stdlib": str(STDLIB), "validatorJar": str(JAR), "suites": {}}
 
-    # 1. syntax, positive
-    ok, errs = syntax_check(library + examples)
-    report["suites"]["syntax-positive"] = {"passed": ok, "files": len(library + examples), "errors": errs}
+    # 1. syntax, positive (files hitting documented ANTLR-validator gaps are exempt; see 1b)
+    gaps = json.loads((ROOT / "tests" / "validator-known-gaps.json").read_text(encoding="utf-8"))
+    exempt = {(ROOT / p).resolve() for p in gaps["exemptFromAntlrSyntax"]}
+    syntax_files = [f for f in library + examples if f.resolve() not in exempt]
+    ok, errs = syntax_check(syntax_files)
+    report["suites"]["syntax-positive"] = {"passed": ok, "files": len(syntax_files),
+                                           "exempt": sorted(str(p) for p in exempt), "errors": errs}
+
+    # 1b. validator gaps must still be real: each official OMG evidence file must still fail the ANTLR
+    #     validator; if one passes, the gap is fixed and the exemption should be removed
+    gap_cases = []
+    for g in gaps["gaps"]:
+        evidence = RELEASE / g["evidence"]
+        still_fails = evidence.exists() and not syntax_check([evidence])[0]
+        gap_cases.append({"construct": g["construct"], "evidence": g["evidence"], "stillFails": still_fails})
+    report["suites"]["validator-gaps"] = {"passed": all(c["stillFails"] for c in gap_cases), "cases": gap_cases}
 
     # 2. names, positive
     rc, rep = name_check(library + examples, [], LOGS / "names-positive.json")
@@ -121,6 +134,15 @@ def main() -> int:
         report["suites"]["checker-calibration"] = {
             "passed": rc == 0, "files": len(rep["files"]),
             "findings": [f | {"file": x["file"]} for x in rep["files"] for f in x["findings"]]}
+
+    # 4a. UML 2.x -> UML3 traceability: every cited metaclass / UML3 element / view / example exists and
+    #     the generated document is up to date
+    tr = run([sys.executable, str(ROOT / "tools" / "check_traceability.py"), "--stdlib", str(STDLIB),
+              "--report", str(LOGS / "traceability-report.json")])
+    tr_rep = json.loads((LOGS / "traceability-report.json").read_text(encoding="utf-8")) if tr.returncode != 2 else {}
+    report["suites"]["traceability"] = {"passed": tr.returncode == 0, "rows": tr_rep.get("rows"),
+                                        "statusCounts": tr_rep.get("statusCounts"),
+                                        "findings": tr_rep.get("findings", [tr.stderr.strip()])}
 
     # 4b. design rules: examples must have no ERROR findings; each tests/rules file must produce exactly
     #     the rule IDs in its EXPECT-RULES header (R12 stacking warnings are allowed extras), 'none' = clean

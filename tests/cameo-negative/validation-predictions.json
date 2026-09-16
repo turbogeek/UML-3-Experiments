@@ -142,6 +142,15 @@
       "why": "added after first observed run (2026-09-16), not a prior prediction",
       "observed": false,
       "observedRules": []
+    },
+    {
+      "package": "OnlineStoreBehavior",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "native SysML v2 behaviors copied from official training patterns; prediction recorded 2026-09-16 before any CATIA Magic run",
+      "observed": false,
+      "observedRules": [],
+      "observedNote": "NOT YET OBSERVED - 'observed' mirrors the prediction until the first harness run"
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"

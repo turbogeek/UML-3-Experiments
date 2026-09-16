@@ -1,0 +1,10 @@
+{
+  "description": "Constructs that the ANTLR sysml-validator rejects although they are valid SysML v2. Each gap cites an OFFICIAL OMG model that fails the same way (evidence). Files listed in 'exemptFromAntlrSyntax' skip only the ANTLR syntax suite; they still go through name/rule checks and must load in CATIA Magic. run_tests.py asserts the evidence files still fail, so an exemption is flagged for removal when the validator is fixed.",
+  "gaps": [
+    {"construct": "then include use case ... (succession to an included use case)", "evidence": "sysml/src/training/35. Use Cases/Use Case Usage Example.sysml"},
+    {"construct": "then snapshot ... (succession between snapshots)", "evidence": "sysml/src/training/28. Individuals/Individuals and Roles-1.sysml"},
+    {"construct": "in parameter declared in a state def / state usage body", "evidence": "sysml/src/training/24. States/State Actions.sysml"},
+    {"construct": "loop action ... until ... (loop action usage)", "evidence": "sysml/src/training/17. Control/Control Structures Example.sysml"}
+  ],
+  "exemptFromAntlrSyntax": ["examples/06-OnlineStoreBehavior.sysml"]
+}

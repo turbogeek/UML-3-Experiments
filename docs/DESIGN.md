@@ -278,6 +278,13 @@ In the kernel, `Item :> Object :> Occurrence`, `Performance :> Occurrence`, `Obj
 
 **Consequence of switching.** `Class` becomes an `occurrence def`. Kinds that must flow or persist become explicit item defs under it: `Signal`, `MessageType`, `ExceptionType`, `Entity`, `Table`, `Artifact`. `InterfaceType` becomes an occurrence def, so behaviors can realize interfaces; `ServicePort.contract` then changes from `ref item` to `ref occurrence`. A new rule would flag item usages typed by non-item classes. Semantic-keyword applicability widens accordingly (the occurrence family is compatible with both structures and behaviors).
 
+## Decisions (2026-09-16)
+
+1. **Behaviors are used as-is.** `action def`, `state def`, `calc def` and `use case def` get no UML3 keyword or `Class` label. SysML v2 behaviors already are classifiers with features, specialization and instances (performances). KerML's separation of `Object` and `Performance` is kept deliberately: it distinguishes a thing from the execution of a behavior, and CATIA Magic enforces it (`validateBehaviorSpecialization`). UML 2.x "Behavior is a Class" is recorded in the traceability map, not copied. UML 2.x XMI interchange, if needed, becomes a mapping concern.
+2. **`Class` stays item/part-based.** The occurrence-based alternative (E05) is not adopted, because its main gain was behaviors as classes, which decision 1 rules out.
+3. **Traceability is part of the product.** Every UML 2.x concept has a row in `traceability/uml2-to-uml3.json` with status NATIVE, NATIVE+UML3, UML3, PARTIAL or NOT_ADOPTED, plus rationale. The tests verify every cited element and example.
+4. **Attributes.** An attribute of a class is an attribute *usage*. An `attribute def` is for reused or published value types; single-use structure can be nested attribute usages. The E05 row "`#classType` on `attribute def` is invalid" is about applying a class keyword to a value type, not about class attributes.
+
 ## Harness safety incident and guard (E07)
 
 An audit of the command history found two commands, "General View" and "Multiple add", interleaved with harness loads. The old undo script had undone them together with the loads. E07 showed that none of the harness operations create such commands, so they were probably GUI actions in CATIA Magic during the run. The undo script now undoes only `SysMLv2TestHarness: REST Load SysML` commands. It stops and reports on any other command, and `cameo_check.py` then fails.

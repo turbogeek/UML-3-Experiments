@@ -1,0 +1,1273 @@
+{
+  "title": "UML 2.5.1 to UML3 (SysML v2) traceability",
+  "description": "Source of truth for how each UML 2.x concept is realized in UML3. docs/UML2-to-UML3-Traceability.md is GENERATED from this file by tools/check_traceability.py, which also verifies that every cited SysML/KerML metaclass, UML3 element, view definition and example snippet exists.",
+  "statusLegend": {
+    "NATIVE": "SysML v2 / KerML element used as-is; UML3 adds nothing",
+    "UML3": "realized by a UML3 library element or keyword",
+    "NATIVE+UML3": "native SysML v2 element, optionally refined by a UML3 keyword or library element",
+    "PARTIAL": "covered with a different structure or reduced scope (see notes)",
+    "NOT_ADOPTED": "deliberately not carried into UML3 (see rationale)"
+  },
+  "rows": [
+    {
+      "area": "Classification",
+      "uml2": "Class",
+      "status": "UML3",
+      "sysml": [
+        "SysML::ItemDefinition",
+        "SysML::PartDefinition"
+      ],
+      "uml3": [
+        "UML3Core::Class",
+        "UML3Core::ClassMetadata"
+      ],
+      "notation": "#classType item def Customer { ... }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#classType item def Customer"
+      },
+      "notes": "Classes are item defs (objects that can be passed, stored, flowed) or part defs when structural. Behaviors are NOT classes in UML3 (decision 2026-09-16, see Behavior)."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Class (isActive)",
+      "status": "UML3",
+      "sysml": [
+        "SysML::PartDefinition"
+      ],
+      "uml3": [
+        "UML3Core::ActiveClass",
+        "UML3Core::ActiveClassMetadata"
+      ],
+      "notation": "#activeClass part def Scheduler;"
+    },
+    {
+      "area": "Classification",
+      "uml2": "Classifier.isAbstract",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::Definition"
+      ],
+      "notation": "abstract item def PaymentMethod",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "abstract #classType item def PaymentMethod"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "RedefinableElement.isLeaf",
+      "status": "UML3",
+      "sysml": [],
+      "uml3": [
+        "UML3Core::Final"
+      ],
+      "notation": "#final part def StripeGateway",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#classType #final part def StripeGateway"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property (attribute)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::AttributeUsage"
+      ],
+      "notation": "attribute email : EmailAddress;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "attribute email : EmailAddress;"
+      },
+      "notes": "An attribute of a class is an attribute USAGE. Type it with an attribute def only when the value type is reused or published; otherwise nest attribute usages."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property (composite part)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::PartUsage",
+        "SysML::ItemUsage"
+      ],
+      "notation": "item lines : OrderLine[1..*] ordered;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "item lines : OrderLine[1..*] ordered;"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property (shared/reference)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ReferenceUsage"
+      ],
+      "notation": "ref item orders : Order[0..*];",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "ref item orders : Order[0..*];"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property.isStatic",
+      "status": "UML3",
+      "sysml": [],
+      "uml3": [
+        "UML3Core::Static"
+      ],
+      "notation": "#static attribute registeredCount : Int64;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#static attribute registeredCount"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property.isID",
+      "status": "UML3",
+      "sysml": [],
+      "uml3": [
+        "UML3Core::Identifier"
+      ],
+      "notation": "#id attribute customerId : Uuid;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#id attribute customerId : Uuid;"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property.isDerived / isReadOnly / defaultValue",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Feature",
+        "KerML::FeatureValue"
+      ],
+      "notation": "derived attribute x; constant attribute y; attribute z = 0; attribute w default 1;"
+    },
+    {
+      "area": "Classification",
+      "uml2": "MultiplicityElement (lower/upper, isOrdered, isUnique)",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::MultiplicityRange"
+      ],
+      "notation": "[0..*] ordered nonunique",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "Address[0..*] ordered"
+      },
+      "notes": "Collection kinds: Set [*], OrderedSet [*] ordered, Bag [*] nonunique, List [*] ordered nonunique."
+    },
+    {
+      "area": "Classification",
+      "uml2": "VisibilityKind",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Membership"
+      ],
+      "notation": "private attribute passwordHash : String;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "private attribute passwordHash"
+      },
+      "notes": "UML 'package' visibility has no SysML v2 equivalent."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Operation",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ActionUsage",
+        "SysML::CalculationUsage"
+      ],
+      "uml3": [
+        "UML3Core::OperationMetadata",
+        "UML3Core::QueryMetadata",
+        "UML3Core::ConstructorMetadata"
+      ],
+      "notation": "#operation action cancel { in reason : Text[0..1]; out succeeded : Boolean; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#operation action cancel"
+      },
+      "notes": "An operation is a nested action (side effects) or calc (isQuery). The keyword marks it as an operation of the owning class."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Parameter (in/out/inout/return)",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::ParameterMembership",
+        "KerML::ReturnParameterMembership"
+      ],
+      "notation": "in newEmail : EmailAddress; return total : Money;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "return total : Money;"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Operation.method (behavior implementing an operation)",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Redefinition"
+      ],
+      "notation": "action :>> authorize { ... }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "action :>> authorize;"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Operation.raisedException",
+      "status": "PARTIAL",
+      "sysml": [],
+      "uml3": [
+        "UML3Core::ExceptionType",
+        "UML3Core::ExceptionTypeMetadata"
+      ],
+      "notation": "#exceptionType item def PaymentDeclined { ... }",
+      "rationale": "Exceptions are modeled as #exceptionType items; SysML v2 has no raises list on actions. Signal via 'send' / handle via 'accept'."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Generalization",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Subclassification",
+        "KerML::Subsetting"
+      ],
+      "notation": ":> PaymentMethod",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "item def CardPayment :> PaymentMethod"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "GeneralizationSet (isCovering, isDisjoint)",
+      "status": "UML3",
+      "sysml": [],
+      "uml3": [
+        "UML3Core::GeneralizationSet",
+        "UML3Core::InGeneralizationSet"
+      ],
+      "notation": "@GeneralizationSet { setName = \"byInstrument\"; isCovering = true; isDisjoint = true; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "@GeneralizationSet"
+      },
+      "notes": "KerML has native 'disjoint from' (Disjoining) and 'unions' (Unioning) which could express disjointness and covering formally; candidate improvement."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Interface",
+      "status": "UML3",
+      "sysml": [
+        "SysML::ItemDefinition"
+      ],
+      "uml3": [
+        "UML3Core::InterfaceType",
+        "UML3Core::InterfaceTypeMetadata"
+      ],
+      "notation": "#interfaceType item def PaymentGateway { abstract #operation action authorize { ... } }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#interfaceType item def PaymentGateway"
+      },
+      "notes": "Not SysML 'interface def', which is a connection between ports."
+    },
+    {
+      "area": "Classification",
+      "uml2": "InterfaceRealization",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "KerML::Subclassification"
+      ],
+      "uml3": [
+        "UML3Core::RealizesDependency"
+      ],
+      "notation": "part def StripeGateway :> PaymentGateway, Auditable",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": ":> PaymentGateway, Auditable"
+      },
+      "notes": "Realization = specialization + redefinition of abstract operations (checked by rule R06). #realizes dependency only when specialization is not possible."
+    },
+    {
+      "area": "Classification",
+      "uml2": "DataType",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::AttributeDefinition"
+      ],
+      "uml3": [
+        "UML3Core::DataTypeMetadata"
+      ],
+      "notation": "attribute def Price { ... }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#dataType attribute def Price"
+      },
+      "notes": "Only for reused/published value types; single-use structure can be nested attribute usages."
+    },
+    {
+      "area": "Classification",
+      "uml2": "PrimitiveType",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::AttributeDefinition"
+      ],
+      "uml3": [
+        "UML3Types::Int32",
+        "UML3Types::Uuid",
+        "UML3Types::Facets"
+      ],
+      "notation": "ScalarValues::Integer / UML3Types::Int32",
+      "notes": "ScalarValues gives mathematical types; UML3Types adds sized/formatted software types with @Facets."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Enumeration / EnumerationLiteral",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::EnumerationDefinition",
+        "SysML::EnumerationUsage"
+      ],
+      "notation": "enum def OrderStatus { enum pending; ... }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "enum def OrderStatus"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Signal",
+      "status": "UML3",
+      "sysml": [
+        "SysML::ItemDefinition"
+      ],
+      "uml3": [
+        "UML3Core::Signal",
+        "UML3Core::SignalMetadata"
+      ],
+      "notation": "#signal item def PaymentConfirmed;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "#signal item def PaymentConfirmed;"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "InstanceSpecification / Slot",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::OccurrenceDefinition",
+        "SysML::ItemUsage",
+        "KerML::FeatureValue"
+      ],
+      "notation": "individual item order1001 : Order_1001 { snapshot item ... { :>> status = OrderStatus::paid; } }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "individual item def Order_1001 :> Order;"
+      },
+      "notes": "SysML v2 improves on UML: individuals have lifetimes, snapshots and time slices."
+    },
+    {
+      "area": "Classification",
+      "uml2": "Association",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ConnectionDefinition"
+      ],
+      "uml3": [
+        "UML3Core::Association",
+        "UML3Core::AssociationMetadata"
+      ],
+      "notation": "#association connection def Places { end [1] ref customer : Customer; end [0..*] ref order : Order; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#association connection def Places"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "AssociationClass",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ConnectionDefinition",
+        "SysML::AttributeUsage"
+      ],
+      "uml3": [
+        "UML3Core::AssociationMetadata"
+      ],
+      "notation": "#association connection def Review { end ...; attribute rating : UInt8; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#association connection def Review"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Property.aggregation (shared / composite)",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::PartUsage",
+        "SysML::ReferenceUsage"
+      ],
+      "uml3": [
+        "UML3Core::AggregationMetadata",
+        "UML3Core::CompositionMetadata"
+      ],
+      "notation": "composite: part/item usage; shared: ref usage; first-class: #composition connection def",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#composition connection def Contains"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Association end navigability",
+      "status": "UML3",
+      "sysml": [
+        "KerML::EndFeatureMembership"
+      ],
+      "uml3": [
+        "UML3Core::Navigable"
+      ],
+      "notation": "end [1] ref customer : Customer { @Navigable; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "ref customer : Customer { @Navigable; }"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Dependency",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Dependency"
+      ],
+      "notation": "dependency d from A to B;"
+    },
+    {
+      "area": "Classification",
+      "uml2": "Usage / Abstraction / Realization / «create» / «call» / «trace» / «instantiate»",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "KerML::Dependency"
+      ],
+      "uml3": [
+        "UML3Core::UsesDependency",
+        "UML3Core::RealizesDependency",
+        "UML3Core::CreatesDependency",
+        "UML3Core::CallsDependency",
+        "UML3Core::TracesDependency",
+        "UML3Core::InstantiatesDependency"
+      ],
+      "notation": "#uses dependency checkoutUsesGateway from Order to PaymentGateway;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "#uses dependency checkoutUsesGateway"
+      }
+    },
+    {
+      "area": "Classification",
+      "uml2": "Constraint",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ConstraintDefinition",
+        "SysML::AssertConstraintUsage"
+      ],
+      "notation": "constraint def C { ... } / assert constraint { ... }"
+    },
+    {
+      "area": "Classification",
+      "uml2": "Comment",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Comment",
+        "KerML::Documentation"
+      ],
+      "notation": "doc /* ... */  comment /* ... */"
+    },
+    {
+      "area": "Templates",
+      "uml2": "TemplateSignature / TemplateParameter",
+      "status": "UML3",
+      "sysml": [
+        "KerML::Feature"
+      ],
+      "uml3": [
+        "UML3Core::Template",
+        "UML3Core::TemplateParameter"
+      ],
+      "notation": "abstract #template item def Repository { abstract ref #templateParameter item entity : Class[0..*]; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "abstract #template item def Repository"
+      },
+      "notes": "Template parameters are abstract features, not a separate signature (KerML feature redefinition is more general than UML templates)."
+    },
+    {
+      "area": "Templates",
+      "uml2": "TemplateBinding",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Subclassification",
+        "KerML::Redefinition"
+      ],
+      "notation": "item def CustomerRepository :> Repository { ref item :>> entity : Customer[0..*]; }",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "ref item :>> entity : Customer[0..*];"
+      }
+    },
+    {
+      "area": "Packages",
+      "uml2": "Package / Model",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Package",
+        "KerML::LibraryPackage"
+      ],
+      "notation": "package P { ... }  library package L { ... }"
+    },
+    {
+      "area": "Packages",
+      "uml2": "PackageImport / ElementImport",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::NamespaceImport",
+        "KerML::MembershipImport"
+      ],
+      "notation": "private import UML3Core::*;  import P::X;",
+      "example": {
+        "file": "examples/01-OnlineStoreDomain.sysml",
+        "contains": "private import UML3Core::*;"
+      }
+    },
+    {
+      "area": "Packages",
+      "uml2": "PackageMerge",
+      "status": "NOT_ADOPTED",
+      "sysml": [],
+      "rationale": "SysML v2 has no package merge; composition of models uses imports and specialization, which are explicit and analyzable."
+    },
+    {
+      "area": "Profiles",
+      "uml2": "Profile / Stereotype / Extension / tagged values",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::MetadataDefinition",
+        "SysML::MetadataUsage",
+        "KerML::LibraryPackage"
+      ],
+      "notation": "library package + metadata def <kw> X :> SemanticMetadata { :>> baseType = ...; }",
+      "example": {
+        "file": "library/UML3Core.sysml",
+        "contains": "metadata def <classType> ClassMetadata :> SemanticMetadata"
+      },
+      "notes": "UML3 itself is the example. Semantic metadata makes stereotypes imply real specialization (KerML 9.2.16), unlike UML stereotypes. CATIA Magic applies only the first semantic keyword per element (E02/E03)."
+    },
+    {
+      "area": "Structured classifiers",
+      "uml2": "Port",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::PortDefinition",
+        "SysML::PortUsage",
+        "SysML::ConjugatedPortDefinition"
+      ],
+      "uml3": [
+        "UML3Components::ServicePort",
+        "UML3Components::Provided",
+        "UML3Components::Required"
+      ],
+      "notation": "#provided port orderApi : OrderApiPort;  #required port paymentApi : ~PaymentApiPort;",
+      "example": {
+        "file": "examples/02-OnlineStoreArchitecture.sysml",
+        "contains": "#required port paymentApi : ~PaymentApiPort;"
+      }
+    },
+    {
+      "area": "Structured classifiers",
+      "uml2": "Connector / ConnectorEnd (assembly, delegation)",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ConnectionUsage",
+        "SysML::InterfaceUsage",
+        "SysML::BindingConnectorAsUsage"
+      ],
+      "uml3": [
+        "UML3Components::AssemblyMetadata",
+        "UML3Components::DelegationMetadata"
+      ],
+      "notation": "#assembly connect web.orderApi to orders.orderApi;",
+      "example": {
+        "file": "examples/02-OnlineStoreArchitecture.sysml",
+        "contains": "#assembly connect web.orderApi to orders.orderApi;"
+      }
+    },
+    {
+      "area": "Structured classifiers",
+      "uml2": "Collaboration / CollaborationUse",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::PartDefinition",
+        "SysML::ReferenceUsage"
+      ],
+      "rationale": "No dedicated construct; a part def with ref roles plus connections, or an interaction occurrence def, expresses the same pattern."
+    },
+    {
+      "area": "Components",
+      "uml2": "Component",
+      "status": "UML3",
+      "sysml": [
+        "SysML::PartDefinition"
+      ],
+      "uml3": [
+        "UML3Components::Component",
+        "UML3Components::ComponentMetadata",
+        "UML3Components::ServiceMetadata",
+        "UML3Components::SubsystemMetadata"
+      ],
+      "notation": "#service part def OrderService { ... }",
+      "example": {
+        "file": "examples/02-OnlineStoreArchitecture.sysml",
+        "contains": "#service part def OrderService"
+      }
+    },
+    {
+      "area": "Deployments",
+      "uml2": "Artifact / Node / Device / ExecutionEnvironment / CommunicationPath",
+      "status": "UML3",
+      "sysml": [
+        "SysML::ItemDefinition",
+        "SysML::PartDefinition",
+        "SysML::ConnectionDefinition"
+      ],
+      "uml3": [
+        "UML3Components::ArtifactMetadata",
+        "UML3Components::NodeMetadata",
+        "UML3Components::DeviceMetadata",
+        "UML3Components::ExecutionEnvironmentMetadata",
+        "UML3Components::CommunicationPathMetadata"
+      ],
+      "notation": "#artifact item def OrderServiceImage; #device part def WorkerNode;",
+      "example": {
+        "file": "examples/02-OnlineStoreArchitecture.sysml",
+        "contains": "#artifact item def OrderServiceImage"
+      }
+    },
+    {
+      "area": "Deployments",
+      "uml2": "Deployment / Manifestation",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::AllocationUsage"
+      ],
+      "uml3": [
+        "UML3Components::DeploymentMetadata",
+        "UML3Components::ManifestationMetadata"
+      ],
+      "notation": "#deploy allocate orderImage to nodeA.pods;",
+      "example": {
+        "file": "examples/02-OnlineStoreArchitecture.sysml",
+        "contains": "#deploy allocate orderImage to nodeA.pods;"
+      }
+    },
+    {
+      "area": "Deployments",
+      "uml2": "DeploymentSpecification",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::MetadataUsage"
+      ],
+      "uml3": [
+        "UML3Components::Technology"
+      ],
+      "rationale": "Deployment properties are captured as @Technology metadata or attributes of the node/artifact; no separate classifier."
+    },
+    {
+      "area": "Common behavior",
+      "uml2": "Behavior (and Behavior as a Class)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ActionDefinition",
+        "SysML::StateDefinition",
+        "SysML::CalculationDefinition"
+      ],
+      "notation": "action def FulfillOrder { ... }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "action def FulfillOrder {"
+      },
+      "notes": "Used as-is with no UML3 label (decision 2026-09-16). SysML v2 behaviors already are classifiers with features, specialization and instances (performances); KerML keeps Object disjoint from Performance, which CATIA Magic enforces (validateBehaviorSpecialization)."
+    },
+    {
+      "area": "Common behavior",
+      "uml2": "BehavioredClassifier.classifierBehavior",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::PerformActionUsage",
+        "SysML::ExhibitStateUsage"
+      ],
+      "notation": "perform action fulfill : FulfillOrder { ... }  exhibit state lifecycle : OrderLifecycle { ... }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "exhibit state lifecycle : OrderLifecycle"
+      }
+    },
+    {
+      "area": "Common behavior",
+      "uml2": "OpaqueBehavior / FunctionBehavior",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::CalculationDefinition",
+        "KerML::TextualRepresentation"
+      ],
+      "notation": "calc def F { ... }  rep language \"java\" /* ... */"
+    },
+    {
+      "area": "Common behavior",
+      "uml2": "Trigger / SignalEvent / Reception",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::AcceptActionUsage",
+        "SysML::TransitionUsage"
+      ],
+      "notation": "accept PaymentConfirmed then paid;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "accept PaymentConfirmed"
+      }
+    },
+    {
+      "area": "Common behavior",
+      "uml2": "TimeEvent / ChangeEvent",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::AcceptActionUsage",
+        "SysML::TriggerInvocationExpression"
+      ],
+      "notation": "accept after 48 [h]  accept at t  accept when condition"
+    },
+    {
+      "area": "Common behavior",
+      "uml2": "CallEvent",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::AcceptActionUsage"
+      ],
+      "rationale": "No operation-call event; calls are modeled as sent/accepted request items (UML3Messaging RequestReplyPort) or performed actions."
+    },
+    {
+      "area": "Actions",
+      "uml2": "SendSignalAction",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::SendActionUsage"
+      ],
+      "notation": "send new OverTemp() to controller"
+    },
+    {
+      "area": "Actions",
+      "uml2": "AcceptEventAction",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::AcceptActionUsage"
+      ],
+      "notation": "accept request : Request via requestPort"
+    },
+    {
+      "area": "Actions",
+      "uml2": "CallBehaviorAction / CallOperationAction",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ActionUsage",
+        "SysML::PerformActionUsage"
+      ],
+      "notation": "action check : CheckStock { in order = ...; }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "action check : CheckStock"
+      }
+    },
+    {
+      "area": "Actions",
+      "uml2": "AddStructuralFeatureValueAction (assignment)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::AssignmentActionUsage"
+      ],
+      "notation": "assign x := expr;"
+    },
+    {
+      "area": "Activities",
+      "uml2": "Activity",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ActionDefinition"
+      ],
+      "notation": "action def FulfillOrder { first start; then ...; then done; }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "action def FulfillOrder {"
+      }
+    },
+    {
+      "area": "Activities",
+      "uml2": "ControlFlow / InitialNode / ActivityFinalNode",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::SuccessionAsUsage"
+      ],
+      "notation": "first start; then check; then done;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "then done;"
+      }
+    },
+    {
+      "area": "Activities",
+      "uml2": "ObjectFlow / Pin",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::FlowUsage",
+        "SysML::SuccessionFlowUsage",
+        "KerML::ParameterMembership"
+      ],
+      "notation": "flow from a.out to b.in;  in order = FulfillOrder::order;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "in order = FulfillOrder::order;"
+      }
+    },
+    {
+      "area": "Activities",
+      "uml2": "DecisionNode / MergeNode",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::DecisionNode",
+        "SysML::MergeNode"
+      ],
+      "notation": "then decide; if cond then a; ...  merge retry;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "then decide;"
+      }
+    },
+    {
+      "area": "Activities",
+      "uml2": "ForkNode / JoinNode",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ForkNode",
+        "SysML::JoinNode"
+      ],
+      "notation": "then fork; then pack; then label; ... join packedAndLabelled;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "join packedAndLabelled;"
+      }
+    },
+    {
+      "area": "Activities",
+      "uml2": "LoopNode / ConditionalNode / ExpansionRegion",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::WhileLoopActionUsage",
+        "SysML::ForLoopActionUsage",
+        "SysML::IfActionUsage"
+      ],
+      "notation": "loop action attempt { ... } until cond;  if cond { ... } else { ... }  for x in xs { ... }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "loop action attempt"
+      }
+    },
+    {
+      "area": "Activities",
+      "uml2": "ActivityPartition",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::PerformActionUsage"
+      ],
+      "rationale": "Responsibility is expressed by parts performing actions ('perform'), not by swimlane partitions."
+    },
+    {
+      "area": "Activities",
+      "uml2": "InterruptibleActivityRegion / ExceptionHandler",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::StateUsage",
+        "SysML::AcceptActionUsage",
+        "SysML::TerminateActionUsage"
+      ],
+      "rationale": "Interruption is modeled with states and accept transitions (or terminate); no dedicated region or handler construct."
+    },
+    {
+      "area": "State machines",
+      "uml2": "StateMachine",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::StateDefinition",
+        "SysML::StateUsage"
+      ],
+      "notation": "state def OrderLifecycle { first start then pending; ... }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "state def OrderLifecycle"
+      }
+    },
+    {
+      "area": "State machines",
+      "uml2": "State (entry/do/exit), Region (orthogonal)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::StateUsage",
+        "SysML::StateSubactionMembership"
+      ],
+      "notation": "state paid { entry action ...; }  state s parallel { state r1 {...} state r2 {...} }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "entry action notifyPaid"
+      }
+    },
+    {
+      "area": "State machines",
+      "uml2": "Transition (trigger [guard] / effect)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::TransitionUsage",
+        "SysML::TransitionFeatureMembership"
+      ],
+      "notation": "accept Signal if guard do send ... then target;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "accept ShipmentDispatched"
+      }
+    },
+    {
+      "area": "State machines",
+      "uml2": "Pseudostate initial / FinalState",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::SuccessionAsUsage"
+      ],
+      "notation": "first start then pending;  then done;",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "first start then pending;"
+      }
+    },
+    {
+      "area": "State machines",
+      "uml2": "Pseudostate history / choice / junction / entryPoint / exitPoint",
+      "status": "NOT_ADOPTED",
+      "sysml": [],
+      "rationale": "SysML v2 has no history or connection-point pseudostates; guards on transitions and decision nodes in do-actions cover choice. Not emulated in UML3 to avoid non-standard semantics."
+    },
+    {
+      "area": "State machines",
+      "uml2": "ProtocolStateMachine",
+      "status": "NOT_ADOPTED",
+      "sysml": [],
+      "rationale": "Use port definitions with constraints and interface contracts (#interfaceType, rules R06/R07) instead of a separate protocol machine kind."
+    },
+    {
+      "area": "Interactions",
+      "uml2": "Interaction / Lifeline",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::OccurrenceDefinition",
+        "SysML::PartUsage",
+        "SysML::EventOccurrenceUsage"
+      ],
+      "notation": "occurrence def CheckoutInteraction { part checkoutLifeline : CheckoutService { event occurrence ...; } }",
+      "example": {
+        "file": "examples/03-OnlineStoreMessaging.sysml",
+        "contains": "occurrence def CheckoutInteraction"
+      }
+    },
+    {
+      "area": "Interactions",
+      "uml2": "Message / OccurrenceSpecification / GeneralOrdering",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::FlowUsage",
+        "SysML::EventOccurrenceUsage",
+        "SysML::SuccessionAsUsage"
+      ],
+      "notation": "message capture of CapturePayment from a.evt to b.evt;  first e1 then e2;",
+      "example": {
+        "file": "examples/03-OnlineStoreMessaging.sysml",
+        "contains": "message capture of CapturePayment"
+      }
+    },
+    {
+      "area": "Interactions",
+      "uml2": "CombinedFragment (alt/opt/loop/par) / InteractionUse / Gate",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::OccurrenceUsage"
+      ],
+      "rationale": "No combined fragments; alternatives and loops belong in the performed actions (decide/loop), and an interaction can be reused as an occurrence usage typed by its occurrence def."
+    },
+    {
+      "area": "Use cases",
+      "uml2": "UseCase / Actor (subject)",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::UseCaseDefinition",
+        "SysML::UseCaseUsage",
+        "SysML::ActorMembership",
+        "SysML::SubjectMembership"
+      ],
+      "notation": "use case def 'Place Order' { subject shop : Shop; actor shopper : Shopper; }",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "use case def 'Place Order'"
+      }
+    },
+    {
+      "area": "Use cases",
+      "uml2": "Include",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::IncludeUseCaseUsage"
+      ],
+      "notation": "include use case payForOrder : 'Pay For Order'",
+      "example": {
+        "file": "examples/06-OnlineStoreBehavior.sysml",
+        "contains": "include use case payForOrder"
+      }
+    },
+    {
+      "area": "Use cases",
+      "uml2": "Extend / ExtensionPoint",
+      "status": "NOT_ADOPTED",
+      "sysml": [],
+      "rationale": "SysML v2 has no extend relationship; optional behavior is an included use case with multiplicity [0..1] or a conditional succession."
+    },
+    {
+      "area": "Information flows",
+      "uml2": "InformationFlow / InformationItem",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::FlowUsage",
+        "SysML::ItemDefinition"
+      ],
+      "uml3": [
+        "UML3Messaging::Publishes",
+        "UML3Messaging::MessageTypeMetadata"
+      ],
+      "notation": "#publishes flow publishOrderPlaced of OrderPlaced from ... to ...;",
+      "example": {
+        "file": "examples/03-OnlineStoreMessaging.sysml",
+        "contains": "#publishes flow publishOrderPlaced of OrderPlaced"
+      }
+    },
+    {
+      "area": "Values",
+      "uml2": "LiteralInteger / LiteralReal / LiteralString / LiteralBoolean / LiteralNull / LiteralUnlimitedNatural",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::LiteralInteger",
+        "KerML::LiteralRational",
+        "KerML::LiteralString",
+        "KerML::LiteralBoolean",
+        "KerML::NullExpression",
+        "KerML::LiteralInfinity"
+      ],
+      "notation": "42  3.14  \"text\"  true  null  *"
+    },
+    {
+      "area": "Values",
+      "uml2": "Expression / OpaqueExpression",
+      "status": "NATIVE",
+      "sysml": [
+        "KerML::Expression",
+        "KerML::TextualRepresentation"
+      ],
+      "notation": "model-level KerML expressions; rep language \"ocl\" /* ... */ for opaque text"
+    },
+    {
+      "area": "Values",
+      "uml2": "Interval / Duration / TimeExpression",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::AttributeUsage"
+      ],
+      "notation": "ISQ / SI / Time libraries (DurationValue, TimeInstantValue); UML3Types::DurationValue for ISO 8601 text",
+      "notes": "Quantities with units are a SysML v2 improvement over UML."
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Class diagram / Object diagram",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ViewDefinition",
+        "SysML::ViewUsage"
+      ],
+      "uml3": [
+        "UML3Views::ClassDiagram",
+        "UML3Views::ClassTable"
+      ],
+      "views": [
+        "StandardViewDefinitions::GeneralView"
+      ],
+      "notation": "view domainClassDiagram : ClassDiagram { expose OnlineStoreDomain::*; }",
+      "example": {
+        "file": "examples/05-OnlineStoreViews.sysml",
+        "contains": "view domainClassDiagram : ClassDiagram"
+      }
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Package diagram",
+      "status": "UML3",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "uml3": [
+        "UML3Views::PackageDiagram"
+      ],
+      "views": [
+        "StandardViewDefinitions::GeneralView"
+      ],
+      "example": {
+        "file": "examples/05-OnlineStoreViews.sysml",
+        "contains": "view storePackages : PackageDiagram"
+      }
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Composite structure / Component diagram",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "uml3": [
+        "UML3Views::ComponentDiagram"
+      ],
+      "views": [
+        "StandardViewDefinitions::InterconnectionView"
+      ],
+      "example": {
+        "file": "examples/05-OnlineStoreViews.sysml",
+        "contains": "view architectureComponents : ComponentDiagram"
+      }
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Deployment diagram",
+      "status": "UML3",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "uml3": [
+        "UML3Views::DeploymentDiagram"
+      ],
+      "views": [
+        "StandardViewDefinitions::GeneralView"
+      ],
+      "example": {
+        "file": "examples/05-OnlineStoreViews.sysml",
+        "contains": "view deploymentDiagram : DeploymentDiagram"
+      }
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Profile diagram",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "views": [
+        "StandardViewDefinitions::GeneralView"
+      ],
+      "notation": "GeneralView filtered on @SysML::MetadataDefinition"
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Use case diagram",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "views": [
+        "StandardViewDefinitions::GeneralView"
+      ],
+      "notation": "GeneralView filtered on @SysML::UseCaseDefinition or @SysML::UseCaseUsage"
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Activity diagram",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "views": [
+        "StandardViewDefinitions::ActionFlowView"
+      ],
+      "notation": "view : ActionFlowView { expose OnlineStoreBehavior::FulfillOrder; }"
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "State machine diagram",
+      "status": "NATIVE",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "views": [
+        "StandardViewDefinitions::StateTransitionView"
+      ],
+      "notation": "view : StateTransitionView { expose OnlineStoreBehavior::OrderLifecycle; }"
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Sequence diagram",
+      "status": "NATIVE+UML3",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "uml3": [
+        "UML3Views::SequenceDiagram"
+      ],
+      "views": [
+        "StandardViewDefinitions::SequenceView"
+      ],
+      "example": {
+        "file": "examples/05-OnlineStoreViews.sysml",
+        "contains": "view checkoutSequence : SequenceDiagram"
+      }
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Communication / Interaction overview diagram",
+      "status": "PARTIAL",
+      "sysml": [
+        "SysML::ViewUsage"
+      ],
+      "views": [
+        "StandardViewDefinitions::InterconnectionView",
+        "StandardViewDefinitions::ActionFlowView"
+      ],
+      "rationale": "Approximated by interconnection views (messages between parts) and action flow views; no dedicated view kinds."
+    },
+    {
+      "area": "Diagrams",
+      "uml2": "Timing diagram",
+      "status": "NOT_ADOPTED",
+      "sysml": [],
+      "rationale": "No standard view definition; time behavior is captured by snapshots/time slices and time triggers and can be analyzed rather than drawn."
+    }
+  ]
+}
