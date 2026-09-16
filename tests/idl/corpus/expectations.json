@@ -1,0 +1,16 @@
+{
+  "description": "Classification of the IDL corpora in external/idl (git submodules). Files under a mustFail prefix are invalid IDL by their project's own test design (the upstream compiler must reject them).",
+  "mustFail": [
+    "external/idl/jacorb/test/regression/src/test/idl/compiler/fail/",
+    "external/idl/ic-idl/crates/ic-hir/tests/fail/"
+  ],
+  "sources": {
+    "ic-idl": {"url": "https://github.com/intercom-dds/ic-idl", "license": "BSD-3-Clause", "why": "IDL4 compiler with C/C++/Rust/C#/Java/Python/TS backends; codegen and HIR pass/fail tests"},
+    "rtps-gen": {"url": "https://github.com/frehberg/rtps-gen", "license": "Apache-2.0", "why": "IDL to Rust generator; per-construct test vectors and DDS IDL"},
+    "hdds": {"url": "https://github.com/hdds-team/hdds", "license": "see repo", "why": "pure Rust DDS; IDL samples used for Rust code generation"},
+    "eprosima-idl-parser": {"url": "https://github.com/eProsima/IDL-Parser", "license": "Apache-2.0", "why": "Java IDL parser used by Fast DDS-Gen; XTypes test IDL"},
+    "cyclonedds": {"url": "https://github.com/eclipse-cyclonedds/cyclonedds", "license": "EPL-2.0 / EDL-1.0", "why": "idlc tests and DDS data types (XTypes: optional, keys, bitmasks)"},
+    "glassfish-orb": {"url": "https://github.com/eclipse-ee4j/orb", "license": "EPL-2.0 / GPL-2.0 w/ CE", "why": "idlj (IDL to Java) and CORBA OMG API IDL"},
+    "jacorb": {"url": "https://github.com/JacORB/JacORB", "license": "LGPL-2.0", "why": "Java IDL compiler (OMG IDL-to-Java mapping); compiler succeed/fail regression IDL and OMG service IDL"}
+  }
+}

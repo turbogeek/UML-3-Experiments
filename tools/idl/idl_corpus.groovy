@@ -3,7 +3,8 @@
 //   file-list: one path per line (as the caller wants it reported)
 //   results.tsv columns: file, outcome, detail, roundTrip, sysml
 //     outcome  ACCEPT | UNSUPPORTED | REJECT | CRASH | TIMEOUT
-//     roundTrip STABLE | UNSTABLE | FAIL:<msg> | -     sysml OK | FAIL:<msg> | -
+//     roundTrip STABLE | UNSTABLE | FAIL:<msg> | -     sysml OK | -
+//     ACCEPT = parsed AND SysML emitted; an emitter IdlException is UNSUPPORTED ("mapping: ...")
 // Prints SUMMARY|<outcome>=<n>... at the end. No System.exit (project rule).
 import java.util.concurrent.*
 
@@ -41,7 +42,13 @@ out.withWriter("UTF-8") { w ->
                 return ["CRASH", t.class.name + ": " + t.message + " @ " + (t.stackTrace.find { it.className.startsWith("Idl") } ?: ""), "-", "-"]
             }
             String sysml = "OK", rt
-            try { facade.toSysml(ast) } catch (Throwable t) { sysml = "FAIL:" + t.class.simpleName + ": " + t.message }
+            try {
+                facade.toSysml(ast)
+            } catch (Throwable t) {
+                // import = parse AND emit: a mapping limitation is an unsupported construct, anything else a crash
+                if (idlException.isInstance(t)) return ["UNSUPPORTED", "mapping: " + t.message, "-", "-"]
+                return ["CRASH", "emit: " + t.class.name + ": " + t.message, "-", "-"]
+            }
             try {
                 String c1 = facade.toIdl(ast)
                 String c2 = facade.toIdl(facade.parse(c1, f.name))
