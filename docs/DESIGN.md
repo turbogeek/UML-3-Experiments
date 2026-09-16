@@ -122,6 +122,7 @@ Collection kinds need no new types:
 |---|---|---|
 | Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 9 files (5 library + 4 examples) load with 0 errors** (2026-09-16) |
 | Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **21/21 hypotheses hold, including 7 negative controls** |
+| Validation engine (KerML/SysML constraint suites) | `validateUML3Packages.groovy` | **0 failures on library + examples** |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
 | Name resolution, lint and keyword applicability | `tools/check_names.py` | Library and examples pass; 16 negative tests fail as expected; 0 false positives on 251 official OMG models |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
@@ -154,7 +155,22 @@ The experiment is in `tests/cameo-negative`; predictions were written down befor
 
 Negative tests `n12`–`n18` cover these cases. The Cameo probe suite (`run_tests.py --cameo`) records the current Cameo behaviour and will flag it if a future version starts rejecting these models.
 
-Still open: whether Cameo's diagrams and tables show the keywords as stereotype-like labels, and whether its *Validate Model* suites catch misapplied keywords.
+### CATIA Magic validation engine vs. UML3 APPLICABILITY
+
+The SysML v2 validation in CATIA Magic is a separate KerML engine (`com.dassault_systemes.modeler.kerml.validation.ValidationService`), not UML *Validate Model*: the UML validation helper reports 0 suites in a SysML v2 project. `tools/cameo-scripts/validateUML3Packages.groovy` runs the engine's active and passive suites (`DassaultSystemesValidationSuite`, `SysMLConstraintsSuite`) on every loaded package. Predictions were committed before the run (`0329c69`); 12 of 15 were correct.
+
+| Case | CATIA Magic validation engine | UML3 `APPLICABILITY` |
+|---|---|---|
+| Library (5 packages) + examples (4 packages), about 5,900 elements | **0 failures** | 0 findings |
+| `#entity attribute def` | `validateDataTypeSpecialization` | caught |
+| `#operation attribute` (usage) | **not caught** | caught |
+| `#mapsTo item def` | `validateMetadataFeatureAnnotatedElement` | caught |
+| `#classType package` | **not caught** | caught |
+| `#column item def` | `validateClassSpecialization` | caught |
+
+The two checks overlap but neither replaces the other. Cameo's engine misses keyword misuse on features and on non-types. UML3's checker does not do Cameo's full conformance validation. `run_tests.py --cameo` runs both. The observed engine results are stored in `tests/cameo-negative/validation-predictions.json` next to the original predictions and act as a regression baseline.
+
+Still open: whether Cameo's diagrams and tables show the keywords as stereotype-like labels.
 
 ## Validator findings (sysml-validator issues found during this work)
 
