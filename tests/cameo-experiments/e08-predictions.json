@@ -1,7 +1,43 @@
 {
   "description": "E08 predictions, recorded 2026-09-16 BEFORE running: importIdl.groovy inside CATIA Magic on tests/idl/shop_order.idl (library already loaded).",
-  "importResult": {"expected": "OK with 0 build errors", "confidence": "medium", "risks": ["#raises dependency clients are features nested in an item def (OrderService::getOrder)", "quoted reserved names ('state', 'message')", "constant package-level attributes with literal values"]},
-  "session": {"expected": "one undoable command named 'UML3 IDL Import'", "confidence": "high"},
-  "validationEngineFlagged": {"package": "shop_order", "expected": false, "confidence": "low", "risks": ["#union attribute def with [0..1] branches", "Octet :> Natural / Any :> DataValue typing", "constant attributes without runtime values"]},
-  "undo": {"expected": "guarded undo removes library loads and the import (allowed command names), project returns to 0 UML3 packages", "confidence": "high"}
+  "importResult": {
+    "expected": "OK with 0 build errors",
+    "confidence": "medium",
+    "risks": [
+      "#raises dependency clients are features nested in an item def (OrderService::getOrder)",
+      "quoted reserved names ('state', 'message')",
+      "constant package-level attributes with literal values"
+    ]
+  },
+  "session": {
+    "expected": "one undoable command named 'UML3 IDL Import'",
+    "confidence": "high"
+  },
+  "validationEngineFlagged": {
+    "package": "shop_order",
+    "expected": false,
+    "confidence": "low",
+    "risks": [
+      "#union attribute def with [0..1] branches",
+      "Octet :> Natural / Any :> DataValue typing",
+      "constant attributes without runtime values"
+    ]
+  },
+  "undo": {
+    "expected": "guarded undo removes library loads and the import (allowed command names), project returns to 0 UML3 packages",
+    "confidence": "high"
+  },
+  "observed": {
+    "on": "2026-09-16 CATIA Magic MSoSA 2026x Refresh1",
+    "importResult": "OK, 0 build errors (prediction held)",
+    "session": "one 'UML3 IDL Import' command (held)",
+    "validationEngineFlagged": "TRUE - refuted: 4x validateFeatureConstantIsVariable 'A constant feature must be variable.' on package-level consts MAX_ITEMS, STORE_NAME, TAX_RATE, OPEN",
+    "consequence": "IDL const now maps to a package-level attribute with a bound value (=), not 'constant'; rule R14 detects constant usages owned by a package",
+    "log": "logs/cameo/e08-import.txt, logs/cameo/e08-validation.txt"
+  },
+  "rerunPrediction": {
+    "recorded": "2026-09-16 after the fix, before the re-run",
+    "validationEngineFlagged": false,
+    "confidence": "medium"
+  }
 }

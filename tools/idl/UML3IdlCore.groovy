@@ -758,7 +758,9 @@ class IdlToSysml {
             } else if (d instanceof IdlConst) {
                 IdlConst c = (IdlConst) d
                 Shape sh = shape(c.type, null, false, c.line)
-                line(ind, "constant attribute " + name(c.name) + " : " + sh.type + " = " + constValue(c.value, c.type) + ";")
+                // not 'constant': KerML requires constant features to be variable (features of occurrences);
+                // a package-level attribute with a bound value ('=') is already fixed (CATIA Magic E08)
+                line(ind, "attribute " + name(c.name) + " : " + sh.type + " = " + constValue(c.value, c.type) + ";")
             } else if (d instanceof IdlEnum) {
                 line(ind, "enum def " + name(d.name) + " {")
                 ((IdlEnum) d).literals.each { lit -> line(ind + 1, "enum " + name(lit) + ";") }

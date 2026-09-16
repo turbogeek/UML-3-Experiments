@@ -19,6 +19,7 @@ It reuses the index of check_names.py (declarations, keywords, bodies) and repor
   R11  WARNING   #dbView definitions set queryText
   R12  WARNING   a usage with 2+ UML3 semantic keywords: CATIA Magic 2026x applies only the first
                  keyword's implied specialization (experiments E02/E03)
+  R14  ERROR     'constant' on a package-level usage (KerML: constant features must be variable; CATIA Magic E08)
 
 Keywords are normalized to the qualified name of the library metadata def they resolve to, so
 '#primaryKey' (prefix, short name) and '@PrimaryKey' (body, declared name) are the same keyword.
@@ -284,6 +285,11 @@ def check(model: Model, scopes: list[cn.Scope]) -> list[Finding]:
 
         if s.is_def and KW["dbView"] in kws and "queryText" not in e.redefined:
             add("R11", "WARNING", e, "#dbView does not set queryText")
+
+        if not s.is_def and "constant" in [t.text for t in s.decl] and s.owner is not None and \
+                (s.owner.decl_kind == "package" or s.owner.qname == ""):
+            add("R14", "ERROR", e, "'constant' on a package-level usage: KerML requires constant features to be variable "
+                                   "(owned by an occurrence); use a bound value 'attribute x : T = v;' (CATIA Magic E08)")
 
         if not s.is_def and len(e.semantic_keywords) >= 2:
             names = ", ".join("#" + model.keyword_label(q) for q in e.semantic_keywords)

@@ -1,13 +1,14 @@
 # Lines (whitespace-trimmed) that the generated SysML v2 MUST contain. Written 2026-09-16 BEFORE the importer.
 # Correction after first run: "out message" was a wrong expectation - message is a SysML reserved word and must be quoted.
+# Correction after CATIA Magic E08: IDL const maps to a bound package-level attribute, not constant (KerML: constant features must be variable).
 package shop_order {
 @IdlFile { fileName = "shop_order.idl"; }
 private import UML3IDL::*;
 package Shop {
-constant attribute MAX_ITEMS : Int32 = 50;
-constant attribute STORE_NAME : String = "UML3 Store";
-constant attribute TAX_RATE : Float64 = 0.2;
-constant attribute OPEN : Boolean = true;
+attribute MAX_ITEMS : Int32 = 50;
+attribute STORE_NAME : String = "UML3 Store";
+attribute TAX_RATE : Float64 = 0.2;
+attribute OPEN : Boolean = true;
 enum def OrderStatus {
 enum PENDING;
 enum CANCELLED;

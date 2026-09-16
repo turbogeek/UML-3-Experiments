@@ -17,7 +17,7 @@ library package UML3IDL {
 	 *   interface         -> #interfaceType item def (UML3Core); operations abstract #operation action
 	 *   readonly attribute-> constant attribute    oneway -> @IdlOneway    return -> out result { @IdlReturn; }
 	 *   raises (E)        -> #raises dependency from Interface::operation to E
-	 *   const             -> constant attribute NAME : T = value; (package level)
+	 *   const             -> attribute NAME : T = value; (package level; not 'constant': KerML requires constant features to be variable)
 	 *   @key -> #id  @optional -> [0..1]  @range -> @Facets  @default -> default  @id -> @IdlMemberId
 	 *   any other annotation -> @IdlAnnotation { text = "@name(...)"; } (preserved for export)
 	 */
