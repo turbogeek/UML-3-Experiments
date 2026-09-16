@@ -123,6 +123,7 @@ Collection kinds need no new types:
 | Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 9 files (5 library + 4 examples) load with 0 errors** (2026-09-16) |
 | Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **21/21 hypotheses hold, including 7 negative controls** |
 | Validation engine (KerML/SysML constraint suites) | `validateUML3Packages.groovy` | **0 failures on library + examples** |
+| Diagram keyword labels | `probeKeywordDisplay.groovy` | semantic keywords render `«#keyword»`; plain metadata is not in the label |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
 | Name resolution, lint and keyword applicability | `tools/check_names.py` | Library and examples pass; 16 negative tests fail as expected; 0 false positives on 251 official OMG models |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
@@ -170,7 +171,23 @@ The SysML v2 validation in CATIA Magic is a separate KerML engine (`com.dassault
 
 The two checks overlap but neither replaces the other. Cameo's engine misses keyword misuse on features and on non-types. UML3's checker does not do Cameo's full conformance validation. `run_tests.py --cameo` runs both. The observed engine results are stored in `tests/cameo-negative/validation-predictions.json` next to the original predictions and act as a regression baseline.
 
-Still open: whether Cameo's diagrams and tables show the keywords as stereotype-like labels.
+### How CATIA Magic displays the keywords
+
+Tested read-only through the functions behind the diagram shape labels (`KeywordProvider`, and `ModelTextCreator` as used by `MetadataLabelWrapper`), found with `javap`. Script: `tools/cameo-scripts/probeKeywordDisplay.groovy`. Predictions were committed first (`9e8a3bc`), and 5 of 6 held.
+
+| Element | Rendered keyword text |
+|---|---|
+| `#service part def OrderService` | `«part def»` and **`«#service»`** |
+| `#classType item def Customer` | `«item def»` and **`«#classType»`** |
+| `#operation action cancel` (a nested usage) | `«action»` and **`«#operation»`** |
+| `#primaryKey attribute orderId` (**plain** metadata) | `«attribute»` only; **`#primaryKey` is not in the keyword label** |
+| `enum def OrderStatus` (control) | `«enum def»` only |
+
+**Semantic keywords show like UML stereotypes (`«#service»`).** Plain metadata keywords (`#primaryKey`, `#foreignKey`, `#unique`, `#id`, `#static`, `#provided`/`#required`, `#publishes`…) are left out of the keyword label. They may still appear in a shape's *metadata compartment*: `MetadataCompartmentDescriptor` exists, but the Collection overload only produced compartment `{ name = value }` text, so this is unconfirmed.
+
+**Design implication, to be decided.** If these data and architecture markers must be visible on diagrams, they would have to become semantic keywords. Each one would then need a `baseType` that is valid on the elements it marks (e.g. both attributes and `ref` items for keys). That changes their meaning, so it needs its own Cameo experiment before it is adopted.
+
+Still open: confirming on an actual diagram whether plain metadata appears in the metadata compartment.
 
 ## Validator findings (sysml-validator issues found during this work)
 
