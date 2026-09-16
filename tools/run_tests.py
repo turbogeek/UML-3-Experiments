@@ -122,6 +122,30 @@ def main() -> int:
             "passed": rc == 0, "files": len(rep["files"]),
             "findings": [f | {"file": x["file"]} for x in rep["files"] for f in x["findings"]]}
 
+    # 4b. design rules: examples must have no ERROR findings; each tests/rules file must produce exactly
+    #     the rule IDs in its EXPECT-RULES header (R12 stacking warnings are allowed extras), 'none' = clean
+    rules_script = ROOT / "tools" / "check_rules.py"
+    rr = run([sys.executable, str(rules_script), "--stdlib", str(STDLIB), "--index", str(ROOT / "library"),
+              "--check", str(ROOT / "examples"), "--report", str(LOGS / "rules-examples.json")])
+    rules_rep = json.loads((LOGS / "rules-examples.json").read_text(encoding="utf-8")) if rr.returncode != 2 else {}
+    report["suites"]["rules-examples"] = {
+        "passed": rr.returncode == 0, "errors": rules_rep.get("errors"), "warnings": rules_rep.get("warnings"),
+        "findings": rules_rep.get("findings", []) if rr.returncode != 2 else [rr.stderr.strip()]}
+    rule_cases = []
+    for f in sorted((ROOT / "tests" / "rules").glob("*.sysml")):
+        m = re.search(r"EXPECT-RULES:\s*([A-Za-z0-9 ,]+)", f.read_text(encoding="utf-8"))
+        expected = set() if m is None or m.group(1).strip().startswith("none") else \
+            set(re.findall(r"R\d\d", m.group(1)))
+        out = LOGS / "rules-negative.json"
+        rc = run([sys.executable, str(rules_script), "--stdlib", str(STDLIB), "--index", str(ROOT / "library"),
+                  "--check", str(f), "--report", str(out)])
+        observed = {x["rule"] for x in json.loads(out.read_text(encoding="utf-8"))["findings"]} if rc.returncode != 2 else {"TOOL_ERROR"}
+        extra = observed - expected - ({"R12"} if expected else set())
+        passed = m is not None and expected <= observed and not extra
+        rule_cases.append({"file": f.name, "expected": sorted(expected), "observed": sorted(observed), "passed": passed})
+    report["suites"]["rules-tests"] = {"passed": bool(rule_cases) and all(c["passed"] for c in rule_cases),
+                                       "cases": rule_cases}
+
     # 5. authoritative check in CATIA Magic (optional; needs the harness running)
     if args.cameo:
         # 5a. probes: library + tests/cameo-negative, verify what Cameo builds, undo (harness stays up)

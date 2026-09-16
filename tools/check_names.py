@@ -189,6 +189,8 @@ class Scope:
     is_metadata_def: bool = False
     supers: list[str] = field(default_factory=list)  # names after ':>' / 'specializes' in the declaration
     body: list[Tok] = field(default_factory=list)    # tokens between the declaration's braces
+    decl: list[Tok] = field(default_factory=list)    # declaration tokens: prefixes .. up to '{' or ';'
+    owner: "Scope | None" = field(default=None, repr=False)  # lexically enclosing scope
 
 
 @dataclass
@@ -209,6 +211,48 @@ def parse_qualified(toks: list[Tok], i: int) -> tuple[str, int]:
         parts.append(toks[j + 1].text)
         j += 2
     return "::".join(parts), j
+
+
+MEMBER_PREFIX_WORDS = {"public", "private", "protected", "in", "out", "inout", "derived", "abstract",
+                       "variation", "constant", "ref", "end", "individual", "library", "standard"}
+
+
+def declaration_span(toks: list[Tok], k: int) -> list[Tok]:
+    """Tokens of the declaration whose construct keyword is at k: walk back over member prefixes,
+    '#kw' keywords and an end multiplicity '[..]'; walk forward to the first '{' or ';' at depth 0."""
+    start = k
+    while start > 0:
+        prev = toks[start - 1]
+        if prev.kind == "ident" and prev.text in MEMBER_PREFIX_WORDS:
+            start -= 1
+            continue
+        if prev.kind == "ident":  # '#a::b' keyword
+            m = start - 1
+            while m >= 2 and toks[m - 1].text == "::" and toks[m - 2].kind == "ident":
+                m -= 2
+            if m >= 1 and toks[m - 1].text == "#":
+                start = m - 1
+                continue
+        if prev.text == "]":  # 'end [1] ref x'
+            m = start - 1
+            while m > 0 and toks[m].text != "[":
+                m -= 1
+            if m > 0 and toks[m - 1].text == "end":
+                start = m - 1
+                continue
+        break
+    end = k
+    depth = 0
+    while end < len(toks):
+        s = toks[end].text
+        if s in ("(", "["):
+            depth += 1
+        elif s in (")", "]"):
+            depth -= 1
+        elif depth == 0 and s in ("{", ";"):
+            break
+        end += 1
+    return toks[start:end]
 
 
 def index_file(path: Path) -> FileModel:
@@ -309,6 +353,9 @@ def index_file(path: Path) -> FileModel:
                                 k += 1
                             else:
                                 break
+                if not child.decl:
+                    child.decl = declaration_span(toks, i)
+                    child.owner = scope
                 pending = child
             i = j + (1 if name else 0)
             continue
