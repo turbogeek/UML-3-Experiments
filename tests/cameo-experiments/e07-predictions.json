@@ -1,8 +1,31 @@
 {
   "description": "E07 predictions, recorded 2026-09-16 BEFORE running: what created the 'General View' + 'Multiple add' commands observed in the command history after the views run?",
   "hypotheses": [
-    {"id": "H-probe", "statement": "evaluating ViewUsage.getExposedElement() (probeViewContents) creates the commands / a diagram", "expected": true, "confidence": "medium"},
-    {"id": "H-load", "statement": "loading examples/05-OnlineStoreViews.sysml creates the commands / a diagram", "expected": false, "confidence": "low"}
+    {
+      "id": "H-probe",
+      "statement": "evaluating ViewUsage.getExposedElement() (probeViewContents) creates the commands / a diagram",
+      "expected": true,
+      "confidence": "medium"
+    },
+    {
+      "id": "H-load",
+      "statement": "loading examples/05-OnlineStoreViews.sysml creates the commands / a diagram",
+      "expected": false,
+      "confidence": "low"
+    },
+    {
+      "id": "H-validate",
+      "statement": "running the KerML validation engine (validateUML3Packages) on packages containing ViewUsages creates the 'General View' + 'Multiple add' commands",
+      "expected": true,
+      "confidence": "medium",
+      "recordedAfter": "step 1, before running validation"
+    }
   ],
-  "procedure": "load library + examples 01-05 (no view probe); record history + diagrams; run probeViewContents; record history + diagrams; undo; audit history."
+  "procedure": "load library + examples 01-05 (no view probe); record history + diagrams; run probeViewContents; record history + diagrams; undo; audit history.",
+  "observedStep1": {
+    "afterLoads": "HIST 11 loads, 0 diagrams",
+    "afterViewProbe": "HIST 11 loads, 0 diagrams",
+    "H-probe": "refuted",
+    "H-load": "not supported (as predicted)"
+  }
 }
