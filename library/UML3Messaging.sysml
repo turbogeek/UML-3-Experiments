@@ -102,18 +102,18 @@ library package UML3Messaging {
 
 	abstract port def ProducerPort {
 		doc /* Emits messages. Narrow the message type with ':>> outboundMessages : OrderPlaced'. */
-		abstract out item outboundMessages : MessageType[0..*];
+		out item outboundMessages : MessageType[0..*];
 	}
 
 	abstract port def ConsumerPort {
 		doc /* Receives messages. Narrow the message type with ':>> inboundMessages : OrderPlaced'. */
-		abstract in item inboundMessages : MessageType[0..*];
+		in item inboundMessages : MessageType[0..*];
 	}
 
 	abstract port def RequestReplyPort {
 		doc /* Synchronous or async request/reply endpoint (client side; server side is ~RequestReplyPort). */
-		abstract out item request : MessageType[0..1];
-		abstract in item response : Reply[0..1];
+		out item request : MessageType[0..1];
+		in item response : Reply[0..1];
 	}
 
 	/* ---------------------------------------------------------------------

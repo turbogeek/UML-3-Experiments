@@ -5,15 +5,18 @@ Suites (each result is recorded in logs/test-report.json):
   syntax-positive     ANTLR sysml-validator on library/ and examples/        -> must PASS
   names-positive      check_names.py on library/ and examples/               -> must PASS
   negative            each tests/negative/*.sysml must FAIL with its EXPECT code
-                      (SYNTAX via the validator, IMPORT/TYPE/KEYWORD via check_names)
+                      (SYNTAX via the validator, IMPORT/TYPE/KEYWORD/QUALIFIED/LINT via check_names)
   checker-calibration check_names.py on the official OMG models              -> must PASS
                       (guards the checker against false positives)
+  cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
+                      the SysMLv2 test harness REST API, undo the loads, stop the harness.
+                      This is the authoritative semantic check.
 
 Paths default to sibling checkouts and can be overridden with environment variables:
   SYSML_RELEASE   (default ../SysML-v2-Release)
   SYSML_VALIDATOR_JAR (default ../sysml-validator/validator-cli/target/sysml-validator.jar)
 
-Usage: python tools/run_tests.py [--skip-calibration]
+Usage: python tools/run_tests.py [--skip-calibration] [--cameo [--keep-harness]]
 Exit code: 0 all suites pass, 1 any failure, 2 environment problem.
 """
 from __future__ import annotations
@@ -34,7 +37,7 @@ JAR = Path(os.environ.get("SYSML_VALIDATOR_JAR",
                           ROOT.parent / "sysml-validator" / "validator-cli" / "target" / "sysml-validator.jar"))
 CHECKER = ROOT / "tools" / "check_names.py"
 LOGS = ROOT / "logs"
-EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED)")
+EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|LINT)")
 
 
 def run(cmd: list[str], timeout: int = 600) -> subprocess.CompletedProcess:
@@ -62,6 +65,8 @@ def name_check(check: list[Path], index: list[Path], report: Path) -> tuple[int,
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-calibration", action="store_true")
+    ap.add_argument("--cameo", action="store_true", help="also run the CATIA Magic harness check")
+    ap.add_argument("--keep-harness", action="store_true", help="with --cameo: do not shut the harness down")
     args = ap.parse_args()
 
     LOGS.mkdir(exist_ok=True)
@@ -116,6 +121,20 @@ def main() -> int:
         report["suites"]["checker-calibration"] = {
             "passed": rc == 0, "files": len(rep["files"]),
             "findings": [f | {"file": x["file"]} for x in rep["files"] for f in x["findings"]]}
+
+    # 5. authoritative check in CATIA Magic (optional; needs the harness running)
+    if args.cameo:
+        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo"]
+        if not args.keep_harness:
+            cmd.append("--shutdown")
+        r = run(cmd)
+        cameo_report = ROOT / "logs" / "cameo" / "cameo-report.json"
+        details = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
+        report["suites"]["cameo"] = {
+            "passed": r.returncode == 0, "exitCode": r.returncode,
+            "errors": [f'{Path(x["file"]).name}: {e}' for x in details.get("loads", []) for e in x["errors"]]
+                      or ([r.stderr.strip()] if r.returncode else []),
+            "inspectAfterUndo": details.get("inspectAfterUndo")}
 
     report["finished"] = dt.datetime.now().isoformat(timespec="seconds")
     report["passed"] = all(s["passed"] for s in report["suites"].values())

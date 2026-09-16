@@ -30,7 +30,7 @@ package OnlineStoreDatabase {
 		#aggregateRoot item def PurchaseOrder {
 			#primaryKey attribute orderId : Uuid;
 			#indexed attribute placedAt : Timestamp;
-			#foreignKey ref item account : CustomerAccount[1] {
+			ref #foreignKey item account : CustomerAccount[1] {
 				@ForeignKey { onDelete = ReferentialAction::restrict; }
 			}
 			item lines : PurchaseOrderLine[1..*] ordered;
@@ -39,7 +39,7 @@ package OnlineStoreDatabase {
 
 		#entity item def PurchaseOrderLine {
 			/* composite key: (order, lineNumber) */
-			#primaryKey #foreignKey ref item parentOrder : PurchaseOrder[1];
+			ref #primaryKey #foreignKey item parentOrder : PurchaseOrder[1];
 			#primaryKey attribute lineNumber : UInt16;
 			attribute sku : String;
 			attribute quantity : UInt32;

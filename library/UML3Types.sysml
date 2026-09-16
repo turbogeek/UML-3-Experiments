@@ -49,7 +49,7 @@ library package UML3Types {
 		@Facets { bitWidth = 16; isSigned = true; minInclusive = -32768; maxInclusive = 32767; }
 	}
 	attribute def Int32 :> Integer {
-		@Facets { bitWidth = 32; isSigned = true; minInclusive = -2147483648; maxInclusive = 2147483647; }
+		@Facets { bitWidth = 32; isSigned = true; minInclusive = -2.147483648E9; maxInclusive = 2147483647; }
 	}
 	attribute def Int64 :> Integer {
 		@Facets { bitWidth = 64; isSigned = true; }
@@ -61,7 +61,7 @@ library package UML3Types {
 		@Facets { bitWidth = 16; isSigned = false; minInclusive = 0; maxInclusive = 65535; }
 	}
 	attribute def UInt32 :> Natural {
-		@Facets { bitWidth = 32; isSigned = false; minInclusive = 0; maxInclusive = 4294967295; }
+		@Facets { bitWidth = 32; isSigned = false; minInclusive = 0; maxInclusive = 4.294967295E9; }
 	}
 	attribute def UInt64 :> Natural {
 		@Facets { bitWidth = 64; isSigned = false; }

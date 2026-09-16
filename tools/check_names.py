@@ -10,6 +10,9 @@ standard library plus project files and verifies, per file:
   KEYWORD     prefix / body metadata                     (#kw   @Meta)
   QUALIFIED   A::B::C in value expressions (e.g. Enum::literal), reported only when the
               missing member belongs to a package or enum def (complete member lists)
+  LINT        constraints the ANTLR validator accepts but CATIA Magic / Pilot reject:
+              member prefix order (visibility, direction, derived, abstract, constant,
+              ref/end, #keywords) and integer literals beyond 32-bit int
 
 Visibility model (deliberately approximate, documented so results are interpretable):
   visible(file) = names declared anywhere in the file
@@ -451,6 +454,7 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
             scope = nxt if nxt is not None else Scope(f"{scope.qname}::{p}", p)
 
     toks = fm.tokens
+    findings.extend(lint_file(toks))
     i = 0
     while i < len(toks):
         t = toks[i]
@@ -505,6 +509,59 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
             if not (nxt < len(toks) and toks[nxt].text == "."):
                 resolve_qualified(qn, t.line, "QUALIFIED", closed_only=True)
             i = nxt
+            continue
+        i += 1
+    return findings
+
+
+# Member prefix ordering from the SysML textual BNF (sysml-validator's ANTLR grammar is more
+# lenient than CATIA Magic / Pilot, which reject out-of-order prefixes):
+#   MemberPrefix(visibility) RefPrefix(direction derived abstract|variation constant)
+#   ['ref' | 'end' | 'individual'] UsageExtensionKeyword/DefinitionExtensionKeyword('#Kw')*
+PREFIX_RANK = {
+    "public": 0, "private": 0, "protected": 0,
+    "in": 1, "out": 1, "inout": 1,
+    "derived": 2,
+    "abstract": 3, "variation": 3,
+    "constant": 4,
+    "ref": 5, "end": 5, "individual": 5,
+    "#": 6,
+}
+MAX_INT_LITERAL = 2147483647  # CATIA Magic stores integer literals as Java int
+
+
+def lint_file(toks: list[Tok]) -> list[Finding]:
+    """Grammar/implementation constraints the ANTLR validator does not enforce."""
+    findings: list[Finding] = []
+    for i, t in enumerate(toks):
+        if t.kind == "number" and t.text.isdigit() and int(t.text) > MAX_INT_LITERAL:
+            findings.append(Finding("LINT", t.line, f"integer literal {t.text} exceeds 32-bit int; "
+                                                    "use a Real literal such as 4.294967295E9"))
+    i = 0
+    while i < len(toks):
+        prev = toks[i - 1].text if i >= 1 else "{"
+        # 'doc' counts as a boundary because the lexer strips its /* body */
+        if prev in ("{", ";", "}", "doc") and toks[i].text in PREFIX_RANK:
+            seq: list[tuple[str, int]] = []
+            j = i
+            while j < len(toks) and toks[j].text in PREFIX_RANK:
+                if toks[j].text == "#":
+                    if j + 1 >= len(toks) or toks[j + 1].kind != "ident":
+                        break
+                    _, k = parse_qualified(toks, j + 1)
+                    seq.append(("#" + toks[j + 1].text, toks[j].line))
+                    j = k
+                else:
+                    seq.append((toks[j].text, toks[j].line))
+                    j += 1
+            ranks = [PREFIX_RANK["#" if w.startswith("#") else w] for w, _ in seq]
+            for (w1, _), (w2, line), r1, r2 in zip(seq, seq[1:], ranks, ranks[1:]):
+                if r2 < r1:
+                    findings.append(Finding("LINT", line, f"prefix '{w2}' must come before '{w1}' "
+                                                          "(order: visibility, direction, derived, abstract, "
+                                                          "constant, ref/end, #keywords)"))
+                    break
+            i = max(j, i + 1)
             continue
         i += 1
     return findings
