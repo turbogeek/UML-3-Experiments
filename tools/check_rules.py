@@ -132,7 +132,10 @@ class Model:
                 depth += 1
             elif t.text == "}":
                 depth -= 1
-            elif depth == 0 and t.text == "@" and k + 1 < len(body) and body[k + 1].kind == "ident":
+            # '@M' applies metadata only at a statement start; inside expressions (e.g. 'filter @M or @N;')
+            # it is a metadata test and must not count as a keyword of this element
+            elif depth == 0 and t.text == "@" and k + 1 < len(body) and body[k + 1].kind == "ident" and \
+                    (k == 0 or body[k - 1].text in ("{", ";", "}", "doc")):
                 qn, _ = cn.parse_qualified(body, k + 1)
                 self._add_keyword(e, qn)
             elif depth == 0 and t.text == ":>>" and k + 1 < len(body) and body[k + 1].kind == "ident":

@@ -153,6 +153,12 @@ def main() -> int:
     report["suites"]["rules-examples"] = {
         "passed": rr.returncode == 0, "errors": rules_rep.get("errors"), "warnings": rules_rep.get("warnings"),
         "findings": rules_rep.get("findings", []) if rr.returncode != 2 else [rr.stderr.strip()]}
+    rl = run([sys.executable, str(rules_script), "--stdlib", str(STDLIB), "--index", str(ROOT / "library"),
+              "--check", str(ROOT / "library"), "--report", str(LOGS / "rules-library.json")])
+    rl_rep = json.loads((LOGS / "rules-library.json").read_text(encoding="utf-8")) if rl.returncode != 2 else {}
+    report["suites"]["rules-library"] = {
+        "passed": rl.returncode == 0 and rl_rep.get("warnings") == 0, "errors": rl_rep.get("errors"),
+        "warnings": rl_rep.get("warnings"), "findings": rl_rep.get("findings", [rl.stderr.strip()])}
     rule_cases = []
     for f in sorted((ROOT / "tests" / "rules").glob("*.sysml")):
         m = re.search(r"EXPECT-RULES:\s*([A-Za-z0-9 ,]+)", f.read_text(encoding="utf-8"))
