@@ -1,0 +1,9 @@
+{
+  "description": "E03 predictions, recorded 2026-09-16 BEFORE running, under the refined hypothesis from E02: CATIA Magic applies only the FIRST semantic metadata owned by an element, regardless of prefix or body form.",
+  "specializes": [
+    {"id": "F1", "why": "F: single body-form @PrimaryKey is applied", "subject": ["UML3ExperimentBodyKeywords", "BODYFORM", "F"], "general": ["UML3Data", "primaryKeyFeatures"], "expected": true},
+    {"id": "G1", "why": "G: first body-form @Unique is applied", "subject": ["UML3ExperimentBodyKeywords", "BODYFORM", "G"], "general": ["UML3Data", "uniqueFeatures"], "expected": true},
+    {"id": "G2", "why": "G: second body-form @Indexed is NOT applied", "subject": ["UML3ExperimentBodyKeywords", "BODYFORM", "G"], "general": ["UML3Data", "indexedFeatures"], "expected": false}
+  ],
+  "inheritsFeature": []
+}
