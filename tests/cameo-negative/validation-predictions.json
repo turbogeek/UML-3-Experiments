@@ -1,0 +1,20 @@
+{
+  "description": "Predictions for CATIA Magic's KerML/SysML validation engine (ValidationService, active+passive suites), recorded 2026-09-16 BEFORE running. flagged = at least one ERROR-severity failure on an element of the package.",
+  "predictions": [
+    {"package": "UML3ProbeValid", "flagged": false, "confidence": "medium", "why": "control: correct keyword use"},
+    {"package": "UML3ProbeEntityOnAttributeDef", "flagged": true, "confidence": "medium", "why": "ValidateDataTypeSpecialization: a DataType must not specialize a Class"},
+    {"package": "UML3ProbeOperationOnAttribute", "flagged": true, "confidence": "medium", "why": "ValidateAttributeUsageFeatures / type conformance: attribute usage gains a Behavior type"},
+    {"package": "UML3ProbeMapsToOnItemDef", "flagged": true, "confidence": "high", "why": "ValidateMetadataFeatureAnnotatedElement: annotatedElement restricted to SysML::Dependency"},
+    {"package": "UML3ProbeSemanticOnPackage", "flagged": true, "confidence": "high", "why": "SemanticMetadata requires a Type annotated element"},
+    {"package": "UML3ProbeColumnOnItemDef", "flagged": false, "confidence": "low", "why": "no rule seen for Occurrence/DataValue disjointness on item defs"},
+    {"package": "UML3Core", "flagged": false, "confidence": "medium", "why": "library loads cleanly"},
+    {"package": "UML3Types", "flagged": false, "confidence": "medium", "why": "library loads cleanly"},
+    {"package": "UML3Components", "flagged": false, "confidence": "medium", "why": "library loads cleanly"},
+    {"package": "UML3Messaging", "flagged": false, "confidence": "medium", "why": "library loads cleanly"},
+    {"package": "UML3Data", "flagged": false, "confidence": "medium", "why": "library loads cleanly"},
+    {"package": "OnlineStoreDomain", "flagged": false, "confidence": "medium", "why": "example loads cleanly"},
+    {"package": "OnlineStoreArchitecture", "flagged": false, "confidence": "low", "why": "port/connector typing may trigger conformance rules"},
+    {"package": "OnlineStoreMessaging", "flagged": false, "confidence": "low", "why": "flows/messages between port items may trigger rules"},
+    {"package": "OnlineStoreDatabase", "flagged": false, "confidence": "medium", "why": "example loads cleanly"}
+  ]
+}
