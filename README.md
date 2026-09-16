@@ -59,13 +59,14 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 9/9 files load; validation engine reports 0 failures |
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
 | Keyword labels | CATIA Magic label functions | 17/17 render `«#keyword»` |
-| Keyword semantics (implied specialization) | CATIA Magic API | **38/39**, see Known issues |
+| Keyword semantics (implied specialization) | CATIA Magic API | 39/39 against the recorded baseline (1 case is a known Cameo deviation, see Known issues) |
 
 Every Cameo run loads files in dependency order, undoes its own loads (confirmed by an inspection with a positive control) and then shuts the harness down. Experiments record their predictions in git before they run (`tests/cameo*/`).
 
 ## Known issues and open work
 
-* **Stacked semantic keywords (under investigation).** On `#column #primaryKey attribute ACCOUNT_ID`, CATIA Magic applied only the first keyword's implied specialization: the attribute is a column but not a primary key, although both labels show. KerML says every keyword applies. Experiment `tests/cameo-experiments/e02-*` tests keyword order, body form (`{ @PrimaryKey; }`) and marker pairs.
+* **Stacked semantic keywords: CATIA Magic applies only the first one.** Confirmed by experiments E02 and E03 (predictions committed before each run; 8/9 and 3/3 held). Of the semantic keywords on one element (prefix or body form), only the **first** gets its implied specialization. The rest still show as labels, and the validation engine does not report the gap. KerML says every keyword applies, so this is a CATIA Magic deviation.
+  **Usage rule:** put the keyword whose meaning matters most for queries first (e.g. `#primaryKey #column` when key membership matters). The regression baseline (`M15`) records the current behaviour and will flag it when Cameo is fixed.
 * `@Navigable` is still plain metadata; making association ends semantic is untested.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.

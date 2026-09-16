@@ -204,6 +204,22 @@ This pattern is therefore available for any marker that must be visible on diagr
 
 Still open: confirming on an actual diagram whether plain metadata appears in the metadata compartment.
 
+### Marker keywords converted to semantic metadata, and the stacked-keyword deviation
+
+All marker keywords that go on types were converted to the E01 pattern (commit `bc2cb63`). Plain metadata remains only where needed: dependencies and packages (`#uses`…, `#mapsTo`, `#layer`), valued configuration (`@Facets`, `@Index`, `@Column`, `@QualityOfService`…), and `@Navigable`, pending an experiment on end features. In CATIA Magic, 9/9 files load, the validation engine reports 0 failures, labels are 17/17 (including flows, conjugated ports and body form), and 38/39 predicted specializations held.
+
+The failing case (`#column #primaryKey attribute ACCOUNT_ID` is not in `primaryKeyFeatures`) led to two experiments, with predictions committed before each run:
+
+| Experiment | Case | Result |
+|---|---|---|
+| E02 | `#column #primaryKey` / `#primaryKey #column` | only the first keyword is applied; the reversed order gives the reverse result |
+| E02 | `#unique #indexed` | only `#unique` is applied, so the effect is not keyword-specific |
+| E02 | `#column attribute C { @PrimaryKey; }` | body-form second keyword **also** ignored (the prediction was refuted) |
+| E03 | `attribute F { @PrimaryKey; }` | single body-form keyword is applied |
+| E03 | `attribute G { @Unique; @Indexed; }` | only the first is applied |
+
+**Conclusion.** CATIA Magic 2026x Refresh1 applies the implied specialization of only the **first** semantic metadata on an element. KerML 9.2.16 requires it for each. Labels and validation give no sign of the gap. The usage rule is to order keywords by query importance. `M15` in `tests/cameo/implied-specializations.json` records the observed behaviour (`kermlExpected: true`), so the suite will flag the change when Cameo is fixed. A possible library workaround, not adopted: combined keywords whose base subsets several sets (e.g. `#pkColumn` with a base `:> columns, primaryKeyFeatures`).
+
 ## Validator findings (sysml-validator issues found during this work)
 
 * **No name resolution.** Unresolved types, imports and specializations pass.
