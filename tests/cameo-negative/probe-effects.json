@@ -1,0 +1,10 @@
+{
+  "description": "What CATIA Magic builds for misapplied keywords (tests/cameo-negative probes load without builder errors). Predictions recorded before running: the implied specialization is applied even though it is kind-incompatible.",
+  "specializes": [
+    {"id": "Q00", "why": "control: valid #entity item def specializes Entity", "subject": ["UML3ProbeValid", "Account"], "general": ["UML3Data", "Entity"], "expected": true},
+    {"id": "Q01", "why": "#entity attribute def: does the DataType get Entity as a supertype?", "subject": ["UML3ProbeEntityOnAttributeDef", "Money"], "general": ["UML3Data", "Entity"], "expected": true},
+    {"id": "Q02", "why": "#operation attribute usage: does it subset the action usage operations?", "subject": ["UML3ProbeOperationOnAttribute", "Customer", "rename"], "general": ["UML3Core", "operations"], "expected": true},
+    {"id": "Q05", "why": "#column item def: does the item def subclassify Base::DataValue?", "subject": ["UML3ProbeColumnOnItemDef", "CUSTOMER"], "general": ["Base", "DataValue"], "expected": true}
+  ],
+  "inheritsFeature": []
+}

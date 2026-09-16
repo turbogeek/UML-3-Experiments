@@ -1,0 +1,95 @@
+{
+  "description": "Predictions (recorded 2026-09-16 BEFORE running) for how CATIA Magic renders UML3 keywords on diagram shapes, observed through the text functions the diagram labels use: KeywordProvider.getKeyword(Element) (metaclass keyword) and ModelTextCreator.getSemanticMetadataText / createMetadataKeywordsText (MetadataLabelWrapper). 'contains' is a case-sensitive substring expected in the metadata keyword text.",
+  "cases": [
+    {
+      "id": "D1",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService"
+      ],
+      "contains": "service",
+      "expected": true,
+      "confidence": "medium",
+      "why": "semantic keyword #service on a part def",
+      "observed": true,
+      "observedText": "\u00abpart def\u00bb + \u00ab#service\u00bb",
+      "matchesPrediction": true
+    },
+    {
+      "id": "D2",
+      "subject": [
+        "OnlineStoreDomain",
+        "Customer"
+      ],
+      "contains": "classType",
+      "expected": true,
+      "confidence": "medium",
+      "why": "semantic keyword #classType on an item def",
+      "observed": true,
+      "observedText": "\u00abitem def\u00bb + \u00ab#classType\u00bb",
+      "matchesPrediction": true
+    },
+    {
+      "id": "D3",
+      "subject": [
+        "OnlineStoreDomain",
+        "Order",
+        "cancel"
+      ],
+      "contains": "operation",
+      "expected": true,
+      "confidence": "medium",
+      "why": "semantic keyword on a nested action usage",
+      "observed": true,
+      "observedText": "\u00abaction\u00bb + \u00ab#operation\u00bb",
+      "matchesPrediction": true
+    },
+    {
+      "id": "D4",
+      "subject": [
+        "OnlineStoreDatabase",
+        "Logical",
+        "PurchaseOrder",
+        "orderId"
+      ],
+      "contains": "primaryKey",
+      "expected": true,
+      "confidence": "low",
+      "why": "plain (non-semantic) metadata keyword #primaryKey",
+      "observed": false,
+      "observedText": "\u00abattribute\u00bb only; plain #primaryKey omitted by the keyword-label function",
+      "matchesPrediction": false
+    },
+    {
+      "id": "D5",
+      "subject": [
+        "OnlineStoreDomain",
+        "OrderStatus"
+      ],
+      "contains": "#",
+      "expected": false,
+      "confidence": "high",
+      "why": "control: enum def without any keyword",
+      "observed": false,
+      "observedText": "\u00abenum def\u00bb only",
+      "matchesPrediction": true
+    },
+    {
+      "id": "D6",
+      "subject": [
+        "OnlineStoreArchitecture",
+        "OrderService"
+      ],
+      "contains": "part def",
+      "expected": true,
+      "confidence": "high",
+      "why": "metaclass keyword still shown alongside the user keyword",
+      "source": "metaclassKeyword",
+      "observed": true,
+      "observedText": "\u00abpart def\u00bb",
+      "matchesPrediction": true
+    }
+  ],
+  "observedOn": "2026-09-16 CATIA Magic MSoSA 2026x Refresh1; raw output logs/cameo/keyword-display.txt",
+  "followUp": "createMetadataKeywordsText(Collection<Feature>,TextBuilder) renders metadata compartment contents ({ name = value }), not keyword labels -> whether a real diagram shows plain metadata remains unverified (needs a diagram)."
+}
