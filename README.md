@@ -38,7 +38,8 @@ package Shop {
 This repo expects sibling checkouts of `SysML-v2-Release` and `sysml-validator` (with `validator-cli/target/sysml-validator.jar` built). You can override their locations with `SYSML_RELEASE` and `SYSML_VALIDATOR_JAR`.
 
 ```bash
-python tools/run_tests.py
+python tools/run_tests.py            # local checks
+python tools/run_tests.py --cameo    # plus CATIA Magic (harness must be running)
 ```
 
 The harness has four suites:

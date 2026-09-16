@@ -120,21 +120,26 @@ Collection kinds need no new types:
 
 | Check | Tool | Status |
 |---|---|---|
-| Syntax | `sysml-validator` (ANTLR) | library + examples pass; negative tests fail as expected |
-| Name resolution (imports, types, keywords, qualified names) | `tools/check_names.py` | library + examples pass; 6 negative tests fail as expected; 0 false positives on 251 official OMG models |
-| Semantic validation (typing conformance, implied specialization from SemanticMetadata, redefinition rules, connection end typing) | OMG Pilot Implementation | **Not yet run** (see below) |
+| Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 9 files (5 library + 4 examples) load with 0 errors** (2026-09-16) |
+| Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
+| Name resolution and lint (imports, types, keywords, qualified names, prefix order, int range) | `tools/check_names.py` | Library and examples pass; 9 negative tests fail as expected; 0 false positives on 251 official OMG models |
+| OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
 
-### Known open semantic questions (to confirm with the Pilot Implementation)
+Run everything with `python tools/run_tests.py --cameo`. The harness must be running in CATIA Magic. The runner loads the files in dependency order, **undoes its own loads** (checked with `inspectUML3Roots.groovy`, which includes a positive control), and then stops the harness.
 
-1. Operations: can a nested `#operation action` inside an `item def` subset the package-level `operations` without breaking featuring constraints? The official FMEA example does the same thing with occurrences, so we expect it to work.
-2. `#assembly connect a to b` subsets `assemblyConnectors`, whose type `AssemblyConnector` declares no ends. We expect the connector ends to come from `Connection`.
-3. `#classType part def StripeGateway :> PaymentGateway`: a `part def` specializing `item def`s is legal (`Part :> Item`). We still need to confirm there is no conflict with the implied `Class` specialization.
-4. `#column attribute` subsets `columns : Base::DataValue[*]`. Columns typed by attribute defs conform. A column typed by an item would be a semantic error, which is intended.
+### Errors CATIA Magic found that local tools missed (now covered by LINT)
 
-The local `SysML-v2-Pilot-Implementation` build (0.55) can't be used here. Its jars contain "Unresolved compilation problems" stubs, which means they were compiled with errors. `tools/pilot-check/SysMLCheck.groovy` is a ready-to-use headless checker once a working Pilot build or the `jupyter-sysml-kernel` "all" jar is available.
+1. `abstract out item x`: the direction must come first (`RefPrefix = direction? derived? abstract? constant?`).
+2. `#foreignKey ref item x`: `ref` must come before the extension keywords (`ref #foreignKey item x`).
+3. Integer literals above 2147483647 (`Integer number too large`): use Real exponent form, e.g. `4.294967295E9`.
+
+### Remaining semantic questions
+
+A zero-error load in CATIA Magic confirms that parsing, name resolution and the validations its builder reports all pass. It does not show that the *implied* specializations from semantic metadata behave as intended in queries (e.g. that `OrderService` is reported as a `Component`). That is the next experiment: inspect the loaded elements' general types through the API.
 
 ## Validator findings (sysml-validator issues found during this work)
 
 * **No name resolution.** Unresolved types, imports and specializations pass.
 * **Lexer bug.** An identifier starting with `def` combined with a multiplicity is rejected. `attribute definitionQuery : String[0..1];` fails, but `attribute definitionQuery : String;` and `attribute x : String[0..1];` both pass.
+* **Reversed prefix order.** It rejects the legal `out abstract item x` and accepts the illegal `abstract out item x`, which is the reverse of the BNF and of CATIA Magic. The library avoids the conflict by not combining a direction with `abstract`.
 * **KerML keywords rejected as SysML names.** `class`, `datatype`, `feature`, `type`, `composite`, `value` and `sequence` are refused. This is arguably stricter than the SysML reserved-word list, but models should avoid these names anyway, for portability.
