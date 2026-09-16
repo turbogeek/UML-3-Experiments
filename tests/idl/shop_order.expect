@@ -1,4 +1,5 @@
 # Lines (whitespace-trimmed) that the generated SysML v2 MUST contain. Written 2026-09-16 BEFORE the importer.
+# Correction after first run: "out message" was a wrong expectation - message is a SysML reserved word and must be quoted.
 package shop_order {
 @IdlFile { fileName = "shop_order.idl"; }
 private import UML3IDL::*;
@@ -64,7 +65,7 @@ abstract #operation action cancel {
 in reason : String;
 abstract #operation action update {
 inout order : Order;
-out message : String;
+out 'message' : String;
 out result : Boolean { @IdlReturn; }
 abstract #operation action ping {
 @IdlOneway;

@@ -174,6 +174,51 @@ def main() -> int:
     report["suites"]["rules-tests"] = {"passed": bool(rule_cases) and all(c["passed"] for c in rule_cases),
                                        "cases": rule_cases}
 
+    # 4c. IDL import (Groovy core, outside CATIA Magic): each tests/idl/*.idl must import, keep a stable canonical
+    #     round trip, contain every line of its .expect file, and yield SysML that passes syntax/names/rules;
+    #     each tests/idl/unsupported fixture must fail with its expected message
+    groovy = "groovy.bat" if os.name == "nt" else "groovy"
+    idl_dir = LOGS / "idl"
+    idl_cases = []
+    for idl in sorted((ROOT / "tests" / "idl").glob("*.idl")):
+        out_sysml = idl_dir / (idl.stem + ".sysml")
+        g = run([groovy, str(ROOT / "tools" / "idl" / "idl2sysml.groovy"), str(idl), str(out_sysml),
+                 str(idl_dir / (idl.stem + ".canonical.idl"))])
+        lines = g.stdout.splitlines()
+        case = {"file": idl.name, "result": next((l for l in lines if l.startswith("RESULT|")), g.stderr.strip()[:300]),
+                "roundtrip": next((l for l in lines if l.startswith("ROUNDTRIP|")), None), "missingExpected": [],
+                "syntaxErrors": [], "nameFindings": None, "ruleErrors": None}
+        ok = case["result"].startswith("RESULT|OK") and case["roundtrip"] == "ROUNDTRIP|STABLE"
+        expect = idl.with_suffix(".expect")
+        if ok and expect.exists():
+            generated = {l.strip() for l in out_sysml.read_text(encoding="utf-8").splitlines()}
+            case["missingExpected"] = [l.strip() for l in expect.read_text(encoding="utf-8").splitlines()
+                                       if l.strip() and not l.startswith("#") and l.strip() not in generated]
+            syn_ok, case["syntaxErrors"] = syntax_check([out_sysml])
+            nrc, nrep = name_check([out_sysml], library, LOGS / "names-idl.json")
+            case["nameFindings"] = sum(len(x["findings"]) for x in nrep["files"])
+            rrc = run([sys.executable, str(rules_script), "--stdlib", str(STDLIB), "--index", str(ROOT / "library"),
+                       "--check", str(out_sysml), "--report", str(LOGS / "rules-idl.json")])
+            case["ruleErrors"] = json.loads((LOGS / "rules-idl.json").read_text(encoding="utf-8"))["errors"]
+            ok = ok and not case["missingExpected"] and syn_ok and nrc == 0 and rrc.returncode == 0
+        elif ok:
+            ok = False
+            case["missingExpected"] = ["no .expect file"]
+        case["passed"] = ok
+        idl_cases.append(case)
+    expected_errors = ROOT / "tests" / "idl" / "unsupported" / "expected-errors.txt"
+    for entry in expected_errors.read_text(encoding="utf-8").splitlines():
+        if not entry.strip() or entry.startswith("#"):
+            continue
+        fname, substring = entry.split("|", 1)
+        g = run([groovy, str(ROOT / "tools" / "idl" / "idl2sysml.groovy"),
+                 str(ROOT / "tests" / "idl" / "unsupported" / fname), str(idl_dir / ("unsupported-" + fname + ".sysml"))])
+        result = next((l for l in g.stdout.splitlines() if l.startswith("RESULT|")), g.stderr.strip()[:300])
+        idl_cases.append({"file": "unsupported/" + fname, "result": result, "expectedError": substring,
+                          "passed": result.startswith("RESULT|FAIL") and substring in result})
+    report["suites"]["idl-import"] = {"passed": bool(idl_cases) and all(c["passed"] for c in idl_cases),
+                                      "cases": idl_cases}
+
     # 5. authoritative check in CATIA Magic (optional; needs the harness running)
     if args.cameo:
         # 5a. probes: library + tests/cameo-negative, verify what Cameo builds, undo (harness stays up)
