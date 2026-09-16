@@ -4,3 +4,5 @@ map.idl|unsupported IDL construct 'map'
 nested_sequence.idl|anonymous nested sequence
 shift_const.idl|unsupported operator '<<' in constant expression
 nested_type_in_interface.idl|type declarations inside an interface
+bad_float_literal.idl|invalid floating-point literal
+int_out_of_range.idl|outside the signed 64-bit range

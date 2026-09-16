@@ -1,0 +1,8 @@
+# lines that must appear in the generated SysML (see escapes_and_bounds.idl)
+#dataType attribute def 'struct' {
+attribute long : Int32;
+attribute string : String { @Facets { maxLength = 8; } }
+attribute 'sequence' : Int32[0..5] ordered nonunique;
+attribute grid : Int16[12] ordered nonunique { @IdlArray { dimensions = (4, 3); } }
+enum def 'enum' {
+enum module;

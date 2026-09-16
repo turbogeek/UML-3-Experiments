@@ -1,0 +1,12 @@
+// E10 regressions: IDL keywords used as names need the '_' escape to survive the canonical round trip
+// (JacORB bugjac717), and bounds/dimensions may be constant expressions (Cyclone DDS InstanceHandleTypes)
+module Escapes {
+    const long MAX = 4;
+    struct _struct {
+        long _long;
+        string<MAX * 2> _string;
+        sequence<long, MAX + 1> _sequence;
+        short grid[MAX][(MAX - 1)];
+    };
+    enum _enum { _module, plain };
+};

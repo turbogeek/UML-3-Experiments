@@ -74,7 +74,9 @@ class IdlLexer {
                 if (j < n && (s.charAt(j) == 'e' as char || s.charAt(j) == 'E' as char)) {
                     isFloat = true; j++
                     if (j < n && (s.charAt(j) == '+' as char || s.charAt(j) == '-' as char)) j++
+                    int expStart = j
                     while (j < n && Character.isDigit(s.charAt(j))) j++
+                    if (j == expStart) throw new IdlException("invalid floating-point literal '" + s.substring(i, j) + "' (exponent has no digits)", line)
                 }
                 if (j < n && (s.charAt(j) == 'd' as char || s.charAt(j) == 'D' as char)) { isFloat = true; j++ }
                 add(isFloat ? "FLOAT" : "INT", s.substring(i, j), line); i = j; continue
@@ -323,7 +325,7 @@ class IdlParser {
             if (x.kind == "PUNCT" && x.text == "(") { pos[0]++; def v = exprFn(); pos[0]++; return v }
             pos[0]++
             switch (x.kind) {
-                case "INT": return x.text.toLowerCase().startsWith("0x") ? Long.parseLong(x.text.substring(2), 16) : Long.parseLong(x.text)
+                case "INT": return intLiteral(x)
                 case "FLOAT": return Double.parseDouble(x.text.replaceAll("[dD]\$", ""))
                 case "STRING": return x.text
                 case "CHAR": return x.text
@@ -377,17 +379,30 @@ class IdlParser {
     // one typedef statement yields one definition per declarator; IdlParserV1 inserts them in order
     List<IdlTypedef> pendingTypedefs = []
 
-    Long boundValue() {
-        IdlToken x = next()
-        if (x.kind == "INT") return x.text.toLowerCase().startsWith("0x") ? Long.parseLong(x.text.substring(2), 16) : Long.parseLong(x.text)
-        if (x.kind == "ID") {
-            StringBuilder qn = new StringBuilder(x.text)
-            while (isPunct("::")) { next(); qn.append("::").append(identifier()) }
-            Object v = constValues[qn.toString()]
-            if (v instanceof Long) return (Long) v
-            throw new IdlException("bound '" + qn + "' is not an integer constant", x.line)
+    static Long intLiteral(IdlToken x) {
+        try {
+            return x.text.toLowerCase().startsWith("0x") ? Long.parseLong(x.text.substring(2), 16) : Long.parseLong(x.text)
+        } catch (NumberFormatException e) {
+            throw new IdlException("integer literal '" + x.text + "' is outside the signed 64-bit range supported by v1", x.line)
         }
-        throw new IdlException("expected a positive integer bound", x.line)
+    }
+
+    // a bound or array dimension: a positive integer constant expression (e.g. 10, MAX, MAX * 2)
+    Long boundValue() {
+        IdlToken first = peek()
+        List<IdlToken> expr = []
+        int depth = 0
+        while (!(depth == 0 && (isPunct("]") || isPunct(">") || isPunct(",")))) {
+            IdlToken x = next()
+            if (x.kind == "EOF") throw new IdlException("unterminated bound", first.line)
+            if (x.kind == "PUNCT" && x.text == "(") depth++
+            if (x.kind == "PUNCT" && x.text == ")") depth--
+            expr << x
+        }
+        if (expr.isEmpty()) throw new IdlException("expected a positive integer bound", first.line)
+        Object v = evaluate(expr, first.line)
+        if (v instanceof Long && (Long) v > 0) return (Long) v
+        throw new IdlException("bound '" + expr.collect { it.text }.join(" ") + "' is not a positive integer constant", first.line)
     }
 
     IdlTypeRef typeSpec(boolean allowVoid) {
@@ -995,6 +1010,14 @@ class IdlToSysml {
 // ---------------------------------------------------------------- Canonical IDL writer
 
 class IdlWriter {
+    // IDL 4.2 keywords; identifiers colliding with them (case-insensitively) must be written with the '_' escape
+    static final Set<String> KEYWORDS = ("abstract any alias attribute bitfield bitmask bitset boolean case char component " +
+        "connector const consumes context custom default double exception emits enum eventtype factory false finder fixed " +
+        "float getraises home import in inout interface local long manages map mirrorport module multiple native object " +
+        "octet oneway out primarykey private port porttype provides public publishes raises readonly setraises sequence " +
+        "short string struct supports switch true truncatable typedef typeid typename typeprefix unsigned union uses " +
+        "valuebase valuetype void wchar wstring int8 uint8 int16 int32 int64 uint16 uint32 uint64").split(" ") as Set
+    static String id(String n) { return KEYWORDS.contains(n.toLowerCase()) ? "_" + n : n }
     IdlFile file
     IdlNames names
     StringBuilder out = new StringBuilder()
@@ -1010,7 +1033,7 @@ class IdlWriter {
 
     String fq(String name, List<String> scope) {
         String q = names.resolve(name, scope)
-        return "::" + q
+        return "::" + q.split("::").collect { id(it) }.join("::")
     }
 
     String type(IdlTypeRef t, List<String> scope) {
@@ -1062,48 +1085,48 @@ class IdlWriter {
         defs.each { d ->
             if (d.annotations && !(d instanceof IdlTypedef)) line(ind, annotations(d.annotations).trim())
             if (d instanceof IdlModule) {
-                line(ind, "module " + d.name + " {")
+                line(ind, "module " + id(d.name) + " {")
                 definitions(((IdlModule) d).defs, scope + [d.name], ind + 1)
                 line(ind, "};")
             } else if (d instanceof IdlConst) {
                 IdlConst c = (IdlConst) d
-                line(ind, "const " + type(c.type, scope) + " " + c.name + " = " + constValue(c.value, c.type) + ";")
+                line(ind, "const " + type(c.type, scope) + " " + id(c.name) + " = " + constValue(c.value, c.type) + ";")
             } else if (d instanceof IdlEnum) {
-                line(ind, "enum " + d.name + " { " + ((IdlEnum) d).literals.join(", ") + " };")
+                line(ind, "enum " + id(d.name) + " { " + ((IdlEnum) d).literals.collect { id(it) }.join(", ") + " };")
             } else if (d instanceof IdlTypedef) {
                 IdlTypedef td = (IdlTypedef) d
-                line(ind, annotations(td.annotations) + "typedef " + type(td.type, scope) + " " + td.name + dims(td.decl) + ";")
+                line(ind, annotations(td.annotations) + "typedef " + type(td.type, scope) + " " + id(td.name) + dims(td.decl) + ";")
             } else if (d instanceof IdlStruct) {
                 IdlStruct s = (IdlStruct) d
-                line(ind, "struct " + s.name + (s.base ? " : " + fq(s.base, scope) : "") + " {")
-                s.members.each { m -> line(ind + 1, annotations(m.annotations) + type(m.type, scope) + " " + m.decl.name + dims(m.decl) + ";") }
+                line(ind, "struct " + id(s.name) + (s.base ? " : " + fq(s.base, scope) : "") + " {")
+                s.members.each { m -> line(ind + 1, annotations(m.annotations) + type(m.type, scope) + " " + id(m.decl.name) + dims(m.decl) + ";") }
                 line(ind, "};")
             } else if (d instanceof IdlUnion) {
                 IdlUnion u = (IdlUnion) d
-                line(ind, "union " + u.name + " switch (" + type(u.discriminator, scope) + ") {")
+                line(ind, "union " + id(u.name) + " switch (" + type(u.discriminator, scope) + ") {")
                 u.cases.each { uc ->
                     String labels = uc.labels.collect { "case " + it + ": " }.join("") + (uc.isDefault ? "default: " : "")
-                    line(ind + 1, labels + annotations(uc.member.annotations) + type(uc.member.type, scope) + " " + uc.member.decl.name + dims(uc.member.decl) + ";")
+                    line(ind + 1, labels + annotations(uc.member.annotations) + type(uc.member.type, scope) + " " + id(uc.member.decl.name) + dims(uc.member.decl) + ";")
                 }
                 line(ind, "};")
             } else if (d instanceof IdlExceptionDef) {
                 IdlExceptionDef x = (IdlExceptionDef) d
-                line(ind, "exception " + x.name + " {")
-                x.members.each { m -> line(ind + 1, annotations(m.annotations) + type(m.type, scope) + " " + m.decl.name + dims(m.decl) + ";") }
+                line(ind, "exception " + id(x.name) + " {")
+                x.members.each { m -> line(ind + 1, annotations(m.annotations) + type(m.type, scope) + " " + id(m.decl.name) + dims(m.decl) + ";") }
                 line(ind, "};")
             } else if (d instanceof IdlInterface) {
                 IdlInterface itf = (IdlInterface) d
-                line(ind, "interface " + itf.name + (itf.bases ? " : " + itf.bases.collect { fq(it, scope) }.join(", ") : "") + " {")
+                line(ind, "interface " + id(itf.name) + (itf.bases ? " : " + itf.bases.collect { fq(it, scope) }.join(", ") : "") + " {")
                 itf.exports.each { e ->
                     if (e instanceof IdlAttribute) {
                         IdlAttribute a = (IdlAttribute) e
-                        line(ind + 1, annotations(a.annotations) + (a.readonly ? "readonly " : "") + "attribute " + type(a.type, scope) + " " + a.name + ";")
+                        line(ind + 1, annotations(a.annotations) + (a.readonly ? "readonly " : "") + "attribute " + type(a.type, scope) + " " + id(a.name) + ";")
                     } else {
                         IdlOperation op = (IdlOperation) e
-                        String params = op.params.collect { p -> p.direction + " " + type(p.type, scope) + " " + p.name }.join(", ")
+                        String params = op.params.collect { p -> p.direction + " " + type(p.type, scope) + " " + id(p.name) }.join(", ")
                         String raises = op.raises ? " raises (" + op.raises.collect { fq(it, scope) }.join(", ") + ")" : ""
                         line(ind + 1, annotations(op.annotations) + (op.oneway ? "oneway " : "") +
-                            (op.returnType == null ? "void" : type(op.returnType, scope)) + " " + op.name + "(" + params + ")" + raises + ";")
+                            (op.returnType == null ? "void" : type(op.returnType, scope)) + " " + id(op.name) + "(" + params + ")" + raises + ";")
                     }
                 }
                 line(ind, "};")

@@ -1,0 +1,2 @@
+// E10 regression: an exponent without digits must be an IdlException, not a crash
+module M { const double X = 14e; };

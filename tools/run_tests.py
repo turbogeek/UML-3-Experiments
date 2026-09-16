@@ -8,6 +8,7 @@ Suites (each result is recorded in logs/test-report.json):
                       (SYNTAX via the validator, IMPORT/TYPE/KEYWORD/QUALIFIED/LINT via check_names)
   checker-calibration check_names.py on the official OMG models              -> must PASS
                       (guards the checker against false positives)
+  idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
                       the SysMLv2 test harness REST API, undo the loads, stop the harness.
                       This is the authoritative semantic check.
@@ -218,6 +219,16 @@ def main() -> int:
                           "passed": result.startswith("RESULT|FAIL") and substring in result})
     report["suites"]["idl-import"] = {"passed": bool(idl_cases) and all(c["passed"] for c in idl_cases),
                                       "cases": idl_cases}
+
+    # 4d. IDL corpus: the core against 701 third-party IDL files (git submodules in external/idl); invariants and
+    #     per-file baseline in tools/idl_corpus_check.py
+    cc = run([sys.executable, str(ROOT / "tools" / "idl_corpus_check.py"), "--report", str(LOGS / "idl-corpus" / "report.json")],
+             timeout=1500)
+    corpus_rep = LOGS / "idl-corpus" / "report.json"
+    corpus = json.loads(corpus_rep.read_text(encoding="utf-8")) if cc.returncode != 2 and corpus_rep.exists() else {}
+    report["suites"]["idl-corpus"] = {"passed": cc.returncode == 0, "summary": corpus.get("summary"),
+                                      "violations": corpus.get("violations") or [cc.stderr.strip()[-500:]],
+                                      "improvements": corpus.get("improvements", [])}
 
     # 5. authoritative check in CATIA Magic (optional; needs the harness running)
     if args.cameo:

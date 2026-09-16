@@ -1,0 +1,2 @@
+// E10 regression: an integer beyond 64 bits must be an IdlException, not a crash
+module M { const unsigned long long X = 18446744073709551616; };
