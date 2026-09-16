@@ -1,0 +1,17 @@
+{
+  "description": "E01 predictions, recorded 2026-09-16 BEFORE running: semantic #pk keyword with a ref/Anything baseType applied to an attribute usage and a ref item usage.",
+  "load": {"expected": "OK", "confidence": "high"},
+  "validationEngineFlagged": {"expected": false, "confidence": "medium", "why": "subsetting an Anything-typed reference adds no disjoint type"},
+  "specializes": [
+    {"id": "E1", "why": "#pk attribute subsets keyFeatures", "subject": ["UML3ExperimentSemanticKey", "Account", "accountId"], "general": ["UML3ExperimentSemanticKey", "keyFeatures"], "expected": true},
+    {"id": "E2", "why": "#pk ref item subsets keyFeatures", "subject": ["UML3ExperimentSemanticKey", "Account", "owner"], "general": ["UML3ExperimentSemanticKey", "keyFeatures"], "expected": true},
+    {"id": "E3", "why": "control: attribute without keyword does not", "subject": ["UML3ExperimentSemanticKey", "PlainAccount", "accountId"], "general": ["UML3ExperimentSemanticKey", "keyFeatures"], "expected": false}
+  ],
+  "inheritsFeature": [],
+  "labels": [
+    {"id": "L1", "subject": "UML3ExperimentSemanticKey::Account::accountId", "contains": "«#pk»", "expected": true, "confidence": "high"},
+    {"id": "L2", "subject": "UML3ExperimentSemanticKey::Account::owner", "contains": "«#pk»", "expected": true, "confidence": "high"},
+    {"id": "L3", "subject": "UML3ExperimentSemanticKey::PlainAccount::accountId", "contains": "«#pk»", "expected": false, "confidence": "high"}
+  ],
+  "localChecker": {"expected": "0 findings (baseType kind 'ref' is in no disjoint family)", "confidence": "high"}
+}
