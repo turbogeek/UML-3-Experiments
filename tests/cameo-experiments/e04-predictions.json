@@ -1,0 +1,18 @@
+{
+  "description": "E04 predictions, recorded 2026-09-16 BEFORE running: semantic #navigable on association end features (body and prefix form) and connection usages binding those ends.",
+  "load": {"expected": "OK", "confidence": "medium", "why": "grammar allows metadata on ends; risk is connector end rules"},
+  "validationEngineFlagged": {"expected": false, "confidence": "low", "why": "end features gaining a subsetting of a non-end Anything-typed feature might violate end/connector rules"},
+  "specializes": [
+    {"id": "V1", "why": "body-form semantic keyword on end ref applies (single keyword)", "subject": ["UML3ExperimentNavigable", "BuysBody", "buyer"], "general": ["UML3ExperimentNavigable", "navigableEnds"], "expected": true},
+    {"id": "V2", "why": "prefix-form semantic keyword on end item applies", "subject": ["UML3ExperimentNavigable", "BuysPrefix", "buyer"], "general": ["UML3ExperimentNavigable", "navigableEnds"], "expected": true},
+    {"id": "V3", "why": "control: unmarked end does not", "subject": ["UML3ExperimentNavigable", "BuysBody", "purchase"], "general": ["UML3ExperimentNavigable", "navigableEnds"], "expected": false},
+    {"id": "V4", "why": "connection usage is still typed by its connection def", "subject": ["UML3ExperimentNavigable", "Store", "viaBody"], "general": ["UML3ExperimentNavigable", "BuysBody"], "expected": true},
+    {"id": "V5", "why": "keyworded connection def still an Association", "subject": ["UML3ExperimentNavigable", "BuysPrefix"], "general": ["UML3Core", "Association"], "expected": true}
+  ],
+  "inheritsFeature": [],
+  "labels": [
+    {"id": "W1", "subject": "UML3ExperimentNavigable::BuysBody::buyer", "contains": "«#navigable»", "expected": true, "confidence": "medium"},
+    {"id": "W2", "subject": "UML3ExperimentNavigable::BuysPrefix::buyer", "contains": "«#navigable»", "expected": true, "confidence": "high"},
+    {"id": "W3", "subject": "UML3ExperimentNavigable::BuysBody::purchase", "contains": "«#", "expected": false, "confidence": "high"}
+  ]
+}
