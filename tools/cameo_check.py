@@ -34,7 +34,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOGS = ROOT / "logs" / "cameo"
-LIBRARY_ORDER = ["UML3Core", "UML3Types", "UML3Components", "UML3Messaging", "UML3Data"]
+LIBRARY_ORDER = ["UML3Core", "UML3Types", "UML3Components", "UML3Messaging", "UML3Data", "UML3Views"]
+VIEW_SCRIPT = "probeViewContents.groovy"
+VIEW_EXPECTED = ROOT / "tests" / "cameo" / "view-predictions.json"
 UNDO_SCRIPT = "undoUML3Loads.groovy"
 INSPECT_SCRIPT = "inspectUML3Roots.groovy"
 VERIFY_SCRIPT = "verifyImpliedSpecializations.groovy"
@@ -117,6 +119,8 @@ def main() -> int:
     ap.add_argument("--validate", action="store_true",
                     help="run CATIA Magic's KerML/SysML validation engine on loaded packages and compare "
                          "with tests/cameo-negative/validation-predictions.json")
+    ap.add_argument("--views", action="store_true",
+                    help="check view contents against tests/cameo/view-predictions.json (needs examples loaded)")
     ap.add_argument("--display", action="store_true",
                     help="check keyword labels against tests/cameo/display-expectations.json (needs examples loaded)")
     ap.add_argument("--hypotheses", help="hypotheses JSON to verify (default tests/cameo/implied-specializations.json)")
@@ -220,6 +224,35 @@ def main() -> int:
               f"({len(flagged)} packages, {sum(flagged.values())} flagged as expected)" if val_ok else
               f"FAIL  CATIA Magic validation engine: {mismatches or text[:300]}")
         failed = failed or not val_ok
+
+    # View contents (expose + filter) as CATIA Magic evaluates them
+    if args.views and not failed:
+        spec = json.loads(VIEW_EXPECTED.read_text(encoding="utf-8"))
+        (HARNESS_SCRIPTS / "uml3-view-subjects.txt").write_text(
+            "\n".join(v["view"] for v in spec["views"]) + "\n", encoding="utf-8")
+        _, vr = call(args.port, "/run-script", {"scriptName": VIEW_SCRIPT})
+        text = vr.get("result") or vr.get("error") or ""
+        (LOGS / "view-contents.txt").write_text(text, encoding="utf-8")
+        contents: dict[str, tuple[str, list[str]]] = {}
+        for ln in text.splitlines():
+            f = ln.split("|")
+            if f[0] == "VIEW" and len(f) >= 6:
+                contents[f[1]] = (f[3], [n for n in f[5].split(",") if n] if f[3] not in ("", "NONE") else [])
+        results = []
+        for v in spec["views"]:
+            accessor, names = contents.get(v["view"], ("MISSING", []))
+            missing = [n for n in v["includes"] if n not in names]
+            unexpected = [n for n in v["excludes"] if n in names]
+            ok = accessor not in ("MISSING", "NONE", "") and not missing and not unexpected
+            results.append({"id": v["id"], "view": v["view"], "accessor": accessor, "count": len(names),
+                            "missingIncludes": missing, "presentExcludes": unexpected, "passed": ok})
+        views_ok = bool(results) and all(r["passed"] for r in results)
+        report["viewContents"] = {"passed": views_ok, "results": results}
+        print(f"{'PASS' if views_ok else 'FAIL'}  view contents ({sum(r['passed'] for r in results)}/{len(results)})")
+        for r in results:
+            if not r["passed"]:
+                print(f"    {r}")
+        failed = failed or not views_ok
 
     # Keyword labels as CATIA Magic's diagram shapes render them
     if args.display and not failed:
