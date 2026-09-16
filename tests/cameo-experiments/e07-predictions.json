@@ -1,0 +1,8 @@
+{
+  "description": "E07 predictions, recorded 2026-09-16 BEFORE running: what created the 'General View' + 'Multiple add' commands observed in the command history after the views run?",
+  "hypotheses": [
+    {"id": "H-probe", "statement": "evaluating ViewUsage.getExposedElement() (probeViewContents) creates the commands / a diagram", "expected": true, "confidence": "medium"},
+    {"id": "H-load", "statement": "loading examples/05-OnlineStoreViews.sysml creates the commands / a diagram", "expected": false, "confidence": "low"}
+  ],
+  "procedure": "load library + examples 01-05 (no view probe); record history + diagrams; run probeViewContents; record history + diagrams; undo; audit history."
+}
