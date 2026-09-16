@@ -3,10 +3,41 @@
   "recorded": "2026-09-16, before the first corpus run",
   "outcomes": "ACCEPT (parsed, SysML emitted), UNSUPPORTED (IdlException naming an out-of-scope construct), REJECT (other IdlException), CRASH (any non-IdlException Throwable), TIMEOUT (>10 s)",
   "predictions": [
-    {"id": "P1", "claim": "Fewer than 40% of the files not known to be invalid are ACCEPTed (CORBA valuetypes, #include-dependent files, #define macros, bitsets/maps are common)", "confidence": "medium"},
-    {"id": "P2", "claim": "At least 1 file CRASHes (non-IdlException, e.g. index or cast errors on unexpected syntax): the parser was only exercised on its own fixtures", "confidence": "medium"},
-    {"id": "P3", "claim": "0 TIMEOUTs: every parser loop consumes a token or throws", "confidence": "medium"},
-    {"id": "P4", "claim": "At least 30% of the known-invalid files (JacORB compiler/fail, ic-hir tests/fail) are wrongly ACCEPTed, because v1 does no semantic checks (name resolution, duplicates, type compatibility)", "confidence": "medium"},
-    {"id": "P5", "claim": "Every ACCEPTed file has a stable canonical round trip (write -> parse -> write identical)", "confidence": "low"}
-  ]
+    {
+      "id": "P1",
+      "claim": "Fewer than 40% of the files not known to be invalid are ACCEPTed (CORBA valuetypes, #include-dependent files, #define macros, bitsets/maps are common)",
+      "confidence": "medium",
+      "observed": "refuted",
+      "observation": "376/662 = 56.8% of files not known to be invalid are ACCEPTed"
+    },
+    {
+      "id": "P2",
+      "claim": "At least 1 file CRASHes (non-IdlException, e.g. index or cast errors on unexpected syntax): the parser was only exercised on its own fixtures",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "3 CRASHes, all NumberFormatException on invalid literals (JacORB Float2, Long_Fail1, Long_Fail2)"
+    },
+    {
+      "id": "P3",
+      "claim": "0 TIMEOUTs: every parser loop consumes a token or throws",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "0 TIMEOUTs; whole run 10 s in one JVM"
+    },
+    {
+      "id": "P4",
+      "claim": "At least 30% of the known-invalid files (JacORB compiler/fail, ic-hir tests/fail) are wrongly ACCEPTed, because v1 does no semantic checks (name resolution, duplicates, type compatibility)",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "25/39 = 64% of known-invalid files ACCEPTed (no semantic checks in v1)"
+    },
+    {
+      "id": "P5",
+      "claim": "Every ACCEPTed file has a stable canonical round trip (write -> parse -> write identical)",
+      "confidence": "low",
+      "observed": "refuted",
+      "observation": "400/401 stable; bugjac717 UNSTABLE: parser drops the '_' escape of IDL keywords used as names and the writer does not restore it. Also 12 ACCEPTed files fail SysML emission with mapping limitations (@optional on sequences, anonymous sequences in unions/arrays), so ACCEPT must mean parse AND emit"
+    }
+  ],
+  "observedRun": "logs/idl-corpus/results.tsv (tools/idl/idl_corpus.groovy), ACCEPT=401 UNSUPPORTED=147 REJECT=150 CRASH=3 TIMEOUT=0"
 }
