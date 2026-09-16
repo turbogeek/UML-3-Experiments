@@ -121,6 +121,7 @@ Collection kinds need no new types:
 | Check | Tool | Status |
 |---|---|---|
 | Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 9 files (5 library + 4 examples) load with 0 errors** (2026-09-16) |
+| Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **21/21 hypotheses hold, including 7 negative controls** |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
 | Name resolution and lint (imports, types, keywords, qualified names, prefix order, int range) | `tools/check_names.py` | Library and examples pass; 9 negative tests fail as expected; 0 false positives on 251 official OMG models |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
@@ -133,9 +134,16 @@ Run everything with `python tools/run_tests.py --cameo`. The harness must be run
 2. `#foreignKey ref item x`: `ref` must come before the extension keywords (`ref #foreignKey item x`).
 3. Integer literals above 2147483647 (`Integer number too large`): use Real exponent form, e.g. `4.294967295E9`.
 
-### Remaining semantic questions
+### Implied specializations verified in CATIA Magic
 
-A zero-error load in CATIA Magic confirms that parsing, name resolution and the validations its builder reports all pass. It does not show that the *implied* specializations from semantic metadata behave as intended in queries (e.g. that `OrderService` is reported as a `Component`). That is the next experiment: inspect the loaded elements' general types through the API.
+A clean load only shows the files parse and resolve. `tests/cameo/implied-specializations.json` also checks that the keywords **mean** what the design says, by calling `Type.specializes()` and `Type.getFeature()` on the loaded model (`tools/cameo-scripts/verifyImpliedSpecializations.groovy`). The cases include negative controls, which prove the check can fail. **21/21 hold (2026-09-16)**:
+
+* Definitions: `#service` → `Component`/`ActiveClass`, `#classType` → `Class`, `#aggregateRoot` → `AggregateRoot`/`Entity`, `#domainEvent` → `DomainEvent`/`Signal`, `#association` → `Association`, `#composition` → `Composition`. For `OrderService`, the probe showed an *owned* subclassification to `Service` that is not written anywhere in the source text.
+* Features: `#operation action` subsets `operations`, `#query calc` subsets `queries`, `#column attribute` subsets `columns`.
+* Inheritance: every `#domainEvent` inherits `header : MessageHeader`.
+* Controls (all false, as predicted): `#classType` is not an `Entity`, `#entity` is not an `AggregateRoot`, a domain event is not a `Command`, a plain attribute is not an operation, composition is not aggregation, and a plain class has no `header`.
+
+Still open: whether Cameo's diagrams and tables show these keywords as stereotype-like labels, and whether any validation rule checks the `annotatedElement` restrictions (e.g. `#mapsTo` on a non-dependency). A negative Cameo load test would settle the second point.
 
 ## Validator findings (sysml-validator issues found during this work)
 

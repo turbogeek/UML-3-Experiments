@@ -1,0 +1,28 @@
+{
+  "description": "Hypotheses about specializations implied by UML3 semantic-metadata keywords (KerML 9.2.16). 'expected' is the prediction; negative controls (expected=false) prove the check can fail. Verified in CATIA Magic by verifyImpliedSpecializations.groovy.",
+  "specializes": [
+    {"id": "H01", "why": "#service part def (no explicit :>) -> Service :> Component", "subject": ["OnlineStoreArchitecture", "OrderService"], "general": ["UML3Components", "Component"], "expected": true},
+    {"id": "H02", "why": "#service chain reaches UML3Core::ActiveClass", "subject": ["OnlineStoreArchitecture", "OrderService"], "general": ["UML3Core", "ActiveClass"], "expected": true},
+    {"id": "H03", "why": "#classType item def -> Class", "subject": ["OnlineStoreDomain", "Customer"], "general": ["UML3Core", "Class"], "expected": true},
+    {"id": "N03", "why": "control: #classType does NOT make an Entity", "subject": ["OnlineStoreDomain", "Customer"], "general": ["UML3Data", "Entity"], "expected": false},
+    {"id": "H04", "why": "#aggregateRoot -> AggregateRoot", "subject": ["OnlineStoreDatabase", "Logical", "PurchaseOrder"], "general": ["UML3Data", "AggregateRoot"], "expected": true},
+    {"id": "H05", "why": "#aggregateRoot -> Entity (transitive)", "subject": ["OnlineStoreDatabase", "Logical", "PurchaseOrder"], "general": ["UML3Data", "Entity"], "expected": true},
+    {"id": "N05", "why": "control: #entity is not an AggregateRoot", "subject": ["OnlineStoreDatabase", "Logical", "Tag"], "general": ["UML3Data", "AggregateRoot"], "expected": false},
+    {"id": "H06", "why": "#domainEvent -> DomainEvent", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "general": ["UML3Messaging", "DomainEvent"], "expected": true},
+    {"id": "H07", "why": "#domainEvent -> Signal (transitive via MessageType)", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "general": ["UML3Core", "Signal"], "expected": true},
+    {"id": "N07", "why": "control: a domain event is not a Command", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "general": ["UML3Messaging", "Command"], "expected": false},
+    {"id": "C08", "why": "control: explicit ':>' realization is reported", "subject": ["OnlineStoreDomain", "StripeGateway"], "general": ["OnlineStoreDomain", "PaymentGateway"], "expected": true},
+    {"id": "H08", "why": "realizing an #interfaceType reaches InterfaceType", "subject": ["OnlineStoreDomain", "StripeGateway"], "general": ["UML3Core", "InterfaceType"], "expected": true},
+    {"id": "H09", "why": "#operation action (feature) subsets operations", "subject": ["OnlineStoreDomain", "Order", "cancel"], "general": ["UML3Core", "operations"], "expected": true},
+    {"id": "H10", "why": "#query calc subsets queries", "subject": ["OnlineStoreDomain", "Order", "total"], "general": ["UML3Core", "queries"], "expected": true},
+    {"id": "N10", "why": "control: a plain attribute is not an operation", "subject": ["OnlineStoreDomain", "Order", "placedAt"], "general": ["UML3Core", "operations"], "expected": false},
+    {"id": "H11", "why": "#column attribute subsets columns", "subject": ["OnlineStoreDatabase", "Physical", "CUSTOMER_ACCOUNT", "ACCOUNT_ID"], "general": ["UML3Data", "columns"], "expected": true},
+    {"id": "H12", "why": "#association connection def -> Association", "subject": ["OnlineStoreDomain", "Places"], "general": ["UML3Core", "Association"], "expected": true},
+    {"id": "H13", "why": "#composition -> Composition", "subject": ["OnlineStoreDomain", "Contains"], "general": ["UML3Core", "Composition"], "expected": true},
+    {"id": "N13", "why": "control: composition is not aggregation (siblings)", "subject": ["OnlineStoreDomain", "Contains"], "general": ["UML3Core", "Aggregation"], "expected": false}
+  ],
+  "inheritsFeature": [
+    {"id": "H14", "why": "domain events inherit the MessageHeader 'header' from MessageType", "subject": ["OnlineStoreMessaging", "OrderPlaced"], "feature": "header", "expected": true},
+    {"id": "N14", "why": "control: a plain class has no 'header'", "subject": ["OnlineStoreDomain", "Customer"], "feature": "header", "expected": false}
+  ]
+}
