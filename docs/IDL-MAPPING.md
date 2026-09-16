@@ -12,6 +12,7 @@ a few basic types, unions, and metadata that preserves IDL-only details so that 
 | `tools/idl/idl2sysml.groovy` | command line | `groovy tools/idl/idl2sysml.groovy in.idl out.sysml [canonical.idl]`; also checks that IDL → canonical → canonical is stable (`ROUNDTRIP|STABLE`) |
 | `tools/cameo-scripts/importIdl.groovy` | CATIA Magic (harness `/run-script` or macro console) | converts the IDL and builds it into the open project as **one undoable command** ("UML3 IDL Import"); a build error cancels the whole session |
 | `tools/cameo-scripts/exportIdl.groovy` | CATIA Magic | reads a root package of the project (read-only, no session) and writes IDL |
+| `tools/idl/UML3IdlCodegen.groovy`, `tools/idl/idl2code.groovy` | anywhere | IDL AST → Java (OMG IDL4-Java 1.0) and Rust; see [IDL-CODEGEN.md](IDL-CODEGEN.md) |
 
 The Cameo scripts read a request file in the harness scripts directory:
 
@@ -51,6 +52,7 @@ The imported file becomes a root package named after the file (`shop_order`), an
 | `@key` | `#id` | |
 | `@optional` | multiplicity `[0..1]` | |
 | `@range(min, max)` | `@Facets { minInclusive; maxInclusive; }` | constant references are resolved to values |
+| `@value(n)` on an enumerator | kept in the IDL AST, canonical IDL, Java and Rust | not yet carried in the SysML model |
 | `@default(v)` | `default v` | |
 | `@id(n)` | `@IdlMemberId { memberId = n; }` | |
 | any other annotation | `@IdlAnnotation { text = "@name(...)"; }` | kept verbatim for export |
@@ -82,9 +84,33 @@ The exporter does not reproduce the original text. It writes **canonical IDL**: 
 
 Also rejected with `unsupported IDL construct`: `eventtype`, `component`, `home`, `native`, `bitset`, `bitmask`, `Object`, `ValueBase`, `context`, and `raises` on attributes. Preprocessor directives (`#include`, `#pragma`, …) are ignored with a `WARN`; includes are not resolved.
 
+## Third-party IDL corpora (E10)
+
+The importer is tested against 701 IDL files from seven projects, held as shallow git submodules in `external/idl`
+(`git submodule update --init --depth 1`). Sources, licenses and the known-invalid directories are listed in
+`tests/idl/corpus/expectations.json`. `tools/idl_corpus_check.py` runs everything in one JVM (about 30 s), and
+`tests/idl/corpus/baseline.json` records the outcome of each file.
+
+| Outcome | Files | Meaning |
+|---|---|---|
+| ACCEPT | 394 | parsed, SysML emitted, stable canonical round trip |
+| UNSUPPORTED | 160 | out-of-scope construct named in the message (`valuetype` 44, `Object` 19, `import` 19, `bitmask` 16, `map` 16, `typeprefix` 15, ...) |
+| REJECT | 147 | syntax the v1 parser does not accept (types inside interfaces, vendor extensions such as `enum { A = 1 }`, C code in Cyclone's xtests) |
+| CRASH / TIMEOUT | 0 | invariant I1 |
+
+The known-invalid files (JacORB `compiler/fail`, ic-hir `tests/fail`) are rejected only in 14 of 39 cases, because v1
+has no semantic checks. The other 25 are recorded as known leniency. The first run (E10, predictions in
+`tests/idl/corpus/e10-predictions.json`) found 3 crashes on invalid literals, an unstable round trip for IDL
+keywords used as names, and bounds that did not accept constant expressions. All three are fixed, with regression
+fixtures in `tests/idl`. Code generation found a Groovy trap that affects this code: `map["Empty"]` returns
+`isEmpty()`, `map["properties"]` returns the map, and `map["properties"] = v` throws. Maps keyed by IDL names
+therefore use `get`/`put` (`tests/idl/groovy_map_keys.idl`).
+
 ## Verification
 
 | Check | Result |
 |---|---|
 | `run_tests.py` suite `idl-import` | `shop_order.idl` → SysML contains every line of `tests/idl/shop_order.expect`; canonical round trip is stable; every unsupported fixture fails with its expected message |
+| `run_tests.py` suite `idl-corpus` | invariants I1–I6 over the 701 corpus files (no crash, stable round trips, no regressions, generated Java compiles) |
+| `run_tests.py` suite `idl-codegen` | spec naming examples, spec Java declarations, Rust mapping fixture, compilation |
 | `cameo_check.py --idl` (in `run_tests.py --cameo`) | CATIA Magic import: 0 build errors, 1 undoable command; validation engine: 0 failures on `shop_order`; export from the live model is **identical** to the canonical original; the guarded undo removes the import |

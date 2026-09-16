@@ -299,6 +299,19 @@ The full mapping and tool usage are in [`IDL-MAPPING.md`](IDL-MAPPING.md). Desig
 * **E08 (`const`).** The first mapping used package-level `constant attribute`. The CATIA Magic validation engine reported 4 `validateFeatureConstantIsVariable` errors, because KerML requires a constant feature to be variable. Constants now map to a bound attribute (`attribute N : T = v;`), and `check_rules.py` R14 catches the old form. It flags exactly 4 on the old output and 0 on the new.
 * **E09 (export).** The first export from the live model failed. Inside a closure, a bare `call(...)` resolved to `Closure.call`, not to the helper method of the same name. Renaming the helper to `callOn` fixed it. The exported IDL is identical to the canonical original, and the command history is unchanged, which shows export is read-only. `cameo_check.py --idl` now repeats this for every `tests/idl/*.idl` in each `--cameo` run.
 
+## IDL corpora and code generation (E10)
+
+* **Test input from real projects.** The seven IDL projects are git submodules (shallow, pinned commits), not copies. Their tests can be updated deliberately, and licenses stay with the sources. Files the upstream compiler must reject (JacORB `compiler/fail`, ic-hir `tests/fail`) are classified as known-invalid.
+* **Invariants and a baseline, not 701 expected outputs.** The check asserts properties that must hold for every file: no crash, a stable canonical round trip, no regression, and generated Java that compiles. It records each file's outcome, so an improvement shows up as a reviewed baseline change.
+* **Generators work on the IDL AST.** The same Java and Rust generators serve IDL files and SysML models (`fromModel`), and the canonical IDL writer is a third output of that AST.
+* **Java follows the OMG standard; Rust follows practice.** IDL4-Java 1.0 is normative, and its own examples serve as tests. Where the spec contradicts itself, one rule is implemented and the exceptions are recorded in the test data. Rust has no OMG mapping, so the ic-idl conventions are used and the choices are documented (`docs/IDL-CODEGEN.md`).
+* **Findings.**
+  * Parser: 3 crashes, 1 unstable round trip, 1 missing feature (bounds as expressions).
+  * Generators: arrays inside generics, generic array creation, `Object` method names, numeric `wchar` constants, duplicate names, reopened modules, references to the unnamed package.
+  * Groovy 5: map pseudo-properties (`Empty`, `properties`, `metaClass`).
+
+  Each was fixed and has a regression test.
+
 ## Validator findings (sysml-validator issues found during this work)
 
 * **No name resolution.** Unresolved types, imports and specializations pass.
