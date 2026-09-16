@@ -38,6 +38,8 @@ LIBRARY_ORDER = ["UML3Core", "UML3Types", "UML3Components", "UML3Messaging", "UM
 UNDO_SCRIPT = "undoUML3Loads.groovy"
 INSPECT_SCRIPT = "inspectUML3Roots.groovy"
 VERIFY_SCRIPT = "verifyImpliedSpecializations.groovy"
+VALIDATE_SCRIPT = "validateUML3Packages.groovy"
+VALIDATION_EXPECTED = ROOT / "tests" / "cameo-negative" / "validation-predictions.json"
 REPO_SCRIPTS = ROOT / "tools" / "cameo-scripts"
 HYPOTHESES = ROOT / "tests" / "cameo" / "implied-specializations.json"
 # SCRIPTS_DIR hard-coded in start-v2language-test-harness.groovy
@@ -110,6 +112,9 @@ def main() -> int:
     ap.add_argument("--probes", nargs="*", default=[],
                     help="negative/exploratory probe files (EXPECT-CAMEO header), loaded after the library")
     ap.add_argument("--library-only", action="store_true", help="load only library/ (no examples)")
+    ap.add_argument("--validate", action="store_true",
+                    help="run CATIA Magic's KerML/SysML validation engine on loaded packages and compare "
+                         "with tests/cameo-negative/validation-predictions.json")
     ap.add_argument("--hypotheses", help="hypotheses JSON to verify (default tests/cameo/implied-specializations.json)")
     ap.add_argument("files", nargs="*")
     args = ap.parse_args()
@@ -180,6 +185,37 @@ def main() -> int:
             for e in errors[:6]:
                 print(f"    {e}")
         report["probes"] = probe_results
+
+    # CATIA Magic validation engine on every loaded UML3*/OnlineStore* package
+    if args.validate and not failed:
+        _, val = call(args.port, "/run-script", {"scriptName": VALIDATE_SCRIPT})
+        text = val.get("result") or val.get("error") or ""
+        (LOGS / "validation-engine.txt").write_text(text, encoding="utf-8")
+        expected = {p["package"]: p["observed"] for p in
+                    json.loads(VALIDATION_EXPECTED.read_text(encoding="utf-8"))["predictions"]}
+        flagged: dict[str, bool] = {}
+        rows = []
+        for ln in text.splitlines():
+            f = ln.split("|")
+            if f[0] == "PKG" and len(f) >= 4:
+                flagged.setdefault(f[1], False)
+                if f[3].startswith("ERROR"):
+                    rows.append({"package": f[1], "problem": "validation threw: " + f[3]})
+            elif f[0] == "FAIL" and len(f) >= 6:
+                if f[2].upper().startswith("ERR"):
+                    flagged[f[1]] = True
+                rows.append({"package": f[1], "severity": f[2], "rule": f[3], "element": f[4], "message": f[5]})
+        mismatches = [f"{pkg}: expected flagged={expected.get(pkg)}, observed {obs}"
+                      for pkg, obs in flagged.items() if pkg in expected and expected[pkg] != obs]
+        unknown = [pkg for pkg in flagged if pkg not in expected]
+        val_ok = bool(flagged) and not mismatches and not text.startswith("ERROR|") and \
+            not any("problem" in r for r in rows)
+        report["validationEngine"] = {"passed": val_ok, "packages": flagged, "failures": rows,
+                                      "mismatches": mismatches, "packagesWithoutExpectation": unknown}
+        print(f"{'PASS' if val_ok else 'FAIL'}  CATIA Magic validation engine "
+              f"({len(flagged)} packages, {sum(flagged.values())} flagged as expected)" if val_ok else
+              f"FAIL  CATIA Magic validation engine: {mismatches or text[:300]}")
+        failed = failed or not val_ok
 
     # Implied-specialization hypotheses (only meaningful when every default file loaded)
     if not failed and not args.files and (not args.library_only or args.hypotheses):

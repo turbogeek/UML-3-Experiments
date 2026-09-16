@@ -126,7 +126,7 @@ def main() -> int:
     if args.cameo:
         # 5a. probes: library + tests/cameo-negative, verify what Cameo builds, undo (harness stays up)
         probes = sorted((ROOT / "tests" / "cameo-negative").glob("*.sysml"))
-        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--library-only", "--undo",
+        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--library-only", "--undo", "--validate",
                  "--hypotheses", str(ROOT / "tests" / "cameo-negative" / "probe-effects.json"),
                  "--probes", *map(str, probes)])
         cameo_report = ROOT / "logs" / "cameo" / "cameo-report.json"
@@ -137,10 +137,14 @@ def main() -> int:
             "passed": r.returncode == 0 and bool(probe_rows) and all(p["matchesPrediction"] for p in probe_rows),
             "errors": [f'{p["file"]}: expected {p["expected"]}, observed {p["observed"]}'
                        for p in probe_rows if not p["matchesPrediction"]] or ([r.stderr.strip()] if r.returncode else []),
-            "inspectAfterUndo": details.get("inspectAfterUndo")}
+            "inspectAfterUndo": details.get("inspectAfterUndo"),
+            "validationEngine": details.get("validationEngine")}
+        if details.get("validationEngine") and not details["validationEngine"]["passed"]:
+            report["suites"]["cameo-probes"]["passed"] = False
+            report["suites"]["cameo-probes"]["errors"] += details["validationEngine"]["mismatches"]
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
-        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo"]
+        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate"]
         if not args.keep_harness:
             cmd.append("--shutdown")
         r = run(cmd)
