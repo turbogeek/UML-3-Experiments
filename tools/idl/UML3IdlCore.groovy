@@ -307,8 +307,8 @@ class IdlParser {
             c.expr << x
         }
         c.value = evaluate(c.expr, line)
-        constValues[c.name] = c.value
-        constValues[qualify(c.name)] = c.value
+        constValues.put(c.name, c.value)
+        constValues.put(qualify(c.name), c.value)
         return c
     }
 
@@ -334,7 +334,7 @@ class IdlParser {
                     if (x.text == "FALSE") return Boolean.FALSE
                     StringBuilder qn = new StringBuilder(x.text)
                     while (pos[0] + 1 < ts.size() && ts[pos[0]].text == "::") { qn.append("::").append(ts[pos[0] + 1].text); pos[0] += 2 }
-                    Object v = constValues[qn.toString()]
+                    Object v = constValues.get(qn.toString())
                     return v != null ? v : new IdlScopedValue(name: qn.toString())
                 case "PUNCT":
                     if (x.text == "::") return primary()
@@ -565,7 +565,7 @@ class IdlParser {
         if (v != null) {
             Object n = evaluate(v.args.collect { new IdlToken(kind: it ==~ /-?\d+|0[xX][0-9a-fA-F]+/ ? "INT" : (it ==~ /[A-Za-z_].*/ ? "ID" : "PUNCT"), text: it, line: peek().line) }, peek().line)
             if (!(n instanceof Long)) throw new IdlException("@value of enumerator '" + lit + "' is not an integer constant", peek().line)
-            e.values[lit] = (Long) n
+            e.values.put(lit, (Long) n)
         }
     }
 
@@ -698,7 +698,7 @@ class IdlNames {
     private void index(List<IdlDefinition> defs, List<String> scope) {
         defs.each { d ->
             String q = (scope + [d.name]).join("::")
-            byQualified[q] = d
+            byQualified.put(q, d)
             qualifiedOf[d] = q
             if (d instanceof IdlModule) index(((IdlModule) d).defs, scope + [d.name])
         }
@@ -872,7 +872,7 @@ class IdlToSysml {
         String s = text.trim()
         if (s ==~ /-?\d+/) return Long.parseLong(s)
         if (s ==~ /-?\d*\.\d+([eE][-+]?\d+)?/) return Double.parseDouble(s)
-        Object v = parserConstants[s]
+        Object v = parserConstants.get(s)
         if (v instanceof Number) return v
         throw new IdlException("@range bound '" + s + "' is not a numeric constant", line)
     }
@@ -919,7 +919,7 @@ class IdlToSysml {
         for (int i = 0; i < toks.size(); i++) {
             String tk = toks[i]
             if (i + 1 < toks.size() && toks[i + 1] == "=" && key == null && val.length() == 0) { key = tk; i++; continue }
-            if (tk == ",") { if (key != null) kv[key] = val.toString(); key = null; val.setLength(0); continue }
+            if (tk == ",") { if (key != null) kv.put(key, val.toString()); key = null; val.setLength(0); continue }
             val.append(tk)
         }
         return kv
@@ -1074,7 +1074,7 @@ class IdlWriter {
         List<String> parts = []
         ["min", "max"].each { k ->
             if (kv[k] != null) {
-                Object v = constants[kv[k]]
+                Object v = constants.get(kv.get(k))
                 parts << (k + "=" + (v instanceof Number ? v : kv[k]))
             }
         }
@@ -1104,7 +1104,7 @@ class IdlWriter {
                 line(ind, "const " + type(c.type, scope) + " " + id(c.name) + " = " + constValue(c.value, c.type) + ";")
             } else if (d instanceof IdlEnum) {
                 IdlEnum en = (IdlEnum) d
-                line(ind, "enum " + id(d.name) + " { " + en.literals.collect { (en.values.containsKey(it) ? "@value(" + en.values[it] + ") " : "") + id(it) }.join(", ") + " };")
+                line(ind, "enum " + id(d.name) + " { " + en.literals.collect { (en.values.containsKey(it) ? "@value(" + en.values.get(it) + ") " : "") + id(it) }.join(", ") + " };")
             } else if (d instanceof IdlTypedef) {
                 IdlTypedef td = (IdlTypedef) d
                 line(ind, annotations(td.annotations) + "typedef " + type(td.type, scope) + " " + id(td.name) + dims(td.decl) + ";")
@@ -1488,7 +1488,7 @@ class UML3Idl {
 
     private static void collectConstants(List<IdlDefinition> defs, List<String> scope, Map<String, Object> into) {
         defs.each { d ->
-            if (d instanceof IdlConst) { into[d.name] = ((IdlConst) d).value; into[(scope + [d.name]).join("::")] = ((IdlConst) d).value }
+            if (d instanceof IdlConst) { into.put(d.name, ((IdlConst) d).value); into[(scope + [d.name]).join("::")] = ((IdlConst) d).value }
             if (d instanceof IdlModule) collectConstants(((IdlModule) d).defs, scope + [d.name], into)
         }
     }

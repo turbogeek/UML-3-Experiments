@@ -1,0 +1,13 @@
+// Regression: IDL names that are also Groovy Map pseudo-properties ("Empty", "properties", "metaClass").
+// Groovy 5 map["Empty"] returned isEmpty() and map["properties"] returned the map itself (found by the corpus,
+// ic-idl nested_module_refs.idl and JacORB _bugjac801.idl), which corrupted constant evaluation and name checks.
+module Keys {
+    const long properties = 3;
+    const long metaClass = properties + 1;
+    struct Empty { long a; };
+    struct Holder2 {
+        short grid[properties];
+        string<metaClass> label;
+        Empty e;
+    };
+};

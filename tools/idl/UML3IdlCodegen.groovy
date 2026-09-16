@@ -23,7 +23,7 @@ class IdlCodegenContext {
     private void index(List<IdlDefinition> defs, List<String> scope) {
         defs.each { d ->
             scopeOf[d] = scope
-            if (d instanceof IdlConst) { constants[d.name] = ((IdlConst) d).value; constants[(scope + [d.name]).join("::")] = ((IdlConst) d).value }
+            if (d instanceof IdlConst) { constants.put(d.name, ((IdlConst) d).value); constants[(scope + [d.name]).join("::")] = ((IdlConst) d).value }
             if (d instanceof IdlModule) index(((IdlModule) d).defs, scope + [d.name])
         }
     }
@@ -34,10 +34,10 @@ class IdlCodegenContext {
         Map<String, IdlModule> seen = [:]
         defs.each { d ->
             if (d instanceof IdlModule) {
-                IdlModule first = seen[d.name]
+                IdlModule first = seen.get(d.name)
                 if (first == null) {
                     first = new IdlModule(kind: "module", name: d.name, line: d.line, annotations: d.annotations)
-                    seen[d.name] = first
+                    seen.put(d.name, first)
                     out << first
                 }
                 first.defs.addAll(((IdlModule) d).defs)
@@ -47,7 +47,7 @@ class IdlCodegenContext {
     }
 
     IdlDefinition lookup(String name, List<String> scope) {
-        return names.byQualified[names.resolve(name, scope)]
+        return names.byQualified.get(names.resolve(name, scope))
     }
 
     IdlDefinition require(IdlTypeRef t, List<String> scope) {
@@ -92,7 +92,7 @@ class IdlCodegenContext {
                 if (((IdlEnum) e).literals.contains(lit)) return lit
             }
         }
-        Object v = constants[names.resolve(s, scope)] ?: constants[s]
+        Object v = constants.containsKey(names.resolve(s, scope)) ? constants.get(names.resolve(s, scope)) : constants.get(s)
         if (v instanceof IdlScopedValue) {
             String lit = ((IdlScopedValue) v).name
             return lit.contains("::") ? lit.substring(lit.lastIndexOf("::") + 2) : lit
@@ -152,12 +152,12 @@ class IdlNaming {
 
     // names mapped from different IDL names must stay distinct (IDL4-Java footnote 2); applies to Rust as well
     static void checkDistinct(Map<String, String> mappedToIdl, String mapped, String idl, String what, int line) {
-        String prior = mappedToIdl[mapped]
+        String prior = mappedToIdl.get(mapped)
         if (prior != null && prior == idl) throw new IdlException("duplicate " + what + " '" + idl + "'", line)
         if (prior != null && prior != idl) {
             throw new IdlException(what + " '" + idl + "' and '" + prior + "' map to the same name '" + mapped + "'", line)
         }
-        mappedToIdl[mapped] = idl
+        mappedToIdl.put(mapped, idl)
     }
 }
 
@@ -427,7 +427,7 @@ class IdlToJava {
         List<String> conds = []
         Map<String, String> kv = [:]
         if (range != null) kv.putAll(IdlToSysml.keyValues(range))
-        ["min", "max"].each { k -> IdlAnnotation a = f.m.annotation(k); if (a != null) kv[k] = a.argText() }
+        ["min", "max"].each { k -> IdlAnnotation a = f.m.annotation(k); if (a != null) kv.put(k, a.argText()) }
         if (kv.isEmpty() || !isPrimitive(f.type) || f.type in ["boolean", "char"]) return ""
         if (kv.min != null) conds << f.param + " < " + boundLiteral(kv.min, scope, f.m.line)
         if (kv.max != null) conds << f.param + " > " + boundLiteral(kv.max, scope, f.m.line)
@@ -437,7 +437,7 @@ class IdlToJava {
     String boundLiteral(String s, List<String> scope, int line) {
         String v = s.trim()
         if (v ==~ /-?[\d.eE+]+/) return v
-        Object c = ctx.constants[ctx.names.resolve(v, scope)] ?: ctx.constants[v]
+        Object c = ctx.constants.containsKey(ctx.names.resolve(v, scope)) ? ctx.constants.get(ctx.names.resolve(v, scope)) : ctx.constants.get(v)
         if (c instanceof Number) return String.valueOf(c)
         throw new IdlException("range bound '" + s + "' is not a numeric constant", line)
     }
@@ -496,7 +496,7 @@ class IdlToJava {
         long next = 0
         List<String> lits = []
         e.literals.each { l ->
-            long v = e.values.containsKey(l) ? e.values[l] : next
+            long v = e.values.containsKey(l) ? e.values.get(l) : next
             next = v + 1
             lits << "    " + esc(l) + "(" + v + ")"
         }
@@ -817,7 +817,7 @@ class IdlToRust {
         Map<String, String> seen = [:]
         long next = 0
         e.literals.each { l ->
-            long v = e.values.containsKey(l) ? e.values[l] : next
+            long v = e.values.containsKey(l) ? e.values.get(l) : next
             next = v + 1
             String vn = typeName(l)
             IdlNaming.checkDistinct(seen, vn, l, "enumerator", e.line)

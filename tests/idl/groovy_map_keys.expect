@@ -1,0 +1,6 @@
+# the constants must evaluate to 3 and 4 (not a map / boolean)
+attribute properties : Int32 = 3;
+attribute metaClass : Int32 = 4;
+attribute grid : Int16[3] ordered nonunique { @IdlArray { dimensions = (3); } }
+attribute label : String { @Facets { maxLength = 4; } }
+#dataType attribute def Empty {
