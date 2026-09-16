@@ -187,6 +187,21 @@ Tested read-only through the functions behind the diagram shape labels (`Keyword
 
 **Design implication, to be decided.** If these data and architecture markers must be visible on diagrams, they would have to become semantic keywords. Each one would then need a `baseType` that is valid on the elements it marks (e.g. both attributes and `ref` items for keys). That changes their meaning, so it needs its own Cameo experiment before it is adopted.
 
+**Experiment E01: the semantic-key pattern works** (`tests/cameo-experiments/e01-*`). Predictions were committed first (`764854c`) and all held. The pattern is a semantic keyword whose `baseType` is a reference usage typed by `Base::Anything`:
+
+```sysml
+abstract ref keyFeatures : Base::Anything[0..*] nonunique;
+metadata def <pk> PrimaryKeyKeyword :> SemanticMetadata { :>> baseType = keyFeatures meta SysML::Usage; }
+```
+
+Results in CATIA Magic:
+* The model loads with no errors, and the validation engine reports 0 failures.
+* Both `#pk attribute accountId` and `ref #pk item owner` subset `keyFeatures`; the unmarked control does not.
+* Both render as **`«#pk»`**; the control has no label.
+* The local checker reports 0 findings, because a `ref` base belongs to no disjoint family.
+
+This pattern is therefore available for any marker that must be visible on diagrams. A marker converted this way also becomes queryable as a set (e.g. "all key features" = the `keyFeatures` subsets). **It is not yet adopted in the library; that is a design decision.**
+
 Still open: confirming on an actual diagram whether plain metadata appears in the metadata compartment.
 
 ## Validator findings (sysml-validator issues found during this work)
