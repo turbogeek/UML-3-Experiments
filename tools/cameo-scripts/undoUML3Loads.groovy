@@ -7,8 +7,8 @@ import com.dassault_systemes.modeler.kerml.model.RootNamespaces
 import javax.swing.SwingUtilities
 
 def app = Application.getInstance()
-def MINE = ["UML3Core", "UML3Types", "UML3Components", "UML3Messaging", "UML3Data",
-            "OnlineStoreDomain", "OnlineStoreArchitecture", "OnlineStoreMessaging", "OnlineStoreDatabase"] as Set
+// Prefixes cover the library (UML3*), probes (UML3Probe*) and examples (OnlineStore*).
+def MINE_PREFIXES = ["UML3", "OnlineStore"]
 def sb = new StringBuilder()
 
 // RootNamespaces are unnamed Namespaces; the packages are their owned members.
@@ -20,7 +20,12 @@ def countMine = {
         def members = []
         try { members = r.respondsTo("getOwnedMember") ? (r.getOwnedMember() ?: []) : [] } catch (x) {}
         members.each { m ->
-            try { if (m.respondsTo("getName") && MINE.contains(m.getName())) cnt++ } catch (x) {}
+            try {
+                if (m.respondsTo("getName")) {
+                    def nm = m.getName()
+                    if (nm != null && MINE_PREFIXES.any { nm.startsWith(it) }) cnt++
+                }
+            } catch (x) {}
         }
     }
     return cnt

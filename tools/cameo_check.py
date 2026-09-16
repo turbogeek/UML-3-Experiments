@@ -107,6 +107,9 @@ def main() -> int:
     ap.add_argument("--port", type=int, default=8770)
     ap.add_argument("--undo", action="store_true")
     ap.add_argument("--shutdown", action="store_true")
+    ap.add_argument("--probes", nargs="*", default=[],
+                    help="negative/exploratory probe files (EXPECT-CAMEO header), loaded after the library")
+    ap.add_argument("--library-only", action="store_true", help="load only library/ (no examples)")
     ap.add_argument("files", nargs="*")
     args = ap.parse_args()
     LOGS.mkdir(parents=True, exist_ok=True)
@@ -124,7 +127,9 @@ def main() -> int:
     if args.files:
         files = [Path(f).resolve() for f in args.files]
     else:
-        files = [ROOT / "library" / f"{n}.sysml" for n in LIBRARY_ORDER] + sorted((ROOT / "examples").glob("*.sysml"))
+        files = [ROOT / "library" / f"{n}.sysml" for n in LIBRARY_ORDER]
+        if not args.library_only:
+            files += sorted((ROOT / "examples").glob("*.sysml"))
     missing = [str(f) for f in files if not f.exists()]
     if missing:
         print("MISSING FILES: " + ", ".join(missing), file=sys.stderr)
@@ -156,8 +161,27 @@ def main() -> int:
     _, after = call(args.port, "/run-script", {"scriptName": INSPECT_SCRIPT})
     report["inspectAfterLoads"] = after.get("result", after)
 
+    # Negative probes: must be loaded after the library; each declares EXPECT-CAMEO: OK|ERROR
+    if args.probes and not failed:
+        probe_results = []
+        for p in sorted(Path(x).resolve() for x in args.probes):
+            text = p.read_text(encoding="utf-8")
+            expected = "ERROR" if "EXPECT-CAMEO: ERROR" in text else ("OK" if "EXPECT-CAMEO: OK" in text else None)
+            status, resp = call(args.port, "/load-sysml", {"filePath": p.as_posix()})
+            observed = "OK" if status == 200 and resp.get("success") is True else "ERROR"
+            errors = split_errors(resp)
+            ok = expected is not None and observed == expected
+            (LOGS / f"probe-{p.stem}.json").write_text(json.dumps({"status": status, "response": resp}, indent=2),
+                                                        encoding="utf-8")
+            probe_results.append({"file": p.name, "expected": expected, "observed": observed,
+                                  "matchesPrediction": ok, "errors": errors})
+            print(f"{'AS PREDICTED' if ok else 'SURPRISE    '}  {p.name}  expected {expected}, observed {observed}")
+            for e in errors[:6]:
+                print(f"    {e}")
+        report["probes"] = probe_results
+
     # Implied-specialization hypotheses (only meaningful when every default file loaded)
-    if not failed and not args.files:
+    if not failed and not args.files and not args.library_only:
         _, ver = call(args.port, "/run-script", {"scriptName": VERIFY_SCRIPT})
         results, ver_ok = parse_verify(ver.get("result") or ver.get("error") or "")
         report["impliedSpecializations"] = {"passed": ver_ok, "results": results}
