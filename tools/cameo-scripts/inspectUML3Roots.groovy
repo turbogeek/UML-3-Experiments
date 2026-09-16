@@ -5,6 +5,8 @@ import com.nomagic.magicdraw.core.Application
 import com.dassault_systemes.modeler.kerml.model.RootNamespaces
 
 def PREFIXES = ["UML3", "OnlineStore", "N0"]
+def extraFile = new File(new File(System.getProperty("user.home"), "Documents/GitHub/sysmlv2-validator/utilityScripts"), "uml3-undo-extra.txt")
+if (extraFile.exists()) PREFIXES.addAll(extraFile.readLines("UTF-8").collect { it.trim() }.findAll { it && !it.startsWith("#") })
 def sb = new StringBuilder()
 def proj = Application.getInstance().getProject()
 if (proj == null) return "NO_PROJECT"

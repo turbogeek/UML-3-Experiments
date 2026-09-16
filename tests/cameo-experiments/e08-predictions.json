@@ -1,0 +1,7 @@
+{
+  "description": "E08 predictions, recorded 2026-09-16 BEFORE running: importIdl.groovy inside CATIA Magic on tests/idl/shop_order.idl (library already loaded).",
+  "importResult": {"expected": "OK with 0 build errors", "confidence": "medium", "risks": ["#raises dependency clients are features nested in an item def (OrderService::getOrder)", "quoted reserved names ('state', 'message')", "constant package-level attributes with literal values"]},
+  "session": {"expected": "one undoable command named 'UML3 IDL Import'", "confidence": "high"},
+  "validationEngineFlagged": {"package": "shop_order", "expected": false, "confidence": "low", "risks": ["#union attribute def with [0..1] branches", "Octet :> Natural / Any :> DataValue typing", "constant attributes without runtime values"]},
+  "undo": {"expected": "guarded undo removes library loads and the import (allowed command names), project returns to 0 UML3 packages", "confidence": "high"}
+}

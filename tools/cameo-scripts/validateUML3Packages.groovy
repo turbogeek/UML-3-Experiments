@@ -15,6 +15,8 @@ def proj = Application.getInstance().getProject()
 if (proj == null) return "ERROR|NO_PROJECT"
 
 def PREFIXES = ["UML3", "OnlineStore"]
+def extraFile = new File(new File(System.getProperty("user.home"), "Documents/GitHub/sysmlv2-validator/utilityScripts"), "uml3-undo-extra.txt")
+if (extraFile.exists()) PREFIXES.addAll(extraFile.readLines("UTF-8").collect { it.trim() }.findAll { it && !it.startsWith("#") })
 def nameOf = { e -> try { e.respondsTo("getName") ? e.getName() : null } catch (x) { null } }
 def membersOf = { e -> try { e.respondsTo("getOwnedMember") ? (e.getOwnedMember() ?: []) : [] } catch (x) { [] } }
 def clean = { Object t -> t == null ? "" : t.toString().replace("|", "/").replace("\n", " ").replace("\r", " ") }
