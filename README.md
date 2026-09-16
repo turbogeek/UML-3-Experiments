@@ -29,7 +29,7 @@ package Shop {
 
 | Library | What it adds |
 |---|---|
-| `library/UML3Core.sysml` | Classes, active classes, interfaces and realization, data types, signals and exceptions; operations, queries and constructors; associations, association classes, aggregation, composition and navigability; generalization sets; templates; dependency kinds (`#uses`, `#creates`, `#calls`, `#traces`...); markers `#static`, `#final`, `#id`, `#singleton` |
+| `library/UML3Core.sysml` | Classes, active classes, interfaces and realization, data types, signals and exceptions; operations, queries and constructors; associations, association classes, aggregation, composition and navigability (`#navigable` on ends); generalization sets; templates; dependency kinds (`#uses`, `#creates`, `#calls`, `#traces`...); markers `#static`, `#final`, `#id`, `#singleton` |
 | `library/UML3Types.sysml` | Sized and formatted software types (`Int8`–`UInt64`, `Float32/64`, `Decimal`, `Money`, `Uuid`, `EmailAddress`, `Timestamp`, `Bytes`...), `@Facets` (range, length, precision, pattern), `MapEntry`; collection kinds via native multiplicity |
 | `library/UML3Components.sysml` | Components, subsystems, services; `#provided` / `#required` (conjugated) ports bound to interface contracts; assembly and delegation connectors; layers, boundaries, technology tags; artifacts, nodes, devices, execution environments, deployment, manifestation, communication paths |
 | `library/UML3Messaging.sysml` | Message schemas with a standard header (`#command`, `#domainEvent`, `#queryMessage`, `#reply`, `#documentMessage`); topics, queues, brokers; producer / consumer / request-reply ports; serialization format and QoS (delivery, ordering, partitioning, retention, DLQ); `#publishes`, `#subscribes`, `#sends`, `#handles`, `#idempotent`; interactions (sequence diagrams) using native messages |
@@ -58,8 +58,8 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
 | Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 9/9 files load; validation engine reports 0 failures |
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
-| Keyword labels | CATIA Magic label functions | 17/17 render `«#keyword»` |
-| Keyword semantics (implied specialization) | CATIA Magic API | 39/39 against the recorded baseline (1 case is a known Cameo deviation, see Known issues) |
+| Keyword labels | CATIA Magic label functions | 19/19 render `«#keyword»` |
+| Keyword semantics (implied specialization) | CATIA Magic API | 42/42 against the recorded baseline (1 case is a known Cameo deviation, see Known issues) |
 
 Every Cameo run loads files in dependency order, undoes its own loads (confirmed by an inspection with a positive control) and then shuts the harness down. Experiments record their predictions in git before they run (`tests/cameo*/`).
 
@@ -67,7 +67,6 @@ Every Cameo run loads files in dependency order, undoes its own loads (confirmed
 
 * **Stacked semantic keywords: CATIA Magic applies only the first one.** Confirmed by experiments E02 and E03 (predictions committed before each run; 8/9 and 3/3 held). Of the semantic keywords on one element (prefix or body form), only the **first** gets its implied specialization. The rest still show as labels, and the validation engine does not report the gap. KerML says every keyword applies, so this is a CATIA Magic deviation.
   **Usage rule:** put the keyword whose meaning matters most for queries first (e.g. `#primaryKey #column` when key membership matters). The regression baseline (`M15`) records the current behaviour and will flag it when Cameo is fixed.
-* `@Navigable` is still plain metadata; making association ends semantic is untested.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 

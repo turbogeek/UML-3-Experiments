@@ -206,7 +206,7 @@ Still open: confirming on an actual diagram whether plain metadata appears in th
 
 ### Marker keywords converted to semantic metadata, and the stacked-keyword deviation
 
-All marker keywords that go on types were converted to the E01 pattern (commit `bc2cb63`). Plain metadata remains only where needed: dependencies and packages (`#uses`…, `#mapsTo`, `#layer`), valued configuration (`@Facets`, `@Index`, `@Column`, `@QualityOfService`…), and `@Navigable`, pending an experiment on end features. In CATIA Magic, 9/9 files load, the validation engine reports 0 failures, labels are 17/17 (including flows, conjugated ports and body form), and 38/39 predicted specializations held.
+All marker keywords that go on types were converted to the E01 pattern (commit `bc2cb63`). Plain metadata remains only where needed: dependencies and packages (`#uses`…, `#mapsTo`, `#layer`), valued configuration (`@Facets`, `@Index`, `@Column`, `@QualityOfService`…), and, until E04, `@Navigable` (see below). In CATIA Magic, 9/9 files load, the validation engine reports 0 failures, labels are 17/17 (including flows, conjugated ports and body form), and 38/39 predicted specializations held.
 
 The failing case (`#column #primaryKey attribute ACCOUNT_ID` is not in `primaryKeyFeatures`) led to two experiments, with predictions committed before each run:
 
@@ -219,6 +219,16 @@ The failing case (`#column #primaryKey attribute ACCOUNT_ID` is not in `primaryK
 | E03 | `attribute G { @Unique; @Indexed; }` | only the first is applied |
 
 **Conclusion.** CATIA Magic 2026x Refresh1 applies the implied specialization of only the **first** semantic metadata on an element. KerML 9.2.16 requires it for each. Labels and validation give no sign of the gap. The usage rule is to order keywords by query importance. `M15` in `tests/cameo/implied-specializations.json` records the observed behaviour (`kermlExpected: true`), so the suite will flag the change when Cameo is fixed. A possible library workaround, not adopted: combined keywords whose base subsets several sets (e.g. `#pkColumn` with a base `:> columns, primaryKeyFeatures`).
+
+### `#navigable` on association ends (experiment E04)
+
+Predictions were committed first (`16401eb`), and all held. A semantic keyword on `end` features, in body form (`end [1] ref customer : Customer { @Navigable; }`) and in prefix form (`end [1] #navigable item customer : Customer;`):
+* loads, and the validation engine reports 0 failures;
+* the ends join `navigableEnds`, and an unmarked end does not;
+* connection usages binding those ends stay typed by their connection def, and the def is still an `Association`;
+* both marked ends show `«#navigable»`.
+
+`UML3Core::Navigable` was therefore converted (`b0e277a`). The full run passes with 42/42 specializations, 19/19 labels and 0 validation failures. Every marker keyword in the library is now semantic. Only dependency/package keywords and valued configuration metadata remain plain.
 
 ## Validator findings (sysml-validator issues found during this work)
 
