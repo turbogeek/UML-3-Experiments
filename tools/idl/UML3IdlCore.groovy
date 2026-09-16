@@ -1112,6 +1112,321 @@ class IdlWriter {
     }
 }
 
+// ---------------------------------------------------------------- SysML v2 model -> IDL AST (export)
+// Duck-typed over the KerML/SysML object model (CATIA Magic implementation), so it needs no CATIA Magic
+// classes. API established by probes (tools/cameo-scripts/probeIdlModelApi.groovy, logs/cameo/probe-idl-api-*.txt):
+//   getOwnedMember/getOwnedElement/getOwnedRelationship, getMetadataDefinition().getName(), owned features of a
+//   metadata usage named after the redefined attribute holding a literal, FeatureValueImpl.getValue()/isDefault(),
+//   MultiplicityRange.getLowerBound()/getUpperBound(), Literal*.getValue()/isValue(), OperatorExpression ',' for
+//   sequences, Subclassification.getSuperclassifier(), Dependency.getClient()/getSupplier(), getDirection().
+
+class IdlFromModel {
+    static final Map<String, String> BASIC_BACK = [
+        "Int16": "short", "UInt16": "unsigned short", "Int32": "long", "UInt32": "unsigned long", "Int64": "long long",
+        "UInt64": "unsigned long long", "Int8": "int8", "UInt8": "uint8", "Float32": "float", "Float64": "double",
+        "LongDouble": "long double", "Char": "char", "WChar": "wchar", "Boolean": "boolean", "Octet": "octet", "Any": "any"
+    ]
+    static final Map<String, String> LOSSY = ["Integer": "long long", "Natural": "unsigned long long", "Real": "double",
+        "Rational": "double", "Text": "string", "Uuid": "string", "Timestamp": "string", "Date": "string", "TimeOfDay": "string",
+        "DurationValue": "string", "Uri": "string", "EmailAddress": "string", "CurrencyCode": "string", "JsonText": "string",
+        "Bytes": "string", "Money": "fixed"]
+
+    List<String> warnings = []
+    String filePrefix = ""
+    Map<Object, List<String>> raisesByOperation = new IdentityHashMap<>()
+
+    // ---- reflective helpers (respondsTo + fallbacks)
+    static Object call(Object o, String m) {
+        try { return (o != null && o.respondsTo(m)) ? o."$m"() : null } catch (Throwable t) { return null }
+    }
+    static List list(Object o, String m) {
+        Object v = call(o, m)
+        return v == null ? [] : (v instanceof Collection ? new ArrayList((Collection) v) : [v])
+    }
+    static String kind(Object o) { return o == null ? "" : o.getClass().getSimpleName().replaceAll(/Impl$/, "") }
+    static String nameOf(Object o) { Object n = call(o, "getName"); return n == null ? null : n.toString() }
+    static boolean isLibrary(Object o) { return call(o, "isLibraryElement") == Boolean.TRUE }
+
+    List metadataUsages(Object e) { return list(e, "getOwnedElement").findAll { kind(it) == "MetadataUsage" } }
+    static String metadataName(Object mu) { return nameOf(call(mu, "getMetadataDefinition")) }
+    Object metadata(Object e, String defName) { return metadataUsages(e).find { metadataName(it) == defName } }
+    boolean has(Object e, String defName) { return metadata(e, defName) != null }
+
+    Object metaValue(Object mu, String feature) {
+        Object f = list(mu, "getOwnedFeature").find { nameOf(it) == feature }
+        if (f == null) return null
+        Object expr = list(f, "getOwnedMember").find { !(kind(it).startsWith("Multiplicity")) }
+        return value(expr)
+    }
+
+    Object value(Object expr) {
+        if (expr == null) return null
+        String k = kind(expr)
+        switch (k) {
+            case "LiteralInteger": return (call(expr, "getValue") as Number)?.longValue()
+            case "LiteralRational": return (call(expr, "getValue") as Number)?.doubleValue()
+            case "LiteralString": return call(expr, "getValue")?.toString()
+            case "LiteralBoolean": return call(expr, "isValue") == Boolean.TRUE
+            case "LiteralInfinity": return "*"
+            case "FeatureReferenceExpression":
+                Object ref = call(expr, "getReferent")
+                return new IdlScopedValue(name: scoped(ref))
+        }
+        if (k.contains("OperatorExpression")) {
+            String op = call(expr, "getOperator")?.toString()
+            List args = list(expr, "getArgument")
+            if (args.isEmpty()) args = list(expr, "getOperand")
+            if (args.isEmpty()) args = list(expr, "getOwnedMember").findAll { kind(it).startsWith("Literal") || kind(it).contains("Expression") }
+            if (op == ",") return args.collectMany { a -> def v = value(a); v instanceof List ? v : [v] }
+            if (op == "-" && args.size() == 1) { def v = value(args[0]); return v instanceof Number ? -v : v }
+            warnings << ("unsupported expression operator '" + op + "'")
+            return null
+        }
+        warnings << ("unsupported expression kind " + k)
+        return null
+    }
+
+    Map<String, Object> facets(Object e) {
+        Map<String, Object> f = [:]
+        Object mu = metadata(e, "Facets")
+        if (mu != null) list(mu, "getOwnedFeature").each { feat -> f[nameOf(feat)] = metaValue(mu, nameOf(feat)) }
+        return f
+    }
+
+    String scoped(Object dfn) {
+        String q = call(dfn, "getQualifiedName")?.toString() ?: nameOf(dfn)
+        if (q != null && filePrefix && q.startsWith(filePrefix)) return q.substring(filePrefix.length())
+        if (!isLibrary(dfn)) warnings << ("type '" + q + "' is outside the exported package; written with its qualified name")
+        return q
+    }
+
+    Object featureValue(Object u) {
+        return list(u, "getOwnedRelationship").find { kind(it) == "FeatureValue" }
+    }
+
+    List<Object> bounds(Object u) {
+        Object m = call(u, "getMultiplicity")
+        if (m == null) return [1L, 1L]
+        Object lo = value(call(m, "getLowerBound"))
+        Object hi = value(call(m, "getUpperBound"))
+        if (lo == null && hi != null) lo = hi
+        if (hi == null && lo != null) hi = lo
+        return [lo, hi]
+    }
+
+    // type of a definition (library basic or user-defined), with facets giving bounds / fixed digits
+    IdlTypeRef typeOf(Object dfn, Map<String, Object> f) {
+        String n = nameOf(dfn)
+        if (dfn == null) { warnings << "untyped feature written as any"; return new IdlTypeRef(kind: "basic", name: "any") }
+        if (isLibrary(dfn)) {
+            if (BASIC_BACK.containsKey(n)) return new IdlTypeRef(kind: "basic", name: BASIC_BACK[n])
+            if (n == "String" || n == "WString") return new IdlTypeRef(kind: n == "String" ? "string" : "wstring", bound: f.maxLength as Long)
+            if (n == "Decimal") return new IdlTypeRef(kind: "fixed", digits: (f.precision ?: 31) as Integer, scale: (f.scale ?: 0) as Integer)
+            if (LOSSY.containsKey(n)) {
+                warnings << ("library type " + n + " has no exact IDL type; written as " + LOSSY[n])
+                if (LOSSY[n] == "fixed") return new IdlTypeRef(kind: "fixed", digits: 19, scale: 4)
+                if (LOSSY[n] == "string") return new IdlTypeRef(kind: "string", bound: f.maxLength as Long)
+                return new IdlTypeRef(kind: "basic", name: LOSSY[n])
+            }
+            warnings << ("library type " + n + " has no IDL mapping; written as any")
+            return new IdlTypeRef(kind: "basic", name: "any")
+        }
+        return new IdlTypeRef(kind: "scoped", name: scoped(dfn))
+    }
+
+    List<IdlAnnotation> parseAnnotations(String text) {
+        IdlParserV1 p = new IdlParserV1()
+        p.t = new IdlLexer(text).tokens
+        return p.annotations()
+    }
+
+    // attribute usage / parameter -> type + declarator + annotations
+    IdlMember member(Object u, boolean unionBranch) {
+        Map<String, Object> f = facets(u)
+        Object dfn = list(u, "getDefinition") ? list(u, "getDefinition")[0] : (list(u, "getType") ? list(u, "getType")[0] : null)
+        IdlTypeRef t = typeOf(dfn, f)
+        IdlMember m = new IdlMember(type: t, decl: new IdlDeclarator(name: nameOf(u)))
+        List<Object> b = bounds(u)
+        boolean ordered = call(u, "isOrdered") == Boolean.TRUE
+        boolean unique = call(u, "isUnique") != Boolean.FALSE
+        Object arr = metadata(u, "IdlArray")
+        if (arr != null) {
+            Object dims = metaValue(arr, "dimensions")
+            m.decl.dims = (dims instanceof List ? dims : [dims]).collect { it as Long }
+        } else if (b[1] == "*" || (b[1] instanceof Number && b[1] > 1) || (ordered && !unique)) {
+            m.type = new IdlTypeRef(kind: "sequence", element: t, bound: b[1] == "*" ? null : (b[1] as Long))
+        } else if (b[0] == 0L && b[1] == 1L && !unionBranch) {
+            m.annotations << new IdlAnnotation(name: "optional")
+        }
+        if (has(u, "Identifier")) m.annotations << new IdlAnnotation(name: "key")
+        Object mid = metadata(u, "IdlMemberId")
+        if (mid != null) m.annotations << new IdlAnnotation(name: "id", args: [String.valueOf(metaValue(mid, "memberId"))])
+        if (f.minInclusive != null || f.maxInclusive != null) {
+            List<String> args = []
+            if (f.minInclusive != null) args.addAll(["min", "=", String.valueOf(f.minInclusive)])
+            if (f.maxInclusive != null) { if (args) args << ","; args.addAll(["max", "=", String.valueOf(f.maxInclusive)]) }
+            m.annotations << new IdlAnnotation(name: "range", args: args)
+        }
+        Object fv = featureValue(u)
+        if (fv != null && call(fv, "isDefault") == Boolean.TRUE) {
+            Object v = value(call(fv, "getValue"))
+            m.annotations << new IdlAnnotation(name: "default", args: [v instanceof Boolean ? (v ? "TRUE" : "FALSE") : String.valueOf(v)])
+        }
+        metadataUsages(u).findAll { metadataName(it) == "IdlAnnotation" }.each { mu ->
+            m.annotations.addAll(parseAnnotations(String.valueOf(metaValue(mu, "text"))))
+        }
+        return m
+    }
+
+    List<IdlAnnotation> defAnnotations(Object d) {
+        return metadataUsages(d).findAll { metadataName(it) == "IdlAnnotation" }.collectMany { mu -> parseAnnotations(String.valueOf(metaValue(mu, "text"))) }
+    }
+
+    List attributeUsages(Object d) { return list(d, "getOwnedMember").findAll { kind(it) == "AttributeUsage" } }
+
+    IdlFile build(Object filePackage) {
+        filePrefix = (call(filePackage, "getQualifiedName") ?: nameOf(filePackage)) + "::"
+        Object fileMeta = metadata(filePackage, "IdlFile")
+        IdlFile file = new IdlFile(fileName: fileMeta != null ? metaValue(fileMeta, "fileName") : nameOf(filePackage) + ".idl")
+        file.defs = definitions(filePackage)
+        file.warnings.addAll(warnings)
+        return file
+    }
+
+    List<IdlDefinition> definitions(Object ns) {
+        // raises dependencies owned by this namespace
+        list(ns, "getOwnedElement").findAll { kind(it) == "Dependency" && list(it, "getOwnedElement").any { mu -> metadataName(mu) == "RaisesDependency" } }.each { dep ->
+            list(dep, "getClient").each { client ->
+                List<String> r = raisesByOperation.get(client)
+                if (r == null) { r = []; raisesByOperation.put(client, r) }
+                list(dep, "getSupplier").each { s -> r << scoped(s) }
+            }
+        }
+        List<IdlDefinition> out = []
+        list(ns, "getOwnedMember").each { el ->
+            String k = kind(el)
+            String n = nameOf(el)
+            switch (k) {
+                case "Package":
+                    IdlModule mod = new IdlModule(kind: "module", name: n)
+                    mod.defs = definitions(el)
+                    out << mod
+                    break
+                case "AttributeUsage":
+                    Object fv = featureValue(el)
+                    if (fv == null || call(fv, "isDefault") == Boolean.TRUE) { warnings << ("package-level attribute '" + n + "' without a bound value skipped"); break }
+                    IdlConst c = new IdlConst(kind: "const", name: n)
+                    Object dfn = list(el, "getDefinition") ? list(el, "getDefinition")[0] : null
+                    c.type = typeOf(dfn, facets(el))
+                    c.value = value(call(fv, "getValue"))
+                    out << c
+                    break
+                case "EnumerationDefinition":
+                    IdlEnum e = new IdlEnum(kind: "enum", name: n)
+                    e.literals = list(el, "getOwnedMember").findAll { kind(it) == "EnumerationUsage" }.collect { nameOf(it) }
+                    out << e
+                    break
+                case "AttributeDefinition":
+                    out << attributeDefinition(el)
+                    break
+                case "ItemDefinition":
+                    if (has(el, "ExceptionTypeMetadata")) {
+                        IdlExceptionDef x = new IdlExceptionDef(kind: "exception", name: n, annotations: defAnnotations(el))
+                        x.members = attributeUsages(el).collect { member(it, false) }
+                        out << x
+                    } else if (has(el, "InterfaceTypeMetadata")) {
+                        out << interfaceDefinition(el)
+                    } else {
+                        warnings << ("item def '" + n + "' is neither #exceptionType nor #interfaceType; skipped")
+                    }
+                    break
+                case "MetadataUsage": case "Documentation": case "Comment": case "Dependency":
+                    break
+                default:
+                    warnings << ("element '" + n + "' of kind " + k + " has no IDL mapping; skipped")
+            }
+        }
+        return out
+    }
+
+    IdlDefinition attributeDefinition(Object d) {
+        String n = nameOf(d)
+        List<Object> supers = list(d, "getOwnedSubclassification").collect { call(it, "getSuperclassifier") }.findAll { it != null }
+        if (has(d, "UnionMetadata")) {
+            IdlUnion u = new IdlUnion(kind: "union", name: n, annotations: defAnnotations(d))
+            attributeUsages(d).each { a ->
+                if (has(a, "Discriminator")) {
+                    Object dfn = list(a, "getDefinition") ? list(a, "getDefinition")[0] : null
+                    u.discriminator = typeOf(dfn, facets(a))
+                } else {
+                    Object cs = metadata(a, "Case")
+                    IdlUnionCase uc = new IdlUnionCase(member: member(a, true))
+                    if (cs != null) {
+                        Object labels = metaValue(cs, "labels")
+                        if (labels != null) uc.labels = (labels instanceof List ? labels : [labels]).collect { String.valueOf(it) }
+                        uc.isDefault = metaValue(cs, "isDefault") == Boolean.TRUE
+                    }
+                    u.cases << uc
+                }
+            }
+            return u
+        }
+        if (has(d, "DataTypeMetadata")) {
+            IdlStruct s = new IdlStruct(kind: "struct", name: n, annotations: defAnnotations(d))
+            Object base = supers.find { !isLibrary(it) }
+            if (base != null) s.base = scoped(base)
+            s.members = attributeUsages(d).collect { member(it, false) }
+            return s
+        }
+        IdlTypedef td = new IdlTypedef(kind: "typedef", name: n, annotations: defAnnotations(d))
+        Object items = attributeUsages(d).find { nameOf(it) == "items" }
+        Object seq = metadata(d, "IdlSequence")
+        if (seq != null && items != null) {
+            IdlMember im = member(items, false)
+            IdlTypeRef el = im.type.kind == "sequence" ? im.type.element : im.type
+            Object bound = metaValue(seq, "bound")
+            td.type = new IdlTypeRef(kind: "sequence", element: el, bound: bound as Long)
+            td.decl = new IdlDeclarator(name: n)
+            return td
+        }
+        if (items != null && metadata(items, "IdlArray") != null) {
+            IdlMember im = member(items, false)
+            td.type = im.type
+            td.decl = new IdlDeclarator(name: n, dims: im.decl.dims)
+            return td
+        }
+        if (supers.isEmpty()) warnings << ("attribute def '" + n + "' has no supertype; written as typedef any")
+        td.type = typeOf(supers ? supers[0] : null, facets(d))
+        td.decl = new IdlDeclarator(name: n)
+        return td
+    }
+
+    IdlInterface interfaceDefinition(Object d) {
+        IdlInterface itf = new IdlInterface(kind: "interface", name: nameOf(d), annotations: defAnnotations(d))
+        itf.bases = list(d, "getOwnedSubclassification").collect { call(it, "getSuperclassifier") }.findAll { it != null && !isLibrary(it) }.collect { scoped(it) }
+        list(d, "getOwnedMember").each { el ->
+            String k = kind(el)
+            if (k == "AttributeUsage") {
+                IdlMember m = member(el, false)
+                itf.exports << new IdlAttribute(readonly: call(el, "isConstant") == Boolean.TRUE, type: m.type, name: m.decl.name, annotations: m.annotations)
+            } else if (k == "ActionUsage") {
+                IdlOperation op = new IdlOperation(name: nameOf(el), oneway: has(el, "IdlOneway"), annotations: defAnnotations(el))
+                list(el, "getOwnedMember").findAll { call(it, "getDirection") != null }.each { p ->
+                    IdlMember pm = member(p, false)
+                    if (has(p, "IdlReturn")) { op.returnType = pm.type; return }
+                    op.params << new IdlParam(direction: String.valueOf(call(p, "getDirection")).toLowerCase(), type: pm.type, name: pm.decl.name)
+                }
+                List<String> raises = raisesByOperation.get(el)
+                if (raises) op.raises.addAll(raises)
+                itf.exports << op
+            } else if (!(k in ["MetadataUsage", "Documentation", "Comment"])) {
+                warnings << ("interface member '" + nameOf(el) + "' of kind " + k + " has no IDL mapping; skipped")
+            }
+        }
+        return itf
+    }
+}
+
 // ---------------------------------------------------------------- Facade
 
 class UML3Idl {
@@ -1125,6 +1440,9 @@ class UML3Idl {
         collectConstants(f.defs, [], e.parserConstants)
         return e.convert(f)
     }
+
+    // export: a SysML v2 package (the file package created by the importer) -> IDL AST
+    static IdlFile fromModel(Object filePackage) { return new IdlFromModel().build(filePackage) }
 
     static String toIdl(IdlFile f) {
         IdlWriter w = new IdlWriter()
