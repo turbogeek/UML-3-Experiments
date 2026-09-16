@@ -123,7 +123,7 @@ Collection kinds need no new types:
 | Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 9 files (5 library + 4 examples) load with 0 errors** (2026-09-16) |
 | Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **21/21 hypotheses hold, including 7 negative controls** |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
-| Name resolution and lint (imports, types, keywords, qualified names, prefix order, int range) | `tools/check_names.py` | Library and examples pass; 9 negative tests fail as expected; 0 false positives on 251 official OMG models |
+| Name resolution, lint and keyword applicability | `tools/check_names.py` | Library and examples pass; 16 negative tests fail as expected; 0 false positives on 251 official OMG models |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
 
 Run everything with `python tools/run_tests.py --cameo`. The harness must be running in CATIA Magic. The runner loads the files in dependency order, **undoes its own loads** (checked with `inspectUML3Roots.groovy`, which includes a positive control), and then stops the harness.
@@ -143,7 +143,18 @@ A clean load only shows the files parse and resolve. `tests/cameo/implied-specia
 * Inheritance: every `#domainEvent` inherits `header : MessageHeader`.
 * Controls (all false, as predicted): `#classType` is not an `Entity`, `#entity` is not an `AggregateRoot`, a domain event is not a `Command`, a plain attribute is not an operation, composition is not aggregation, and a plain class has no `header`.
 
-Still open: whether Cameo's diagrams and tables show these keywords as stereotype-like labels, and whether any validation rule checks the `annotatedElement` restrictions (e.g. `#mapsTo` on a non-dependency). A negative Cameo load test would settle the second point.
+### Misapplied keywords: CATIA Magic accepts them, so UML3 checks them (`APPLICABILITY`)
+
+The experiment is in `tests/cameo-negative`; predictions were written down before running. Five misapplied keywords were predicted to be rejected. **All five loaded with no builder errors.** `probe-effects.json` then showed (4/4) that Cameo actually builds the inconsistent specializations. For example, `#entity attribute def Money` makes a value type a subtype of the `Entity` class. The load path only reports parsing and linking diagnostics; whether Cameo's separate *Validate Model* suites would catch these has not been tested.
+
+`tools/check_names.py` therefore enforces applicability. The rule is derived from the library, not from a hand-kept table:
+
+* **Semantic keywords.** An error is reported when the `baseType` usage and the annotated element fall in *disjoint* type families according to the Kernel library: `Occurrence` is disjoint from `DataValue`, and `Performance` is disjoint from `Object`. Semantic keywords on packages and dependencies are also rejected. Compatible additions are allowed. For example, the OMG example `#goal constraint` uses a requirement `baseType` on a constraint, which is legal because both are performances. An earlier, stricter sub-kind rule wrongly flagged that case during calibration.
+* **Plain metadata.** An error is reported when the element violates the `annotatedElement` restriction, including restrictions inherited through metadata specialization (e.g. `#uses` inherits `SysML::Dependency` from `DependencyKind`).
+
+Negative tests `n12`–`n18` cover these cases. The Cameo probe suite (`run_tests.py --cameo`) records the current Cameo behaviour and will flag it if a future version starts rejecting these models.
+
+Still open: whether Cameo's diagrams and tables show the keywords as stereotype-like labels, and whether its *Validate Model* suites catch misapplied keywords.
 
 ## Validator findings (sysml-validator issues found during this work)
 
