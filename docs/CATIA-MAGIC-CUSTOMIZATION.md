@@ -33,7 +33,8 @@ every SysML v2 project, so nothing has to be installed for it.
 
 A diagram picks up its palette when it is created, so diagrams that already existed before the customization was
 loaded keep the General View palette. Create the diagram after loading the customization (reloading the project has
-the same effect).
+the same effect). Load the customization only once per project: CATIA Magic drops view definitions whose names
+collide, so a second copy silently disables every palette (E18).
 
 ## What the palettes contain
 
@@ -44,7 +45,7 @@ the same effect).
 | `UML3 Component Diagram` | UML3 Components: component, service, subsystem, interface, service port def, provided port, required port. UML3 Wiring: assembly, delegation, realizes |
 | `UML3 Deployment Diagram` | UML3 Deployment: node, device, execution environment, artifact. UML3 Deployment Links: communication path, deploy, manifest |
 | `UML3 Entity Relationship Diagram` | UML3 Logical Data: entity, aggregate root, value object, relationship. UML3 Physical Data: table, database view, database, column, primary key, foreign key, maps to |
-| `UML3 Message Schema View` | UML3 Messages: command, domain event, query message, reply, document message, message type. UML3 Channels: topic, queue, channel, broker |
+| `UML3 Message Schema View` | UML3 Messages: command, domain event, query message, reply, document message, message type. UML3 Channels: topic, queue, channel, broker. UML3 Message Flows: publishes, subscribes, sends, handles |
 
 Each palette keeps the vendor's Selections, Tools, Common, Items/Ports/Attributes, Connectors, Specializations and
 Other Relationships categories and removes Actions, Other Actions, States, Cases and Requirements/Constraints,
@@ -72,8 +73,10 @@ This is the mechanism CATIA Magic uses for its own derivation buttons. Consequen
 * Template elements are **unnamed**, so the modeler names the copy. Unnamed definitions are legal SysML v2
   (`Identification` is optional, 8.2.2.1).
 * A dependency or connector template owns placeholder ends as well, so its button selects the element it copies with
-  `as SysML::Dependency`, `as SysML::ConnectionUsage` or `as SysML::AllocationUsage`. A connector that is not
-  abstract must have two related features, which the placeholders provide.
+  `as SysML::Dependency`, `as SysML::ConnectionUsage`, `as SysML::AllocationUsage` or `as SysML::FlowUsage`. A
+  connector that is not abstract must have two related features, which the placeholders provide; a flow needs
+  *directed* ends, so its template owns two parts with `UML3Messaging` ports and flows between their message
+  features (an undirected placeholder is not a related feature).
 
 ## The three rules a custom view definition must follow (E17)
 
@@ -97,6 +100,21 @@ This is the mechanism CATIA Magic uses for its own derivation buttons. Consequen
    a tree or nested diagram, never with the full compartments of an unrendered view; removing the rendering does not
    change that. The detail views (`UML3Views::ClassDetailDiagram` and friends) therefore stay tool neutral and use
    the General View palette.
+
+## Which keywords belong on which palette
+
+The buttons are not chosen per tool. `library/UML3DiagramKinds.sysml` records, for each diagram kind, the keywords a
+view shows and the keywords a palette creates, and each palette declares the kind it serves:
+
+```sysml
+part def UML3ClassPalette :> GeneralPalette {
+    @PaletteForDiagramKind { kind = UML3DiagramKinds::classDiagram meta KerML::Type; }
+    ...
+}
+```
+
+`tools/check_diagram_kinds.py` then reports any button that the model does not list and any keyword of the kind that
+has no button, so a keyword added to UML3 cannot be forgotten in the palette (issue I-35).
 
 ## Verification
 

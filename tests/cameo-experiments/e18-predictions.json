@@ -6,27 +6,42 @@
     {
       "id": "P1",
       "claim": "UML3DiagramKinds loads with 0 builder errors: an attribute typed by the reflective metaclass KerML::Type and bound to a sequence of 'meta' casts is accepted (the standard library binds SemanticMetadata::baseType the same way, but single-valued)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "library/UML3DiagramKinds.sysml loads with 0 builder errors; 17 files now load (8 libraries, 6 examples, 3 customization)"
     },
     {
       "id": "P2",
       "claim": "The validation engine reports no ERROR for UML3DiagramKinds",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "The validation engine reports 0 failures on all 17 packages, UML3DiagramKinds included"
     },
     {
       "id": "P3",
       "claim": "The annotated customization loads and is not flagged, and the palettes still verify (6/6 views, 45 templated buttons)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "The annotated customization loads, is not flagged, and the palettes verify: 6/6 views, 45 templated buttons, UML3 Create View dialog active"
     },
     {
       "id": "P4",
       "claim": "A script can read the model: evaluating classDiagram::shows returns the 12 listed keywords and metaclasses, classDiagram::creates the 18 keywords, and classDiagram::views the 2 view definitions, each as an element whose name matches the file",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "confirmed",
+      "observation": "probeDiagramKinds evaluated every list: classDiagram reads back 12 shows, 18 creates and 2 views, with the names the file lists (keyword definitions, the metaclasses Package, EnumerationDefinition, PortDefinition, PortUsage, ConnectionUsage, and the view definitions); the label reads back as the string 'class diagram'. cameo_check now compares the counts and labels the tool evaluates with the model as parsed from the file, so the two cannot diverge"
     },
     {
       "id": "P5",
       "claim": "A kind that binds no value (classTable::creates, sequenceDiagram::shows and creates) evaluates to an empty list rather than failing",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "classTable::creates and sequenceDiagram::shows/creates, which bind no value, evaluate to empty lists"
     }
-  ]
+  ],
+  "furtherObservations": [
+    "Loading the customization a second time without cleaning the project made every palette fall back to the General View palette: CATIA Magic removes visualizations whose names collide (the vendor code logs a warning and drops them), so duplicate view definitions silently disable the customization. One more reason to run the harness on a clean project.",
+    "The diagram-kind model is consumable by a tool, which is what issue I-35 asked for: a generator could build the 45 palette buttons from classDiagram::creates and the other kinds instead of repeating the keywords."
+  ],
+  "conclusion": "Keywords held as metaobjects in a KerML::Type[0..*] attribute load, validate and evaluate in CATIA Magic, so the diagram-kind model is a usable single source: tools/check_diagram_kinds.py compares it with the 12 view filters and the 6 palettes locally, and cameo_check compares the model with what the tool evaluates."
 }

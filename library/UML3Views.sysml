@@ -36,7 +36,10 @@ library package UML3Views {
 	  MessageSchemaDetailView.
 	- Interaction diagrams: SequenceDiagram.
 	- Tables: ClassTable.
-	References: SysML 7.26; SysML 7.5.4; SysML 9.2.20; KerML 8.4.4.14; E06; E07; E13; E14; docs/DESIGN.md.
+	The keywords each of these views selects are recorded once in UML3DiagramKinds, and
+	tools/check_diagram_kinds.py reports a filter that does not match that model.
+	References: SysML 7.26; SysML 7.5.4; SysML 9.2.20; KerML 8.4.4.14; UML3DiagramKinds; E06; E07; E13; E14; E18;
+	docs/DESIGN.md.
 	*/
 
 	private import StandardViewDefinitions::*;

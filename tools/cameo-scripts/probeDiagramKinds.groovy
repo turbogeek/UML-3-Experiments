@@ -40,7 +40,12 @@ def valuesOf = { feature, owner ->
     try { result = expr.evaluate(owner) } catch (Throwable t) { result = null }
     if (result == null) return null
     result.each { v ->
-        // a metaobject carries the element it stands for; fall back to its own name or class
+        // a literal (the label) carries its value; a metaobject carries the element it stands for
+        def literal = call0(v, "getValue")
+        if (literal != null && !(literal instanceof Collection)) {
+            names << String.valueOf(literal)
+            return
+        }
         def element = call0(v, "getSyntaxElement") ?: call0(v, "getAnnotatedElement") ?: v
         if (element instanceof Collection) element = element.isEmpty() ? null : element.iterator().next()
         names << (nameOf(element) ?: nameOf(v) ?: v.getClass().getSimpleName())

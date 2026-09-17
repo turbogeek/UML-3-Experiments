@@ -401,6 +401,37 @@ def main() -> int:
             print(f"    dialog: {'; '.join(pal_report['dialog']['problems'])}")
         failed = failed or not pal_report["passed"]
 
+        # the diagram-kind model must read back in the tool exactly as the file states it (E18, issue I-35)
+        import check_diagram_kinds as cdk  # noqa: E402
+        idx = cdk.build_index(Path(ROOT.parent / "SysML-v2-Release" / "sysml.library"))
+        model = cdk.parse_kinds(cdk.KINDS, idx)
+        (HARNESS_SCRIPTS / "uml3-diagram-kinds-request.txt").write_text("package=UML3DiagramKinds\n", encoding="utf-8")
+        _, pk = call(args.port, "/run-script", {"scriptName": "probeDiagramKinds.groovy"}, timeout=900)
+        ktext = pk.get("result") or pk.get("error") or ""
+        (LOGS / "diagram-kinds.txt").write_text(ktext, encoding="utf-8")
+        read: dict[str, dict] = {}
+        for ln in ktext.splitlines():
+            f = ln.split("|")
+            if f[0] == "KIND" and len(f) >= 6:
+                read[f[1]] = {"label": f[2], "shows": int(f[3]), "creates": int(f[4]), "views": int(f[5])}
+        kind_problems = []
+        for name, kind in model.items():
+            got = read.get(name)
+            if got is None:
+                kind_problems.append(f"{name}: CATIA Magic did not report this diagram kind")
+                continue
+            for role in ("shows", "creates", "views"):
+                if got[role] != len(kind[role]):
+                    kind_problems.append(f"{name}::{role}: the tool evaluates {got[role]} values, the model lists {len(kind[role])}")
+            if kind["label"] and got["label"] != kind["label"]:
+                kind_problems.append(f"{name}::label: the tool reads {got['label']!r}, the model says {kind['label']!r}")
+        report["diagramKinds"] = {"passed": bool(read) and not kind_problems, "read": read, "problems": kind_problems}
+        print(f"{'PASS' if report['diagramKinds']['passed'] else 'FAIL'}  diagram-kind model read back "
+              f"({len(read)}/{len(model)} kinds)")
+        for kp in kind_problems:
+            print(f"    {kp}")
+        failed = failed or not report["diagramKinds"]["passed"]
+
     # Implied-specialization hypotheses (only meaningful when every default file loaded)
     if not failed and not args.files and (not args.library_only or args.hypotheses):
         _, ver = call(args.port, "/run-script", {"scriptName": VERIFY_SCRIPT})

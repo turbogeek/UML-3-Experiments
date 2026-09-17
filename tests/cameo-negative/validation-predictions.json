@@ -195,6 +195,30 @@
       "flagged": false,
       "confidence": "medium",
       "why": "E15: the category UML3Core::DataTypeKind leaves baseType unbound, so binding it in a specialization overrides nothing"
+    },
+    {
+      "package": "UML3DiagramKinds",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "E18: attributes typed by the reflective metaclass KerML::Type, bound to sequences of 'meta' casts"
+    },
+    {
+      "package": "UML3CatiaMagic",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "E17: the CATIA Magic customization: templates, palettes, view definitions and the Create View dialog"
+    },
+    {
+      "package": "OnlineStoreCatiaMagicViews",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "E17: the store's views typed by the UML3 CATIA Magic view definitions"
+    },
+    {
+      "package": "ProjectViewCreationConfig",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "E17: activates the UML3 Create View dialog for the project"
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"
