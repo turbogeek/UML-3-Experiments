@@ -76,12 +76,20 @@ class Tok:
 
 
 def tokenize(text: str) -> list[Tok]:
+    """Tokens without comments and notes. The body of an annotating element ('doc', 'comment', 'rep') ends that
+    statement without a ';', so a synthetic end-of-statement token (kind 'eos', text ';') is emitted after it;
+    otherwise the declaration that follows would not be seen at a statement start."""
     toks: list[Tok] = []
     line = 1
+    stmt_start = 0  # index in toks of the first token of the current statement
     for m in TOKEN_RE.finditer(text):
         kind = m.lastgroup
         val = m.group()
-        if kind in ("ws", "comment", "blocknote", "note"):
+        if kind == "comment":
+            if stmt_start < len(toks) and toks[stmt_start].text in ("doc", "comment", "rep"):
+                toks.append(Tok("eos", ";", line + val.count("\n")))
+                stmt_start = len(toks)
+        elif kind in ("ws", "blocknote", "note"):
             pass
         elif kind == "qname":
             toks.append(Tok("ident", val[1:-1], line))
@@ -89,6 +97,8 @@ def tokenize(text: str) -> list[Tok]:
             toks.append(Tok(kind, val, line))
         else:
             toks.append(Tok("other", val, line))
+        if kind == "sym" and val in ("{", "}", ";"):
+            stmt_start = len(toks)
         line += val.count("\n")
     return toks
 

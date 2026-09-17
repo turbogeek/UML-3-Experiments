@@ -20,7 +20,7 @@ import check_names as cn  # noqa: E402
 
 
 def normalized(text: str) -> list[str]:
-    toks = [t.text for t in cn.tokenize(text)]
+    toks = [t.text for t in cn.tokenize(text) if t.kind != "eos"]   # synthetic end of doc/comment statements
     out: list[str] = []
     i = 0
     while i < len(toks):
