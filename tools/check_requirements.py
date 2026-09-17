@@ -244,6 +244,10 @@ def main() -> int:
                 add("USECASE", f, line, f"use case {name}: missing actor")
             if not uc["objective"]:
                 add("USECASE", f, line, f"use case {name}: missing objective with a doc")
+            if name in usecases:
+                prior = usecases[name]
+                add("USECASE", f, line, f"use case name {name} is also used at {prior['file']}:{prior['line']} "
+                                        "(names must be unique across areas; traces are matched by name)")
             usecases[name] = uc
 
     for rid, r in reqs.items():

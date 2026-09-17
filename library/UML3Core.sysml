@@ -432,7 +432,7 @@ library package UML3Core {
 
 		Usage: declare template parameters as abstract features marked #templateParameter; bind them by
 		specializing the template and redefining each parameter with a concrete type.
-		  #template item def Repository { #templateParameter abstract item entity; }
+		  #template item def Repository { abstract #templateParameter item entity; }
 		  item def CustomerRepository :> Repository { item :>> entity : Customer; }
 		References: UML 2.5.1 TemplateSignature; UML 2.5.1 TemplateBinding; KerML 7.3.4.5.
 		*/

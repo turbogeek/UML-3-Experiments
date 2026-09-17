@@ -39,7 +39,12 @@ package Shop {
 | `library/UML3Data.sysml` | Logical models (`#entity`, `#aggregateRoot`, `#valueObject`, `#relationship` with cardinality); keys and constraints (`#primaryKey`, `#foreignKey` + referential actions, `#unique`, `#indexed`, `@Index`); physical schemas (`#database`, `#table`, `#column` + `@Column`, `#dbView`); governance (`#audited`, `#transient`, `@Sensitivity`); logical-to-physical `#mapsTo` |
 | `library/UML3IDL.sysml` + `tools/idl/` | OMG IDL 4.2 **import and export** (Groovy, inside CATIA Magic or on the command line): modules, structs, typedefs, sequences, arrays, bounded strings, fixed, enums, unions (`#union`, `@Discriminator`, `@Case`), exceptions, interfaces with operations, `oneway` and `raises`, constants and common annotations. IDL basic types `Octet`, `WChar`, `WString`, `LongDouble`, `Any`. Mapping: [`docs/IDL-MAPPING.md`](docs/IDL-MAPPING.md). **Code generation** from IDL or from the model: Java per the OMG IDL4 to Java 1.0 mapping and Rust ([`docs/IDL-CODEGEN.md`](docs/IDL-CODEGEN.md)) |
 
-`examples/` models one online store: class model, architecture and deployment, messaging, database, native behaviors (activity, state machine, use cases, instances; example 06), and a set of views (diagrams) over them. `tools/check_rules.py` checks 12 design rules, e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
+`examples/` models one online store: class model, architecture and deployment, messaging, database, native behaviors (activity, state machine, use cases, instances; example 06), and a set of views (diagrams) over them. `tools/check_rules.py` checks 13 design rules (R01–R12, R14), e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
+
+### Documentation and requirements
+
+* **Documentation is part of the model.** Every library and example element owns a `doc` (what it is, usage, rationale, references), every package summarizes its contents, and explanations spanning several elements are named `comment ... about` annotations, so tools and diagrams show them. There are no banners or star decoration. Rules and checker: [`docs/DOC-CONVENTIONS.md`](docs/DOC-CONVENTIONS.md), `tools/check_docs.py` (citations are checked against the KerML and SysML v2 clause headings).
+* **Requirements and use cases for UML3** are written in SysML v2 in `requirements/`: 247 numbered "shall" requirements in 19 areas (core, structure, data types, behavior, extensibility, verification, validation, views, architecture, data, messaging, security, testing, DevOps, generation, reports, languages, AI, SysML v2 interoperation), each with rationale, status, priority, verification method, evidence and realizing elements, plus 59 use cases with actors. Status today: 67 done, 43 implemented with verification incomplete (tbc), 126 open, 11 to be decided. Guide: [`docs/REQUIREMENTS-GUIDE.md`](docs/REQUIREMENTS-GUIDE.md); generated catalog: [`docs/UML3-Requirements.md`](docs/UML3-Requirements.md).
 
 ### Keyword naming rules
 * Keywords are lowerCamelCase.
@@ -59,10 +64,12 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 |---|---|---|
 | Syntax | `sysml-validator` (ANTLR) | library and examples pass |
 | UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, UML3 elements, views and examples verified |
-| Names, lint, keyword applicability | `tools/check_names.py` | library and examples pass; 19 negative tests fail as expected |
-| Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 12 rules proven to fire; clean control stays clean |
+| Names, lint, keyword applicability | `tools/check_names.py` | library, examples and requirements pass; 20 negative tests fail as expected |
+| Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 13 rules proven to fire; clean control stays clean |
+| Documentation | `tools/check_docs.py` | library, examples and requirements: 0 findings on rules D01–D07; one fixture per rule plus a clean control; documentation-only rewrites proven model-identical (`tools/compare_model_tokens.py`) |
+| Requirements and use cases | `tools/check_requirements.py` | 247 requirements, 59 use cases: form, evidence, realization and traces resolve; every requirement is traced by a use case |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
-| Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 13/13 files load (7 libraries, 6 examples); validation engine reports 0 failures, including the IDL import |
+| Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 13/13 files load (7 libraries, 6 examples); validation engine reports 0 failures, including the IDL import (last run before the documentation rewrite; re-run and experiment E12 pending) |
 | View contents (expose + filter) | CATIA Magic `exposedElement` | 9/9 views match predicted includes and excludes |
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
 | Keyword labels | CATIA Magic label functions | 19/19 render `«#keyword»` |
@@ -81,6 +88,7 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 * **Views are model elements, not yet opened diagrams:** CATIA Magic evaluates their content, but creating or opening the diagram for a view is still to be done.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * **IDL v1 scope:** valuetypes, maps, anonymous nested sequences, shift operators in constants, types nested in interfaces, and IDL CCM constructs are rejected on import. Export writes canonical IDL (qualified names, resolved constants), not the original text.
+* **Open design issues** found while documenting and writing the requirements are listed as I-01 to I-31 in [`docs/DESIGN.md`](docs/DESIGN.md); they are maintainer decisions and none is fixed yet.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 
 ## Layout
@@ -88,6 +96,7 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 | Path | Contents |
 |---|---|
 | `library/` | The seven UML3 libraries |
+| `requirements/` | UML3 requirements (19 area files), actors and use cases, in SysML v2 |
 | `examples/` | Online-store models using every keyword |
 | `tests/negative/` | Models that must fail locally (`EXPECT:` header) |
 | `tests/cameo/` | Cameo hypotheses: implied specializations, label expectations |
@@ -104,7 +113,9 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 | `external/idl/`, `tests/idl/corpus/` | IDL corpora (git submodules), expectations, per-file baseline |
 | `tools/cameo_check.py`, `tools/cameo-scripts/` | CATIA Magic REST runner and Groovy scripts (synced to the harness) |
 | `tools/check_groovy.groovy` | Pre-flight check for scripts that run inside MagicDraw |
-| `docs/DESIGN.md` | Design, mapping, verification history and findings |
+| `docs/DESIGN.md` | Design, mapping, verification history, findings and open issues |
+| `docs/DOC-CONVENTIONS.md`, `tools/check_docs.py`, `tests/docs/` | Documentation rules, checker and fixtures |
+| `docs/REQUIREMENTS-GUIDE.md`, `tools/check_requirements.py`, `docs/UML3-Requirements.md` | Requirements rules, checker and generated catalog |
 
 ## Requirements
 

@@ -120,14 +120,16 @@ Collection kinds need no new types:
 
 | Check | Tool | Status |
 |---|---|---|
-| Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 9 files (5 library + 4 examples) load with 0 errors** (2026-09-16) |
-| Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **21/21 hypotheses hold, including 7 negative controls** |
+| Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 13 files (7 library + 6 examples) load with 0 errors**, plus the IDL imports (2026-09-17, before the documentation rewrite) |
+| Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **42/42 against the recorded baseline, including negative controls** |
 | Validation engine (KerML/SysML constraint suites) | `validateUML3Packages.groovy` | **0 failures on library + examples** |
 | Diagram keyword labels | `probeKeywordDisplay.groovy` | semantic keywords render `«#keyword»`; plain metadata is not in the label |
 | View contents (expose + filter) | `probeViewContents.groovy` | 9/9 views match predicted includes and excludes |
-| Design rules | `tools/check_rules.py` | examples 0 errors; 12 rules each proven to fire |
+| Design rules | `tools/check_rules.py` | examples 0 errors; 13 rules (R01–R12, R14) each proven to fire |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
-| Name resolution, lint and keyword applicability | `tools/check_names.py` | Library and examples pass; 16 negative tests fail as expected; 0 false positives on 251 official OMG models |
+| Name resolution, lint and keyword applicability | `tools/check_names.py` | Library, examples and requirements pass; 20 negative tests fail as expected; 0 false positives on 251 official OMG models |
+| Documentation | `tools/check_docs.py` | 0 findings on D01–D07 in library, examples and requirements |
+| Requirements | `tools/check_requirements.py` | 247 requirements and 59 use cases pass form, evidence, realization and trace checks |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |
 
 Run everything with `python tools/run_tests.py --cameo`. The harness must be running in CATIA Magic. The runner loads the files in dependency order, **undoes its own loads** (checked with `inspectUML3Roots.groovy`, which includes a positive control), and then stops the harness.
@@ -352,6 +354,20 @@ the maintainers; none is fixed yet.
 | I-15 | example 05 | `deploymentDiagram` shows none of the deploy/manifest allocations (they are nested in `productionCluster`) |
 | I-16 | example 06 | `RetryPayment` never uses `attempts` (unbounded loop); `OrderLifecycle` has no final state |
 | I-17 | check_rules | No rule reports a keyword applied twice to one element (prefix `#k` plus body `@K`), which I-14 shows is an easy mistake |
+| I-18 | libraries | UML3 names clash with standard library names: `UML3Types::DurationValue`, `Date`, `TimeOfDay` (Time, ISQ), `Class`, `DataType`, `Association` (metaclasses re-exported by StandardViewDefinitions, which UML3Views imports together with UML3Core), `UML3IDL::Case` (`Cases::Case`) |
+| I-19 | IDL import | Enumerator `@value` codes are dropped without a warning; IDL comments are dropped, so imported models do not meet the documentation rules |
+| I-20 | IDL export, generators | Unmappable elements are handled inconsistently: generators fail with NOMAP, model export skips them or writes `any` with a warning and an OK result |
+| I-21 | generators | `idl2code` deletes its output directory (no protection of hand-written code); generation from a live model covers only the IDL subset; deterministic regeneration is not tested |
+| I-22 | requirements | Traceability uses `#realizes` dependencies and textual "Verified by" evidence rather than native `satisfy` and verification cases (tension with UML3-CORE-004); UML3's own tools are not model elements |
+| I-23 | UML3Data, UML3Messaging | References held as strings (`@ForeignKey` columns, `@Index` columns, QoS dead-letter channel, partition key) break silently on rename; composite foreign keys cannot be expressed |
+| I-24 | rules, views | Rules and view filters select by UML3 keyword, not by semantics: a user keyword whose base specializes Association is not checked by R04; a keyword name visible from two libraries is not reported as ambiguous |
+| I-25 | UML3Core | `Association` does not specialize `Class` (association classes); `#final` and `#singleton` are not enforced; GeneralizationSet metadata duplicates KerML `disjoint`/`unions`; `MapEntry` duplicates `Collections::Map` without unique keys |
+| I-26 | UML3Data, UML3Components, UML3Messaging | R02 flags conceptual entities without identity; architecture style can only be set through `@Layer`; IDL structs (attribute defs) cannot be message item types without a wrapper; `SerializationFormat` lacks CDR and is not extensible |
+| I-27 | scope | No library concepts yet for tests, validation (concerns, acceptance criteria, reviews) or DevOps; no CI pipeline runs `run_tests.py`; a second semantic keyword on a definition is untested (R12 checks usages) |
+| I-28 | tooling tests | `check_requirements.py` and `check_traceability.py` have no negative fixtures; the validator's reversed prefix order and `def`-name lexer bug are not in `tests/validator-known-gaps.json` |
+| I-29 | actors | Roles used as stand-ins: ML engineer or data scientist, AI governance officer, hardware engineer, data steward, compliance officer or auditor, site reliability engineer, extension author |
+| I-30 | decision | UML 2.x XMI interchange: DESIGN treats it as "if needed", requirement UML3-LANG-009 makes it mandatory |
+| I-31 | UML3Core | Operations raising exceptions (`#raises`) and array dimensions (`IdlArray`) exist only in UML3IDL, although they are general OO concepts |
 
 ## Validator findings (sysml-validator issues found during this work)
 
