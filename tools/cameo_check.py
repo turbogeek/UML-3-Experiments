@@ -124,6 +124,9 @@ def main() -> int:
                     help="IDL round trip in CATIA Magic for each tests/idl/*.idl (import, export, compare)")
     ap.add_argument("--views", action="store_true",
                     help="check view contents against tests/cameo/view-predictions.json (needs examples loaded)")
+    ap.add_argument("--svg", action="store_true",
+                    help="open each view of tests/cameo/svg-expectations.json as a diagram, lay it out, export SVG and "
+                         "check display mode, overlaps, drawn shapes and SVG labels (needs examples; IDL views need --idl)")
     ap.add_argument("--display", action="store_true",
                     help="check keyword labels against tests/cameo/display-expectations.json (needs examples loaded)")
     ap.add_argument("--hypotheses", help="hypotheses JSON to verify (default tests/cameo/implied-specializations.json)")
@@ -205,8 +208,11 @@ def main() -> int:
         idl_logs.mkdir(parents=True, exist_ok=True)
         fixtures = sorted((ROOT / "tests" / "idl").glob("*.idl"))
         # packages the importer creates are named after the file; register them for the guarded undo
+        # the importer also creates '<file>_views' (generated views of the imported file)
         (HARNESS_SCRIPTS / "uml3-undo-extra.txt").write_text(
-            "\n".join(re.sub(r"[^A-Za-z0-9_]", "_", f.stem) for f in fixtures) + "\n", encoding="utf-8")
+            "\n".join(n for f in fixtures for n in (re.sub(r"[^A-Za-z0-9_]", "_", f.stem),
+                                                  re.sub(r"[^A-Za-z0-9_]", "_", f.stem) + "_views")) + "\n",
+            encoding="utf-8")
         rows = []
         for f in fixtures:
             pkg = re.sub(r"[^A-Za-z0-9_]", "_", f.stem)
@@ -329,6 +335,36 @@ def main() -> int:
                 print(f"    {r}")
         failed = failed or not disp_ok
 
+    # Views as diagrams: create, show exposed elements, lay out and export SVG in CATIA Magic (E13, E14), then check
+    # display mode, overlaps, drawn shapes and SVG labels; this step undoes its own diagram commands right away
+    if args.svg and not failed:
+        sys.path.insert(0, str(ROOT / "tools"))
+        import check_view_svg as cvs  # noqa: E402
+        expectations = [e for e in cvs.load_expectations() if e.get("requires") != "idl" or args.idl]
+        svg_dir = LOGS / "svg"
+        shutil.rmtree(svg_dir, ignore_errors=True)
+        svg_dir.mkdir(parents=True, exist_ok=True)
+        (HARNESS_SCRIPTS / "uml3-svg-request.txt").write_text(
+            "\n".join(["outDir=" + svg_dir.as_posix()] + ["view=" + e["view"] for e in expectations]) + "\n",
+            encoding="utf-8")
+        _, ex = call(args.port, "/run-script", {"scriptName": "exportViewDiagrams.groovy"}, timeout=1800)
+        text = ex.get("result") or ex.get("error") or ""
+        (LOGS / "view-diagrams.txt").write_text(text, encoding="utf-8")
+        svg_report = cvs.check(text, expectations)
+        (HARNESS_SCRIPTS / "uml3-undo-only.txt").write_text("UML3 View Diagrams\nLayout diagram\n", encoding="utf-8")
+        _, undo_diagrams = call(args.port, "/run-script", {"scriptName": UNDO_SCRIPT})
+        svg_report["undo"] = undo_diagrams.get("result", undo_diagrams)
+        if "undosPerformed=0" in str(svg_report["undo"]) and "TOP|UML3 View Diagrams" in text:
+            svg_report["passed"] = False
+            svg_report["undoProblem"] = "the view-diagram command was not undone"
+        report["viewDiagrams"] = svg_report
+        passed_n = sum(r["passed"] for r in svg_report["results"])
+        print(f"{'PASS' if svg_report['passed'] else 'FAIL'}  view diagrams / SVG ({passed_n}/{len(svg_report['results'])})")
+        for r in svg_report["results"]:
+            if not r["passed"]:
+                print(f"    {r['view']}: {'; '.join(r['problems'])}")
+        failed = failed or not svg_report["passed"]
+
     # Implied-specialization hypotheses (only meaningful when every default file loaded)
     if not failed and not args.files and (not args.library_only or args.hypotheses):
         _, ver = call(args.port, "/run-script", {"scriptName": VERIFY_SCRIPT})
@@ -342,12 +378,23 @@ def main() -> int:
         failed = failed or not ver_ok
 
     if args.undo:
+        # When UML3 packages were already loaded before this run (e.g. a model the user is reviewing), undo exactly
+        # the commands this run created, so the earlier state survives; otherwise undo until none remain.
+        created = sum(1 for l in report["loads"] if l["success"]) + \
+            sum(1 for p in report.get("probes", []) if p["observed"] == "OK") + \
+            sum(1 for r in report.get("idlRoundTrip", {}).get("results", []) if r["import"].startswith("RESULT|OK"))
+        preexisting = "matches=0" not in str(report["inspectBefore"])
+        if preexisting:
+            (HARNESS_SCRIPTS / "uml3-undo-limit.txt").write_text(str(created), encoding="utf-8")
         _, undo = call(args.port, "/run-script", {"scriptName": UNDO_SCRIPT})
         report["undo"] = undo.get("result", undo)
+        report["undoBounded"] = created if preexisting else None
         _, clean = call(args.port, "/run-script", {"scriptName": INSPECT_SCRIPT})
         report["inspectAfterUndo"] = clean.get("result", clean)
         print("UNDO: " + str(report["undo"]).strip().replace("\n", " | "))
-        if "STOPPED" in str(report["undo"]) or "myPackagesAfter=0" not in str(report["undo"]):
+        undo_complete = (f"undosPerformed={created} " in str(report["undo"])) if preexisting \
+            else ("myPackagesAfter=0" in str(report["undo"]))
+        if "STOPPED" in str(report["undo"]) or not undo_complete:
             print("FAIL  undo did not complete safely (foreign command on the undo stack or packages remain) "
                   "- inspect CATIA Magic before continuing")
             failed = True

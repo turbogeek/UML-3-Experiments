@@ -335,7 +335,7 @@ def main() -> int:
             report["suites"]["cameo-probes"]["errors"] += details["validationEngine"]["mismatches"]
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
-        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views", "--idl"]
+        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views", "--idl", "--svg"]
         if not args.keep_harness:
             cmd.append("--shutdown")
         r = run(cmd)
@@ -350,6 +350,8 @@ def main() -> int:
         errors += details.get("validationEngine", {}).get("mismatches", [])
         errors += [f'IDL round trip {r["file"]}: import {r["import"]}, export {r["export"]}, identical={r["identical"]}'
                    for r in details.get("idlRoundTrip", {}).get("results", []) if not r["passed"]]
+        errors += [f'view diagram {r["view"]}: {"; ".join(r["problems"])}'
+                   for r in details.get("viewDiagrams", {}).get("results", []) if not r["passed"]]
         if r.returncode and not errors:
             errors = [r.stderr.strip() or f"cameo_check exit code {r.returncode}"]
         report["suites"]["cameo"] = {

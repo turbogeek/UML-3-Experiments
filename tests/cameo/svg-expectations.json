@@ -1,0 +1,148 @@
+{
+ "description": "Expectations for views rendered as diagrams in CATIA Magic and exported to SVG (tools/check_view_svg.py, cameo_check.py --svg). Example views reuse the includes/excludes of tests/cameo/view-predictions.json. notDrawn lists exposed elements CATIA Magic does not draw as shapes (observed in E13: dependencies). Display modes follow the view definitions' renderings (E14): compact views TREE, detail views and SequenceDiagram UNDEFINED, ComponentDiagram NESTED, ClassTable UNKNOWN. IDL view expectations recorded 2026-09-17 before their first run.",
+ "maxOverlaps": 0,
+ "views": [
+  {
+   "view": "OnlineStoreViews::domainClassDiagram",
+   "predictionId": "VW1",
+   "mode": "TREE",
+   "notDrawn": [
+    "checkoutUsesGateway"
+   ]
+  },
+  {
+   "view": "OnlineStoreViews::architectureComponents",
+   "predictionId": "VW2",
+   "mode": "NESTED"
+  },
+  {
+   "view": "OnlineStoreViews::deploymentDiagram",
+   "predictionId": "VW3",
+   "mode": "TREE"
+  },
+  {
+   "view": "OnlineStoreViews::logicalDataModel",
+   "predictionId": "VW4",
+   "mode": "TREE"
+  },
+  {
+   "view": "OnlineStoreViews::physicalSchema",
+   "predictionId": "VW5",
+   "mode": "TREE",
+   "notDrawn": [
+    "customerMapping",
+    "orderMapping"
+   ]
+  },
+  {
+   "view": "OnlineStoreViews::messageSchemas",
+   "predictionId": "VW6",
+   "mode": "TREE"
+  },
+  {
+   "view": "OnlineStoreViews::storePackages",
+   "predictionId": "VW7",
+   "mode": "TREE"
+  },
+  {
+   "view": "OnlineStoreViews::checkoutSequence",
+   "predictionId": "VW8",
+   "mode": "UNDEFINED"
+  },
+  {
+   "view": "OnlineStoreViews::domainClassTable",
+   "predictionId": "VW9",
+   "mode": "UNKNOWN"
+  },
+  {
+   "view": "OnlineStoreViews::domainClassDetails",
+   "predictionId": "VW10",
+   "mode": "UNDEFINED",
+   "notDrawn": [
+    "checkoutUsesGateway"
+   ]
+  },
+  {
+   "view": "OnlineStoreViews::logicalDataModelDetails",
+   "predictionId": "VW11",
+   "mode": "UNDEFINED"
+  },
+  {
+   "view": "OnlineStoreViews::messageSchemaDetails",
+   "predictionId": "VW12",
+   "mode": "UNDEFINED"
+  },
+  {
+   "view": "shop_order_views::idlTypes",
+   "mode": "TREE",
+   "includes": [
+    "Money",
+    "OrderLine",
+    "Order",
+    "PriorityOrder",
+    "Reserved",
+    "PaymentDetail",
+    "NotFound",
+    "InvalidState",
+    "Auditable",
+    "OrderService",
+    "OrderStatus",
+    "OrderPlaced"
+   ],
+   "excludes": [
+    "Quantity",
+    "Sku",
+    "SkuList",
+    "TopTen",
+    "Matrix",
+    "Amount",
+    "Shop",
+    "Events"
+   ],
+   "requires": "idl"
+  },
+  {
+   "view": "shop_order_views::idlTypeDetails",
+   "mode": "UNDEFINED",
+   "includes": [
+    "Money",
+    "OrderLine",
+    "Order",
+    "PriorityOrder",
+    "Reserved",
+    "PaymentDetail",
+    "NotFound",
+    "InvalidState",
+    "Auditable",
+    "OrderService",
+    "OrderStatus",
+    "OrderPlaced"
+   ],
+   "excludes": [
+    "Quantity",
+    "Sku",
+    "SkuList",
+    "TopTen",
+    "Matrix",
+    "Amount",
+    "Shop",
+    "Events"
+   ],
+   "requires": "idl"
+  },
+  {
+   "view": "shop_order_views::idlModules",
+   "mode": "TREE",
+   "includes": [
+    "Shop",
+    "Events"
+   ],
+   "excludes": [
+    "Money",
+    "OrderService",
+    "PaymentDetail"
+   ],
+   "requires": "idl"
+  }
+ ]
+}

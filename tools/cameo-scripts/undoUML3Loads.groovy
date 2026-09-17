@@ -20,6 +20,14 @@ if (limitFile.exists()) {
     try { LIMIT = Integer.valueOf(limitFile.getText("UTF-8").trim()) } catch (Throwable ignored) {}
     limitFile.delete()
 }
+// Optional (uml3-undo-only.txt, one command name per line): undo ONLY commands with these names, as long as one is on
+// top (at most 50), e.g. the asynchronous 'Layout diagram' commands that follow a view-diagram run (E13). Deleted once read.
+def onlyFile = new File(extraFile.parentFile, "uml3-undo-only.txt")
+Set<String> ONLY = null
+if (onlyFile.exists()) {
+    ONLY = onlyFile.readLines("UTF-8").collect { it.trim() }.findAll { it && !it.startsWith("#") } as Set
+    onlyFile.delete()
+}
 def sb = new StringBuilder()
 
 // RootNamespaces are unnamed Namespaces; the packages are their owned members.
@@ -50,10 +58,12 @@ SwingUtilities.invokeAndWait({
         // SAFETY GUARD (added after an audit found 'General View' / 'Multiple add' commands interleaved
         // with harness loads): only undo commands created by the harness load endpoint. Anything else on
         // top of the undo stack may be the user's work, so stop and report it instead of undoing it.
-        final Set<String> HARNESS_COMMANDS = ["SysMLv2TestHarness: REST Load SysML", "UML3 IDL Import", "UML3 View Diagrams"] as Set
+        final Set<String> HARNESS_COMMANDS = ONLY != null ? ONLY :
+            (["SysMLv2TestHarness: REST Load SysML", "UML3 IDL Import", "UML3 View Diagrams"] as Set)
+        if (ONLY != null) sb.append("only=" + ONLY + "\n")
         def history = app.getProject().getCommandHistory()
-        while (n < (LIMIT != null ? LIMIT : 25)) {
-            if (LIMIT == null && countMine() <= 0) { sb.append("clean -- none of my packages remain\n"); break }
+        while (n < (LIMIT != null ? LIMIT : (ONLY != null ? 50 : 25))) {
+            if (LIMIT == null && ONLY == null && countMine() <= 0) { sb.append("clean -- none of my packages remain\n"); break }
             def top = history.getCommandForUndo()
             String topName = null
             try { topName = top == null ? null : top.getName() } catch (x) { topName = String.valueOf(top) }

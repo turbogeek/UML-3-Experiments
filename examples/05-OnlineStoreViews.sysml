@@ -7,18 +7,22 @@ package OnlineStoreViews {
 	UML3Views definition keep the elements that belong on that kind of diagram, recognized by their UML3
 	keywords, and hide the library elements that imports would bring in (E06). The same diagram kind
 	therefore selects the same kinds of elements wherever it is used. The content named in each view's
-	doc is what CATIA Magic 2026x returned as the view's exposed elements; opening a view there as a drawn
-	diagram is not yet verified (E07).
+	doc is what CATIA Magic 2026x returned as the view's exposed elements. The test harness also opens each
+	view as a diagram, lays it out, exports it to SVG and checks the drawn names (E13, E14). Compact views
+	show one box per element; the detail views show the same elements with their compartments.
 
 	Contents:
-	- Domain classes: domainClassDiagram (ClassDiagram) and domainClassTable (ClassTable) of OnlineStoreDomain.
+	- Domain classes: domainClassDiagram (ClassDiagram), domainClassDetails (ClassDetailDiagram) and
+	  domainClassTable (ClassTable) of OnlineStoreDomain.
 	- Packages: storePackages (PackageDiagram) of OnlineStoreDatabase.
 	- Architecture: architectureComponents (ComponentDiagram) and deploymentDiagram (DeploymentDiagram) of
 	  OnlineStoreArchitecture.
-	- Data: logicalDataModel and physicalSchema (EntityRelationshipDiagram) of OnlineStoreDatabase.
-	- Messaging: messageSchemas (MessageSchemaView) of OnlineStoreMessaging, and checkoutSequence
+	- Data: logicalDataModel and physicalSchema (EntityRelationshipDiagram), and logicalDataModelDetails
+	  (EntityRelationshipDetailDiagram) of OnlineStoreDatabase.
+	- Messaging: messageSchemas (MessageSchemaView) and messageSchemaDetails (MessageSchemaDetailView) of
+	  OnlineStoreMessaging, and checkoutSequence
 	  (SequenceDiagram) of its CheckoutInteraction.
-	References: UML3Views::ClassDiagram; SysML 7.26.2; SysML 9.2.20; E06; E07.
+	References: UML3Views::ClassDiagram; UML3Views::ClassDetailDiagram; SysML 7.26.2; SysML 9.2.20; E06; E07; E13; E14.
 	*/
 	private import UML3Views::*;
 
@@ -165,5 +169,36 @@ package OnlineStoreViews {
 		References: UML3Views::ClassTable; SysML 7.26.2; SysML 7.26.4.
 		*/
 		expose OnlineStoreDomain::*;
+	}
+
+	view domainClassDetails : ClassDetailDiagram {
+		doc
+		/*
+		Detail class diagram of the domain model: the elements of domainClassDiagram, each drawn with its
+		documentation, attributes and operations.
+		Rationale: the compact diagram gives the overview; this one is for reviewing what each class holds.
+		References: UML3Views::ClassDetailDiagram; E14.
+		*/
+		expose OnlineStoreDomain::*;
+	}
+
+	view logicalDataModelDetails : EntityRelationshipDetailDiagram {
+		doc
+		/*
+		Detail data model diagram of the logical level: the entities and relationships of logicalDataModel
+		with their attributes, keys and relationship ends.
+		References: UML3Views::EntityRelationshipDetailDiagram; E14.
+		*/
+		expose OnlineStoreDatabase::Logical::*;
+	}
+
+	view messageSchemaDetails : MessageSchemaDetailView {
+		doc
+		/*
+		Detail message schema view: the message types, channels and brokers of messageSchemas with their
+		payload attributes, headers and quality of service.
+		References: UML3Views::MessageSchemaDetailView; E14.
+		*/
+		expose OnlineStoreMessaging::*;
 	}
 }

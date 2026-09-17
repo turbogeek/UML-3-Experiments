@@ -77,3 +77,8 @@ package Events {
 #dataType attribute def OrderPlaced {
 #id attribute orderId : String;
 attribute total : Shop::Money;
+package shop_order_views {
+view idlTypes : ClassDiagram {
+view idlTypeDetails : ClassDetailDiagram {
+view idlModules : PackageDiagram {
+expose shop_order::**;

@@ -119,8 +119,14 @@ library package UML3IDL {
 		doc /* All IDL union values; #union usages subset this feature, which subsets UML3Core dataTypes. */
 	}
 
-	metadata def <union> UnionMetadata :> SemanticMetadata {
-		doc /* Keyword #union: an IDL Union (a definition specializes Union, a usage subsets idlUnions). */
+	metadata def <union> UnionMetadata :> DataTypeMetadata {
+		doc
+		/*
+		Keyword #union: an IDL Union (a definition specializes Union, a usage subsets idlUnions).
+		Rationale: it specializes UML3Core::DataTypeMetadata because a union is a data type, so views and
+		rules that select data types by '@DataTypeMetadata' (for example UML3Views::ClassDiagram) also
+		select unions (E14).
+		*/
 		:>> baseType = idlUnions meta SysML::Usage;
 	}
 
