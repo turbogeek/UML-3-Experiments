@@ -1,0 +1,37 @@
+{
+  "experiment": "E12: documentation as model elements in CATIA Magic (docs/DOC-CONVENTIONS.md)",
+  "recorded": "2026-09-17, before the run",
+  "file": "tests/cameo-experiments/e12-docs-probe.sysml",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "The probe loads with 0 errors: 'comment Design about A, B' (a list), docs on enum literals and StatusKind::done are accepted",
+      "confidence": "high"
+    },
+    {
+      "id": "P2",
+      "claim": "Design is a Comment owned by the package with exactly 2 annotated elements, A and B",
+      "confidence": "high"
+    },
+    {
+      "id": "P3",
+      "claim": "A's owned Documentation body is exactly 'Documentation of A.' (no delimiters, trimmed)",
+      "confidence": "medium"
+    },
+    {
+      "id": "P4",
+      "claim": "StarDoc's Documentation body has no leading '*' on its lines (KerML 8.2.3.3.3 note 1 strips them)",
+      "confidence": "medium"
+    },
+    {
+      "id": "P5",
+      "claim": "Enumeration literals 'first' and 'second' each own one Documentation",
+      "confidence": "high"
+    },
+    {
+      "id": "P6",
+      "claim": "The library files re-documented with 'comment ... about' lists (UML3Core and the others) still load with 0 errors and 0 validation failures",
+      "confidence": "high"
+    }
+  ]
+}
