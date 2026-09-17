@@ -1,23 +1,34 @@
 library package UML3Views {
 	doc
 	/*
-	 * UML3Views - UML-style diagram kinds as SysML v2 view definitions.
-	 *
-	 * A SysML v2 view selects model content with 'expose' and narrows it with 'filter'
-	 * conditions (ViewUsage::exposedElement). Each definition below specializes a standard
-	 * view (StandardViewDefinitions) and filters on UML3 keyword metadata, so a view usage
-	 * only has to say WHAT to show:
-	 *
-	 *   view domainClasses : ClassDiagram { expose OnlineStoreDomain::*; }
-	 *
-	 * '@M' in a filter is true when an exposed element carries metadata of type M (or a
-	 * specialization of M). Semantic keywords are metadata, so '@ClassMetadata' selects every
-	 * '#classType' element.
-	 *
-	 * 'expose P::*' also exposes what P imports (Expose imports all), so every definition adds
-	 * 'filter not (as KerML::Element).isLibraryElement' to keep library elements out
-	 * (verified in CATIA Magic, experiment E06).
-	 */
+	UML3Views: the UML diagram kinds of UML3, defined as SysML v2 view definitions.
+
+	A SysML v2 view usage selects model content with 'expose' and keeps the exposed elements that meet
+	all filter conditions of the usage and of its definition (ViewUsage::exposedElement). Each definition
+	below specializes a standard view and filters on UML3 keyword metadata, so a view usage only has to
+	say what part of the model to show:
+	  view domainClassDiagram : ClassDiagram { expose OnlineStoreDomain::*; }
+	'@M' in a filter is true when an exposed element carries metadata of type M (or a specialization of
+	M). Semantic keywords are metadata, so '@ClassMetadata' selects every '#classType' element, and the
+	metaclass of an element counts as metadata too, so '@SysML::PortUsage' selects port usages.
+	Every definition also filters out library elements, which 'expose' would otherwise show (E06).
+	Activity and state machine diagrams need no UML3 definition: use the standard ActionFlowView and
+	StateTransitionView.
+
+	Status: CATIA Magic evaluates these views, and all 9 views of examples/05-OnlineStoreViews.sysml
+	match their predicted includes and excludes. A view is not yet opened as a diagram there: loading,
+	evaluating and validating views created no diagram (E07).
+
+	Rationale: a SysML v2 view definition is an ordinary model element, so the UML diagram kinds are part
+	of the model library, and specializing the standard views keeps their standard rendering.
+
+	Contents:
+	- Structure diagrams: PackageDiagram, ClassDiagram, ComponentDiagram, DeploymentDiagram.
+	- Data and messaging views: EntityRelationshipDiagram, MessageSchemaView.
+	- Interaction diagrams: SequenceDiagram.
+	- Tables: ClassTable.
+	References: SysML 7.26; SysML 7.5.4; SysML 9.2.20; KerML 8.4.4.14; E06; E07; docs/DESIGN.md.
+	*/
 
 	private import StandardViewDefinitions::*;
 	private import Views::*;
@@ -26,28 +37,72 @@ library package UML3Views {
 	private import UML3Messaging::*;
 	private import UML3Data::*;
 
+	comment LibraryElementFilterDesign about PackageDiagram, ClassDiagram, ComponentDiagram, DeploymentDiagram,
+		EntityRelationshipDiagram, MessageSchemaView, SequenceDiagram, ClassTable
+		/*
+		Library element filter. Every view definition starts with
+		  filter not (as KerML::Element).isLibraryElement;
+		An expose is an import that ignores visibility (isImportAll), so exposing a package also exposes
+		everything that package imports, even privately. Without the filter, library elements such as
+		UML3Core::AggregationKind and the library port and connection bases appeared in the views.
+		isLibraryElement is true for every element owned, directly or indirectly, by a library package.
+		Imported user elements, such as the domain interfaces in a component view, remain by design.
+		All E06 predictions held in CATIA Magic, including the two made at low confidence.
+		By the same rule, the elements of a user model declared as a library package are hidden too.
+		References: SysML 7.26.2; SysML 8.3.26.2; KerML 8.3.2.1.2; KerML 8.3.4.13.3; E06.
+		*/
+
 	view def PackageDiagram :> GeneralView {
-		doc /* UML package diagram: packages (use 'expose P::**' to include nested packages). */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		UML package diagram: the packages among the exposed elements.
+
+		Usage: view storePackages : PackageDiagram { expose OnlineStoreDatabase::*; }
+		Use 'expose P::**' to include nested packages. Package imports and dependencies are not selected.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML 2.5.1 Package diagram; SysML 7.26.2; SysML 9.2.20.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @SysML::Package;
 	}
 
 	view def ClassDiagram :> GeneralView {
 		doc
 		/*
-		 * UML class diagram: classes, interfaces, data types, signals/exceptions, templates,
-		 * enumerations, associations (incl. aggregation/composition) and dependencies.
-		 * Features are shown inside their owners' nodes.
-		 */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		UML class diagram: classes, interfaces, data types, signals and exceptions, templates, enumerations,
+		associations (including aggregations and compositions) and dependencies.
+
+		Usage: view domainClassDiagram : ClassDiagram { expose OnlineStoreDomain::*; }
+		The filter selects elements marked #classType, #activeClass, #interfaceType, #dataType, #signal,
+		#exceptionType, #template, #association, #aggregation, #composition or a dependency keyword
+		(#uses, #realizes...), and every enum def. Features are not selected: they are shown inside their
+		owners' nodes, in compartments (SysML 7.26.5).
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML 2.5.1 Class diagram; SysML 7.26.2; SysML 9.2.20.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeMetadata
 			or @SignalMetadata or @ExceptionTypeMetadata or @Template or @SysML::EnumerationDefinition
 			or @AssociationMetadata or @AggregationMetadata or @CompositionMetadata or @DependencyKind;
 	}
 
 	view def ComponentDiagram :> InterconnectionView {
-		doc /* UML component diagram: components, services, subsystems, their ports and connectors. */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		UML component diagram (and composite structure diagram): components, services, subsystems, their
+		ports, the interfaces they provide or require, and connectors.
+
+		Usage: view architectureComponents : ComponentDiagram { expose OnlineStoreArchitecture::*; }
+		The filter selects elements marked #component, #service, #subsystem, #interfaceType, #assembly or
+		#delegation, every port def and port usage, and every connection usage. Interface and allocation
+		usages are connection usages too, so exposed #deploy and #manifest allocations are selected as well.
+		It renders as an interconnection diagram: parts as nested nodes with their ports on the boundary,
+		connections as edges.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		Rationale: an InterconnectionView, the standard view for ports and connections between parts.
+		References: UML 2.5.1 Component diagram; SysML 7.26.2; SysML 9.2.19; SysML 9.2.20.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @ComponentMetadata or @ServiceMetadata or @SubsystemMetadata or @InterfaceTypeMetadata
 			or @SysML::PortDefinition or @SysML::PortUsage or @AssemblyMetadata or @DelegationMetadata
 			or @SysML::ConnectionUsage;
@@ -55,35 +110,90 @@ library package UML3Views {
 	}
 
 	view def DeploymentDiagram :> GeneralView {
-		doc /* UML deployment diagram: artifacts, nodes, devices, execution environments, deployments. */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		UML deployment diagram: artifacts, nodes, devices, execution environments, communication paths,
+		deployments and manifestations.
+
+		Usage: view deploymentDiagram : DeploymentDiagram { expose OnlineStoreArchitecture::*; }
+		The filter selects elements marked #artifact, #node, #device, #executionEnvironment,
+		#communicationPath, #deploy or #manifest. Only exposed elements are filtered: allocations nested in
+		a part, such as a cluster, are selected only with a recursive 'expose P::**'.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML 2.5.1 Deployment diagram; SysML 7.26.2; SysML 9.2.20.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @ArtifactMetadata or @NodeMetadata or @DeviceMetadata or @ExecutionEnvironmentMetadata
 			or @CommunicationPathMetadata or @DeploymentMetadata or @ManifestationMetadata;
 	}
 
 	view def EntityRelationshipDiagram :> GeneralView {
-		doc /* Data model: entities, aggregate roots, value objects, relationships, tables, database views. */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		Data model diagram: entities, aggregate roots, value objects and relationships (logical model),
+		databases, tables and database views (physical model), and the #mapsTo links between the two.
+
+		Usage: view logicalDataModel : EntityRelationshipDiagram { expose OnlineStoreDatabase::Logical::*; }
+		Not a UML 2.5.1 diagram kind: UML draws data models as class diagrams. The filter selects elements
+		marked #entity, #aggregateRoot, #valueObject, #relationship, #table, #dbView, #database or #mapsTo;
+		columns are features of their tables and are not selected.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML3Data::Entity; UML3Data::Table; UML 2.5.1 Class diagram; SysML 7.26.2.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @EntityMetadata or @AggregateRootMetadata or @ValueObjectMetadata or @RelationshipMetadata
 			or @TableMetadata or @DatabaseViewMetadata or @DatabaseMetadata or @MapsTo;
 	}
 
 	view def MessageSchemaView :> GeneralView {
-		doc /* Messaging model: message types, channels (topics/queues) and brokers. */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		Messaging model: message types (commands, domain events, query messages, replies, documents),
+		channels (topics and queues) and brokers.
+
+		Usage: view messageSchemas : MessageSchemaView { expose OnlineStoreMessaging::*; }
+		Not a UML 2.5.1 diagram kind: in UML, message types are signals shown on class diagrams. The filter
+		selects elements marked #messageType, #command, #domainEvent, #queryMessage, #reply,
+		#documentMessage, #channel, #topic, #queue or #broker. Endpoint ports and the #publishes,
+		#subscribes, #sends and #handles flows are not selected.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML3Messaging::MessageType; UML3Messaging::Channel; UML 2.5.1 Signal; SysML 7.26.2.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @MessageTypeMetadata or @CommandMetadata or @DomainEventMetadata or @QueryMessageMetadata
 			or @ReplyMetadata or @DocumentMessageMetadata or @ChannelMetadata or @TopicMetadata
 			or @QueueMetadata or @MessageBrokerMetadata;
 	}
 
 	view def SequenceDiagram :> SequenceView {
-		doc /* UML sequence diagram: expose an interaction (an occurrence def with lifelines and messages). */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		UML sequence diagram: the lifelines, event occurrences and messages of an interaction.
+
+		Usage: expose the interaction itself, an occurrence def whose parts are the lifelines:
+		  view checkoutSequence : SequenceDiagram { expose OnlineStoreMessaging::CheckoutInteraction; }
+		There is no keyword filter, because interactions are native SysML v2 occurrences; the SequenceView
+		presents the event occurrences on the lifelines of the exposed interaction in time order.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML 2.5.1 Sequence diagram; UML 2.5.1 Interaction; SysML 7.16; SysML 9.2.20.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 	}
 
 	view def ClassTable :> GridView {
-		doc /* Tabular class listing (UML model browser style). */
-		filter not (as KerML::Element).isLibraryElement; /* hide library content leaked through imports (E06) */
+		doc
+		/*
+		Tabular class listing: one row for each class, interface, data type and enumeration.
+
+		Usage: view domainClassTable : ClassTable { expose OnlineStoreDomain::*; }
+		The filter selects elements marked #classType, #interfaceType or #dataType, and every enum def;
+		signals, exceptions and active classes have their own keywords and are not selected. It renders as
+		an element table (Views::asElementTable). Not a UML 2.5.1 diagram kind: it lists the classifiers of
+		a class diagram.
+		The first filter hides library elements that 'expose' brings in through imports (E06).
+		References: UML 2.5.1 Class diagram; SysML 9.2.19; SysML 9.2.20.
+		*/
+		filter not (as KerML::Element).isLibraryElement;
 		filter @ClassMetadata or @InterfaceTypeMetadata or @DataTypeMetadata or @SysML::EnumerationDefinition;
 		render asElementTable;
 	}
