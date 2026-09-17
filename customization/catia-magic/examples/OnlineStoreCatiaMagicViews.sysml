@@ -7,10 +7,10 @@ package OnlineStoreCatiaMagicViews {
 
 	Contents:
 	- domainClasses: the class diagram of OnlineStoreDomain.
-	- storePackages: the package diagram of the store's packages.
+	- storePackages: the package diagram of the data model's packages.
 	- architectureComponents: the component diagram of OnlineStoreArchitecture.
 	- deployment: the deployment diagram of the production cluster.
-	- logicalDataModel: the entity relationship diagram of OnlineStoreDatabase.
+	- logicalDataModel: the entity relationship diagram of the logical data model.
 	- messageSchemas: the message schema view of OnlineStoreMessaging.
 	References: examples/05-OnlineStoreViews.sysml; UML3CatiaMagic; E17.
 	*/
@@ -23,8 +23,8 @@ package OnlineStoreCatiaMagicViews {
 	}
 
 	view storePackages : 'UML3 Package Diagram' {
-		doc /* The packages of the store model, drawn with the UML3 package palette. */
-		expose OnlineStoreDomain::**;
+		doc /* The packages of the store's data model, drawn with the UML3 package palette (as in example 05). */
+		expose OnlineStoreDatabase::*;
 	}
 
 	view architectureComponents : 'UML3 Component Diagram' {
@@ -33,13 +33,13 @@ package OnlineStoreCatiaMagicViews {
 	}
 
 	view deployment : 'UML3 Deployment Diagram' {
-		doc /* The store's deployment, drawn with the UML3 deployment palette. */
-		expose OnlineStoreArchitecture::**;
+		doc /* The store's deployment, drawn with the UML3 deployment palette (same expose as example 05). */
+		expose OnlineStoreArchitecture::*;
 	}
 
 	view logicalDataModel : 'UML3 Entity Relationship Diagram' {
-		doc /* The store's data model, drawn with the UML3 data palette. */
-		expose OnlineStoreDatabase::*;
+		doc /* The store's logical data model, drawn with the UML3 data palette (same expose as example 05). */
+		expose OnlineStoreDatabase::Logical::*;
 	}
 
 	view messageSchemas : 'UML3 Message Schema View' {
