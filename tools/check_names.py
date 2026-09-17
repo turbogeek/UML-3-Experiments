@@ -503,7 +503,7 @@ class Index:
             if sup.rpartition("::")[2] == "SemanticMetadata":
                 rule["semantic"] = True
                 continue
-            sup_scope = self.lookup(sup, ctx)
+            sup_scope = self.lookup(sup, ctx) or self._imported_metadata_def(sup)
             if sup_scope is None:
                 continue
             inherited = self.keyword_rule(sup_scope, seen)
@@ -512,6 +512,14 @@ class Index:
             if not rule["restrictions"]:
                 rule["restrictions"] = inherited["restrictions"]
         return rule
+
+    def _imported_metadata_def(self, name: str) -> Scope | None:
+        """Metadata def named by a supertype reference that lexical lookup cannot resolve because the owning package
+        only imports it (UML3IDL::UnionMetadata :> DataTypeKind through 'private import UML3Core::*'). Resolves a
+        unique simple name, preferring UML3 libraries, as check_rules.Model.resolve_keyword does (tests n21, n22)."""
+        cands = self.metadata_defs(name.rpartition("::")[2])
+        chosen = [c for c in cands if c.qname.startswith("UML3")] or cands
+        return chosen[0] if len(chosen) == 1 else None
 
     def child(self, scope: Scope, name: str) -> Scope | None:
         eff = self._eff.get(id(scope))
