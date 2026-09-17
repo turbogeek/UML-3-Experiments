@@ -103,13 +103,35 @@
       "id": "P14",
       "run": "E17c",
       "claim": "E17V7 (:> bsv, UML3Views::ClassDetailDiagram with 'render rendering :>> asInterconnectionDiagram [0];') is registered with the UML3 palette and not flagged, and its view is UNDEFINED with an SVG identical to example 05's domainClassDetails (full compartments)",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "refuted",
+      "observation": "E17V7 is registered with the UML3 palette and not flagged, but its view is NESTED, not UNDEFINED, and its SVG is the compact diagram: removing the inherited rendering with multiplicity 0 does not restore the full compartments. A view definition that carries a palette is a descendant of bsv, whose visualization's display mode is nested, so full compartments (UNDEFINED) and a custom palette are mutually exclusive in CATIA Magic 2026x R1"
     },
     {
       "id": "P15",
       "run": "E17c",
       "claim": "E17V9 (:> bsv, UML3Views::ClassDiagram with one owned 'render rendering compactRendering :>> asTreeDiagram, asInterconnectionDiagram;') is registered, TREE, not flagged, and its SVG is identical to example 05's domainClassDiagram",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "E17V9 is registered, TREE, not flagged (0 failures on UML3ProbeRenderingVariants), and its SVG is byte-identical to example 05's domainClassDiagram"
+    },
+    {
+      "id": "P16",
+      "run": "E17d",
+      "claim": "The E17V9 form works for every tree-rendered UML3 view definition: E17V11 (PackageDiagram), E17V12 (DeploymentDiagram), E17V13 (EntityRelationshipDiagram) and E17V14 (MessageSchemaView) are registered, TREE, not flagged, and their content matches the corresponding example 05 views",
       "confidence": "medium"
+    },
+    {
+      "id": "P17",
+      "run": "E17d",
+      "claim": "E17V10 (:> bsv, UML3Views::ComponentDiagram without an owned rendering) inherits two renderings that are both asInterconnectionDiagram and is therefore flagged with validateViewDefinitionOnlyOneViewRendering",
+      "confidence": "medium"
+    },
+    {
+      "id": "P18",
+      "run": "E17d",
+      "claim": "E17V10b, which redefines the inherited rendering by its name ('render rendering nestedRendering :>> asInterconnectionDiagram;') while two inherited features carry that name, either fails to load with an ambiguous-name error or resolves to one of them and is not flagged",
+      "confidence": "low"
     }
   ]
 }
