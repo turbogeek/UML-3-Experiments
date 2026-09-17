@@ -8,6 +8,7 @@ Suites (each result is recorded in logs/test-report.json):
                       (SYNTAX via the validator, IMPORT/TYPE/KEYWORD/QUALIFIED/LINT via check_names)
   checker-calibration check_names.py on the official OMG models              -> must PASS
                       (guards the checker against false positives)
+  requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
@@ -225,11 +226,11 @@ def main() -> int:
     # 4b2. documentation (docs/DOC-CONVENTIONS.md): library and examples are fully documented with verifiable
     #      citations; each tests/docs fixture yields exactly its expected finding codes
     doc_cases = []
-    for profile, target in (("library", ROOT / "library"), ("example", ROOT / "examples")):
-        rep_path = LOGS / f"docs-{profile}.json"
+    for profile, target in (("library", ROOT / "library"), ("example", ROOT / "examples"), ("example", ROOT / "requirements")):
+        rep_path = LOGS / f"docs-{target.name}.json"
         d = run([sys.executable, str(ROOT / "tools" / "check_docs.py"), "--profile", profile, "--report", str(rep_path), str(target)])
         rep = json.loads(rep_path.read_text(encoding="utf-8")) if d.returncode != 2 and rep_path.exists() else {}
-        doc_cases.append({"case": profile, "passed": d.returncode == 0, "counts": rep.get("counts"),
+        doc_cases.append({"case": f"{target.name} ({profile})", "passed": d.returncode == 0, "counts": rep.get("counts"),
                           "error": d.stderr.strip()[-300:] if d.returncode == 2 else None})
     for entry in (ROOT / "tests" / "docs" / "expected.txt").read_text(encoding="utf-8").splitlines():
         if not entry.strip() or entry.startswith("#"):
@@ -241,6 +242,21 @@ def main() -> int:
         expected = sorted(c for c in codes.split(",") if c.strip())
         doc_cases.append({"case": "fixture " + fname, "expected": expected, "observed": observed, "passed": observed == expected})
     report["suites"]["docs"] = {"passed": all(c["passed"] for c in doc_cases), "cases": doc_cases}
+
+    # 4b3. requirements and use cases (docs/REQUIREMENTS-GUIDE.md): ANTLR syntax, name resolution against the
+    #      libraries, form/evidence/realization/use-case checks and the generated docs/UML3-Requirements.md
+    req_files = sorted((ROOT / "requirements").glob("*.sysml"))
+    req_syn_ok, req_syn_errs = syntax_check(req_files) if req_files else (False, ["no requirements/*.sysml"])
+    req_rc, req_names = name_check(req_files, library + req_files, LOGS / "names-requirements.json") if req_files else (1, {"files": []})
+    rq = run([sys.executable, str(ROOT / "tools" / "check_requirements.py"), "--report", str(LOGS / "requirements-report.json")])
+    rq_rep = json.loads((LOGS / "requirements-report.json").read_text(encoding="utf-8")) if rq.returncode != 2 else {}
+    report["suites"]["requirements"] = {
+        "passed": req_syn_ok and req_rc == 0 and rq.returncode == 0,
+        "syntaxErrors": req_syn_errs,
+        "nameFindings": [x | {"file": fr["file"]} for fr in req_names["files"] for x in fr["findings"]],
+        "summary": next((l for l in rq.stdout.splitlines() if l.startswith("SUMMARY")), rq.stderr.strip()[-300:]),
+        "errors": [x for x in rq_rep.get("findings", []) if x["severity"] == "error"],
+        "warnings": [x for x in rq_rep.get("findings", []) if x["severity"] == "warning"]}
 
     # 4c2. IDL code generation (Java: OMG IDL4-Java 1.0, Rust: docs/IDL-CODEGEN.md): spec naming examples; every
     #      tests/idl/codegen fixture generates, compiles (javac in-process; rustc when on PATH) and contains its

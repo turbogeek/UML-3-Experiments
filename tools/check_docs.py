@@ -6,7 +6,8 @@ Documentation checker for UML3 SysML v2 files (rules in docs/DOC-CONVENTIONS.md)
   D03  '//' note or '//* */' block note (not a model element)
   D04  named element without an owned 'doc'
        profile 'library': every named definition, usage, feature and enumeration literal
-       profile 'example': every named definition and usage except parameters (in/out/inout) and enum literals
+       profile 'example' (examples/, requirements/): every named definition and usage except parameters (in/out/inout),
+                       subject/actor/stakeholder usages and enum literals
   D06  a package doc without a "Contents:" section summarizing the package's elements
   D05  unresolvable citation in comment text: 'KerML n.n', 'SysML n.n' (clause numbers of the specification PDFs,
        extracted with pdftotext), 'UML 2.5.1 Name' (a UML concept of traceability/uml2-to-uml3.json),
@@ -208,7 +209,7 @@ def main() -> int:
                 seen.add(id(child))
                 if child.decl and child.name:
                     words = {t.text for t in child.decl if t.kind == "ident"}
-                    is_param = bool(words & {"in", "out", "inout"}) and not child.is_def
+                    is_param = bool(words & {"in", "out", "inout", "subject", "actor", "stakeholder"}) and not child.is_def
                     is_literal = child.decl_kind == "enum" and not child.is_def
                     exempt = args.profile == "example" and (is_param or is_literal)
                     depth, has_doc = 0, False

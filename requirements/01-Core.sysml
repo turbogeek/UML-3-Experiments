@@ -190,6 +190,50 @@ package UML3CoreRequirements {
 		@VerificationMethod { kind = VerificationMethodKind::test; }
 	}
 
+	package UseCases {
+		doc
+		/*
+		UseCases: how tool vendors and language maintainers use the UML3 core.
+
+		Contents:
+		- SupportUML3InTool: a tool vendor adds UML3 support to a SysML v2 tool.
+		- EvolveUML3Language: a language maintainer changes a UML3 library without breaking users.
+		- Traces: #traces dependencies from each use case to the requirements it needs.
+		*/
+		private import UML3Actors::*;
+
+		use case def SupportUML3InTool {
+			doc
+			/*
+			A tool vendor makes UML3 available in a SysML v2 tool: the libraries load, keywords give elements their
+			UML3 semantics, misapplied keywords are reported, and models exchange with other tools.
+			*/
+			subject environment : UML3Environment;
+			actor vendor : ToolVendor;
+			objective {
+				doc /* The tool can claim UML3 conformance for the conformance points it implements. */
+			}
+		}
+
+		use case def EvolveUML3Language {
+			doc
+			/*
+			A language maintainer adds or changes a UML3 concept: defines it in a library with documentation and
+			references, traces it to UML 2.x, checks naming and applicability, and publishes a new library version.
+			*/
+			subject environment : UML3Environment;
+			actor maintainer : LanguageMaintainer;
+			objective {
+				doc /* The change is documented, verified and versioned, and existing models keep their meaning. */
+			}
+		}
+
+		#traces dependency from SupportUML3InTool to 'UML3-CORE-001', 'UML3-CORE-002', 'UML3-CORE-003', 'UML3-CORE-008',
+			'UML3-CORE-010', 'UML3-CORE-011', 'UML3-CORE-013';
+		#traces dependency from EvolveUML3Language to 'UML3-CORE-002', 'UML3-CORE-004', 'UML3-CORE-005', 'UML3-CORE-006',
+			'UML3-CORE-007', 'UML3-CORE-009', 'UML3-CORE-012';
+	}
+
 	package Realization {
 		doc
 		/*

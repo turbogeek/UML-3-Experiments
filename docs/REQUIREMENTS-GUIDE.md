@@ -58,7 +58,7 @@ requirement <'UML3-CORE-001'> sysmlConformance {
 
 ## Use cases
 
-`requirements/UML3UseCases.sysml` holds the actors (`part def`, one per role) and `use case def`s grouped by area. Each use case has:
+The actors (`part def`, one per role) and the use case subject `UML3Environment` are in `requirements/00-Actors.sysml` (package `UML3Actors`). Each area file has a nested package `UseCases` with the area's `use case def`s. Each use case has:
 - a `doc`, a `subject` and at least one `actor`;
 - an `objective` saying what the actor gets;
 - `#traces` dependencies to the requirements it needs.
