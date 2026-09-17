@@ -6,32 +6,45 @@
     {
       "id": "P1",
       "claim": "p06 loads without builder errors (the load path reports parsing and linking only)",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "p06 loaded with no builder errors (logs/cameo/cameo-probes-report.json, 2026-09-17 12:03)"
     },
     {
       "id": "P2",
       "claim": "The validation engine flags UML3ProbeKeywordOverridesBase with validateFeatureValueOverriding on baseType",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "UML3ProbeKeywordOverridesBase: ERROR validateFeatureValueOverriding on baseType, 'Cannot override a non-default value - the redefined feature already has a non-default value. Redefined feature(s): ref :>> baseType.'"
     },
     {
       "id": "P3",
       "claim": "p07 loads and the validation engine reports no ERROR for UML3ProbeKeywordCategory: an abstract metadata def specializing SemanticMetadata with baseType unbound is legal, and binding baseType below it overrides nothing",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "p07 loaded; the validation engine reported no failure for UML3ProbeKeywordCategory"
     },
     {
       "id": "P4",
       "claim": "#probeChoice attribute def Selection specializes ProbeChoice and UML3Core::DataType (Q06, Q07); #dataType attribute def Amount still specializes DataType and not ProbeChoice (Q08, Q09)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "Q06, Q07, Q08 true and Q09 false as predicted (verifyImpliedSpecializations)"
     },
     {
       "id": "P5",
       "claim": "UML3IDL and UML3Core are not flagged after UnionMetadata and DataTypeMetadata specialize DataTypeKind",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "run_tests.py --cameo: validation engine passed with UML3IDL and UML3Core not flagged; the 2026-09-17 failure is gone"
     },
     {
       "id": "P6",
       "claim": "A view filter '@DataTypeKind' selects elements marked #dataType and #union: shop_order_views::idlTypes draws PaymentDetail and Money",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "shop_order_views::idlTypes (TREE) and idlTypeDetails (UNDEFINED) draw PaymentDetail and Money with SVG labels, 0 overlaps (logs/cameo/view-diagrams.txt)"
     }
-  ]
+  ],
+  "conclusion": "An extension keyword that refines a UML3 semantic keyword specializes an abstract keyword category (UML3Core::DataTypeKind) instead of the keyword; check_rules.py R15 reports the overriding form locally."
 }

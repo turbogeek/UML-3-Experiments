@@ -1,0 +1,37 @@
+{
+  "experiment": "E16 CATIA Magic customization library: what a UML3 view palette has to build on",
+  "recorded": "2026-09-17, before the run",
+  "setup": "Read-only probe tools/cameo-scripts/probeCustomizationLibrary.groovy through the harness: lists root members named DS*/Dassault*, then writes CATIA Magic's own textual notation (SysMLTextGeneratorServices.createTextualNotationBuilder().toText(namespace)) of DS_UIComponents::CoreUIComponents (Palette, Operations, Components, Dialogs), DS_Views::CoreViews, DS_Views::ViewPalettes and DS_Views::SymbolicViews to logs/cameo/ds-library/. Source for the expectations: SysML v2 Plugin UserGuide 2026x R1, 'Custom symbolic view definitions' (pp. 354-365) and 'Custom creation dialogs' (pp. 620-647).",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "The UML3 project already contains the DS_Views and DS_UIComponents roots (the 3DS SysML Customization library is attached to SysML v2 projects by default, because the predefined symbolic views and their palettes come from it)",
+      "confidence": "medium"
+    },
+    {
+      "id": "P2",
+      "claim": "toText works on library namespaces and the text contains \"view def <bsv> 'Base Symbolic View'\" with 'part baseViewPalette : ViewPalettes::BasePalette :>> palette'",
+      "confidence": "medium"
+    },
+    {
+      "id": "P3",
+      "claim": "DS_UIComponents::CoreUIComponents::Palette defines Button and ButtonsCategory with the features abstractButtons, focusedButton, label, description, isCollapsed, hasVisibleLabels and representation",
+      "confidence": "medium"
+    },
+    {
+      "id": "P4",
+      "claim": "DS_Views::ViewPalettes::CodeActionIdentifiers holds one String attribute per predefined button (e.g. requirementAction = \"ADD_REQUIREMENT\"), including actions for part def, item def, attribute def, enum def, port def, connection def and metadata def",
+      "confidence": "medium"
+    },
+    {
+      "id": "P5",
+      "claim": "DS_UIComponents::CoreUIComponents::Operations defines OperationFromCode, OperationFromTemplate and OperationByMetaclass, each with an 'in' parameter",
+      "confidence": "high"
+    },
+    {
+      "id": "P6",
+      "claim": "The General View palette (GeneralPalette) is a specialization of BasePalette whose extra categories are part usages subsetting buttonCategories, so a UML3 palette can specialize GeneralPalette and add categories",
+      "confidence": "low"
+    }
+  ]
+}

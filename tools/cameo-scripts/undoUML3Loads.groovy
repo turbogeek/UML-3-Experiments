@@ -69,7 +69,11 @@ SwingUtilities.invokeAndWait({
             try { topName = top == null ? null : top.getName() } catch (x) { topName = String.valueOf(top) }
             if (top == null) { sb.append("no further undo available\n"); break }
             if (!HARNESS_COMMANDS.contains(topName)) {
-                sb.append("STOPPED foreignCommandOnTop=" + topName + " -- not undone; resolve manually\n")
+                // with an only-list, reaching a command outside the list is the normal end (e.g. the IDL import
+                // below the view diagrams); without one, a foreign command means the user's work is on top
+                sb.append(ONLY != null
+                    ? "DONE nextCommand=" + topName + " -- not in the only-list, left for the caller\n"
+                    : "STOPPED foreignCommandOnTop=" + topName + " -- not undone; resolve manually\n")
                 break
             }
             def undo = am.getActionFor("UNDO")
