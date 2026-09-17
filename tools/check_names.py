@@ -116,6 +116,8 @@ DECL_KEYWORDS = {
     "feature", "class", "datatype", "struct", "assoc", "behavior", "function", "predicate",
     "metaclass", "type", "classifier", "connector", "expr", "step", "bool", "inv", "namespace",
     "interaction", "multiplicity",
+    # SysML control nodes can be named: 'merge retry;', 'join packedAndLabelled;'
+    "merge", "join", "fork", "decide",
 }
 # Tokens that may appear between a declaration keyword and the declared name.
 DECL_SKIP = {"def", "ref", "abstract", "variation", "derived", "constant", "readonly", "var",

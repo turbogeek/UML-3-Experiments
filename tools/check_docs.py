@@ -7,8 +7,10 @@ Documentation checker for UML3 SysML v2 files (rules in docs/DOC-CONVENTIONS.md)
   D04  named element without an owned 'doc'
        profile 'library': every named definition, usage, feature and enumeration literal
        profile 'example' (examples/, requirements/): every named definition and usage except parameters (in/out/inout),
-                       subject/actor/stakeholder usages and enum literals
+                       subject/actor/stakeholder usages, enum literals and named control nodes (merge, join, fork,
+                       decide; a 'comment about' explains them)
   D06  a package doc without a "Contents:" section summarizing the package's elements
+  D07  an element named in 'comment ... about ...' that does not resolve from the comment's namespace
   D05  unresolvable citation in comment text: 'KerML n.n', 'SysML n.n' (clause numbers of the specification PDFs,
        extracted with pdftotext), 'UML 2.5.1 Name' (a UML concept of traceability/uml2-to-uml3.json),
        'UML3Xxx::Name' (an element of library/), 'Enn' (an experiment in tests/ or docs/DESIGN.md)
@@ -200,6 +202,60 @@ def main() -> int:
                                      "message": f"package '{name}' doc has no 'Contents:' summary of its elements"})
         # D04 missing documentation
         fm = cn.index_file(f)
+        # D07 every element named in 'comment ... about a, b::c' resolves, searching from the comment's innermost
+        # enclosing namespace outward (the scope whose body spans the comment's line)
+        scopes: list[cn.Scope] = []
+        seen_scopes: set[int] = set()
+
+        def collect(sc: cn.Scope) -> None:
+            for ch in sc.children.values():
+                if id(ch) not in seen_scopes:
+                    seen_scopes.add(id(ch))
+                    scopes.append(ch)
+                    collect(ch)
+
+        collect(fm.root)
+        local = cn.Index()
+        local.add(fm)
+        local.finalize()
+
+        def enclosing(line_no: int) -> list[str]:
+            spans = [(sc.body[-1].line - sc.body[0].line, sc.qname) for sc in scopes
+                     if sc.body and sc.body[0].line <= line_no <= sc.body[-1].line]
+            chain = [q for _, q in sorted(spans)]
+            return chain + [""]
+
+        def about_resolves(name: str, chain: list[str]) -> bool:
+            for base in chain:
+                q = f"{base}::{name}" if base else name
+                for index in (local, idx):
+                    if index.lookup(q) is not None:
+                        return True
+                    owner, _, simple = q.rpartition("::")
+                    sc = index.lookup(owner) if owner else None
+                    if sc is not None and simple in sc.members:
+                        return True
+            return False
+
+        toks_all = [t for t in cn.tokenize(text)]
+        for i, t in enumerate(toks_all):
+            if t.text != "comment" or t.kind != "ident":
+                continue
+            j = i + 1
+            if j < len(toks_all) and toks_all[j].text != "about" and toks_all[j].kind == "ident":
+                j += 1
+            if j >= len(toks_all) or toks_all[j].text != "about":
+                continue
+            j += 1
+            chain = enclosing(t.line)
+            while j < len(toks_all) and toks_all[j].kind == "ident":
+                name, j = cn.parse_qualified(toks_all, j)
+                if not about_resolves(name, chain):
+                    findings.append({"code": "D07", "line": t.line, "message": f"comment about '{name}': no such element"})
+                if j < len(toks_all) and toks_all[j].text == ",":
+                    j += 1
+                    continue
+                break
         seen: set[int] = set()
 
         def walk(scope: cn.Scope) -> None:
@@ -211,7 +267,8 @@ def main() -> int:
                     words = {t.text for t in child.decl if t.kind == "ident"}
                     is_param = bool(words & {"in", "out", "inout", "return", "subject", "actor", "stakeholder"}) and not child.is_def
                     is_literal = child.decl_kind == "enum" and not child.is_def
-                    exempt = args.profile == "example" and (is_param or is_literal)
+                    is_control_node = bool(words & {"merge", "join", "fork", "decide"})
+                    exempt = args.profile == "example" and (is_param or is_literal or is_control_node)
                     depth, has_doc = 0, False
                     for t in child.body:
                         if t.text == "{":
