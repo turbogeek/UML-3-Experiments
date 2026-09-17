@@ -1,0 +1,32 @@
+{
+  "experiment": "E18 the diagram-kind model in CATIA Magic: keywords held as metaobjects, read back by a tool (issue I-35)",
+  "recorded": "2026-09-17, before the run",
+  "setup": "library/UML3DiagramKinds.sysml holds, per diagram kind, the keywords a view shows, the keywords a palette creates and the view definitions that render it, each as a metaobject ('ClassMetadata meta KerML::Type') in a 'KerML::Type[0..*]' attribute. customization/catia-magic annotates every palette with '@PaletteForDiagramKind { kind = UML3DiagramKinds::classDiagram meta KerML::Type; }'. Checks: load of the new library and of the annotated customization, the validation engine on both, and tools/cameo-scripts/probeDiagramKinds.groovy, which evaluates the three lists of every kind and prints the elements it gets back.",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "UML3DiagramKinds loads with 0 builder errors: an attribute typed by the reflective metaclass KerML::Type and bound to a sequence of 'meta' casts is accepted (the standard library binds SemanticMetadata::baseType the same way, but single-valued)",
+      "confidence": "medium"
+    },
+    {
+      "id": "P2",
+      "claim": "The validation engine reports no ERROR for UML3DiagramKinds",
+      "confidence": "medium"
+    },
+    {
+      "id": "P3",
+      "claim": "The annotated customization loads and is not flagged, and the palettes still verify (6/6 views, 45 templated buttons)",
+      "confidence": "medium"
+    },
+    {
+      "id": "P4",
+      "claim": "A script can read the model: evaluating classDiagram::shows returns the 12 listed keywords and metaclasses, classDiagram::creates the 18 keywords, and classDiagram::views the 2 view definitions, each as an element whose name matches the file",
+      "confidence": "low"
+    },
+    {
+      "id": "P5",
+      "claim": "A kind that binds no value (classTable::creates, sequenceDiagram::shows and creates) evaluates to an empty list rather than failing",
+      "confidence": "medium"
+    }
+  ]
+}

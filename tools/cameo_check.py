@@ -35,7 +35,8 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 LOGS = ROOT / "logs" / "cameo"
-LIBRARY_ORDER = ["UML3Core", "UML3Types", "UML3Components", "UML3Messaging", "UML3Data", "UML3IDL", "UML3Views"]
+LIBRARY_ORDER = ["UML3Core", "UML3Types", "UML3Components", "UML3Messaging", "UML3Data", "UML3IDL", "UML3Views",
+                 "UML3DiagramKinds"]
 VIEW_SCRIPT = "probeViewContents.groovy"
 VIEW_EXPECTED = ROOT / "tests" / "cameo" / "view-predictions.json"
 UNDO_SCRIPT = "undoUML3Loads.groovy"

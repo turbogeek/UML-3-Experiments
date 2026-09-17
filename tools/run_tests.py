@@ -11,7 +11,8 @@ Suites (each result is recorded in logs/test-report.json):
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
-  catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization
+  catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization,
+                      and tools/check_diagram_kinds.py (model vs view filters vs palettes, with fixtures)
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
                       the SysMLv2 test harness REST API, undo the loads, stop the harness.
                       This is the authoritative semantic check.
@@ -95,6 +96,7 @@ def main() -> int:
     # probe and experiment models are loaded into CATIA Magic too, so they go through the syntax check as well
     probe_models = (sorted((ROOT / "tests" / "cameo-experiments").glob("*.sysml"))
                     + sorted((ROOT / "tests" / "cameo-negative").glob("*.sysml"))
+                    + sorted((ROOT / "tests" / "diagram-kinds").glob("*.sysml"))
                     + sorted((ROOT / "customization").rglob("*.sysml")))
     syntax_files = [f for f in library + examples + probe_models if f.resolve() not in exempt]
     ok, errs = syntax_check(syntax_files)
@@ -344,6 +346,24 @@ def main() -> int:
                     "--report", str(LOGS / "rules-customization.json")])
         cust_cases.append({"case": "rules", "passed": rr_c.returncode == 0,
                            "errors": [rr_c.stdout[-300:]] if rr_c.returncode else []})
+        # the diagram-kind model, the view filters and the palettes must agree (issue I-35), and each
+        # tests/diagram-kinds fixture must produce exactly its expected problem codes
+        dk = run([sys.executable, str(ROOT / "tools" / "check_diagram_kinds.py"), "--stdlib", str(STDLIB),
+                  "--report", str(LOGS / "diagram-kinds.json")])
+        cust_cases.append({"case": "diagram kinds", "passed": dk.returncode == 0,
+                           "errors": [l for l in dk.stdout.splitlines() if not l.startswith("SUMMARY")][:10]})
+        dk_dir = ROOT / "tests" / "diagram-kinds"
+        for entry in (dk_dir / "expected.txt").read_text(encoding="utf-8").splitlines():
+            if not entry.strip() or entry.startswith("#"):
+                continue
+            case, codes = entry.split("|", 1)
+            expected = sorted(c for c in codes.split(",") if c.strip())
+            f = run([sys.executable, str(ROOT / "tools" / "check_diagram_kinds.py"), "--stdlib", str(STDLIB),
+                     "--kinds", str(dk_dir / f"kinds-{case}.sysml"), "--views", str(dk_dir / f"views-{case}.sysml"),
+                     "--palettes", str(dk_dir / f"palettes-{case}.sysml")])
+            observed = sorted({l.split()[0] for l in f.stdout.splitlines() if not l.startswith("SUMMARY")})
+            cust_cases.append({"case": f"diagram-kind fixture {case}", "expected": expected, "observed": observed,
+                               "passed": observed == expected})
     report["suites"]["catia-customization"] = {
         "passed": bool(cust_cases) and all(c["passed"] for c in cust_cases), "cases": cust_cases,
         "errors": [f'{c["case"]}: {e}' for c in cust_cases for e in c.get("errors", [])]}

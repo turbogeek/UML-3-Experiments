@@ -1,5 +1,5 @@
 {
-  "description": "The UML3 palettes CATIA Magic builds from customization/catia-magic, as tools/cameo-scripts/verifyPalettes.groovy reads them through the DSL service (experiment E17). Each button lists label, the element kind its template owns and the UML3 keyword that element carries, so the check fails if a button stops creating a UML3 element. absentCategories are the General View categories the UML3 palettes remove.",
+  "description": "The UML3 palettes CATIA Magic builds from customization/catia-magic, as tools/cameo-scripts/verifyPalettes.groovy reads them through the DSL service (experiment E17). Each button lists label, the element kind its template owns and the UML3 keyword that element carries, so the check fails if a button stops creating a UML3 element. absentCategories are the General View categories the UML3 palettes remove. The message flow buttons (I-36) copy flows whose ends are UML3Messaging ports, because a flow with undirected ends has no related features.",
   "absentCategories": [
     "Actions",
     "Other Actions",
@@ -370,6 +370,28 @@
             "broker",
             "PartDefinitionImpl",
             "MessageBrokerMetadata"
+          ]
+        ],
+        "UML3 Message Flows": [
+          [
+            "publishes",
+            "FlowUsageImpl",
+            "Publishes"
+          ],
+          [
+            "subscribes",
+            "FlowUsageImpl",
+            "Subscribes"
+          ],
+          [
+            "sends",
+            "FlowUsageImpl",
+            "Sends"
+          ],
+          [
+            "handles",
+            "FlowUsageImpl",
+            "Handles"
           ]
         ]
       }

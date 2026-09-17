@@ -1,0 +1,8 @@
+# case|expected problem codes (empty = consistent); tools/check_diagram_kinds.py is run with the three fixture files
+ok|
+filter-missing|SHOWS
+filter-extra|SHOWS
+palette-missing|CREATES
+palette-extra|CREATES
+orphan-view|ORPHAN
+orphan-palette|ORPHAN

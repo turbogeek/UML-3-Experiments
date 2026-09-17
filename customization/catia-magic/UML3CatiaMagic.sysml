@@ -21,6 +21,8 @@ library package UML3CatiaMagic {
 	- 'UML3 Package Diagram', 'UML3 Class Diagram', 'UML3 Component Diagram', 'UML3 Deployment Diagram',
 	  'UML3 Entity Relationship Diagram', 'UML3 Message Schema View': the UML3Views definitions with those palettes.
 	- UML3ViewTemplates and UML3ViewCreationDialog: the Create View commands for those view definitions.
+	- PaletteForDiagramKind: links each palette to its UML3DiagramKinds kind, which is what keeps the
+	  buttons and the view filters in step (checked by tools/check_diagram_kinds.py).
 	References: CATIA Magic SysML v2 Plugin 2026x R1 'Custom symbolic view definitions' and 'Custom View
 	Creation dialog'; E16; E17; UML3Views.
 	*/
@@ -48,7 +50,9 @@ library package UML3CatiaMagic {
 		placeholder definitions Client and Supplier, and its button selects the dependency with
 		'as SysML::Dependency'. A connector template owns two placeholder ends as well, because a connector
 		that is not abstract must have two related features (validateConnectorRelatedFeatures), and its
-		button selects the connector with 'as SysML::ConnectionUsage' or 'as SysML::AllocationUsage'.
+		button selects the connector with 'as SysML::ConnectionUsage' or 'as SysML::AllocationUsage'. A flow
+		template needs directed ends, so it owns two placeholder parts with UML3Messaging ports and flows
+		between their message features; undirected placeholders are not related features (E17, I-36).
 		Verified in E17: every templated button resolves to its template element and keyword (class to an
 		item definition with ClassMetadata, data type to an attribute definition with DataTypeMetadata,
 		association to a connection definition with AssociationMetadata, uses to a dependency with
@@ -76,6 +80,22 @@ library package UML3CatiaMagic {
 		References: SysML 8.2.2.26; E17.
 		*/
 
+	metadata def PaletteForDiagramKind {
+		doc
+		/*
+		Links a UML3 palette to the diagram kind whose 'creates' keywords it offers
+		(UML3DiagramKinds). tools/check_diagram_kinds.py reads it and reports a palette whose buttons do not
+		match the keywords of its kind, so the model and the palettes cannot drift apart (issue I-35).
+
+		Usage: '@PaletteForDiagramKind { kind = UML3DiagramKinds::classDiagram meta KerML::Type; }' in the
+		body of a palette definition.
+		References: UML3DiagramKinds; docs/DESIGN.md issue I-35.
+		*/
+		attribute kind : KerML::Type {
+			doc /* The UML3DiagramKinds part for this palette, as a metaobject. */
+		}
+	}
+
 	package UML3ElementTemplates {
 		doc
 		/*
@@ -85,7 +105,7 @@ library package UML3CatiaMagic {
 		Contents:
 		- Client, Supplier: the placeholder definitions that dependency templates connect.
 		- Package and layer templates; classifier, feature and relationship templates of the class diagram.
-		- Component, deployment, data and messaging templates.
+		- Component, deployment, data and messaging templates, including the message flow templates.
 		*/
 		item def Client {
 			doc /* Placeholder for the client of a dependency template; the diagram replaces it with the element drawn from. */
@@ -196,6 +216,27 @@ library package UML3CatiaMagic {
 		package topicTemplate { #topic part def; }
 		package queueTemplate { #queue part def; }
 		package brokerTemplate { #broker part def; }
+
+		package publishesTemplate {
+			part producer { port events : ProducerPort; }
+			part channel { port inbound : ConsumerPort; }
+			#publishes flow from producer.events.outboundMessages to channel.inbound.inboundMessages;
+		}
+		package subscribesTemplate {
+			part channel { port outbound : ProducerPort; }
+			part consumer { port events : ConsumerPort; }
+			#subscribes flow from channel.outbound.outboundMessages to consumer.events.inboundMessages;
+		}
+		package sendsTemplate {
+			part sender { port api : RequestReplyPort; }
+			part receiver { port api : ~RequestReplyPort; }
+			#sends flow from sender.api.request to receiver.api.request;
+		}
+		package handlesTemplate {
+			part handler { port api : ~RequestReplyPort; }
+			part requester { port api : RequestReplyPort; }
+			#handles flow from handler.api.response to requester.api.response;
+		}
 	}
 
 	part def UML3PackagePalette :> GeneralPalette {
@@ -207,6 +248,7 @@ library package UML3CatiaMagic {
 		specializes DS_Views::CoreViews::bsv.
 		References: DS_Views::ViewPalettes::GeneralPalette; UML 2.5.1 Package diagram.
 		*/
+		@PaletteForDiagramKind { kind = UML3DiagramKinds::packageDiagram meta KerML::Type; }
 		part uml3PackagesCategory : ButtonsCategory :> buttonCategories {
 			doc /* UML3 packages and the dependencies between them. */
 			attribute :>> isCollapsed default false;
@@ -264,6 +306,7 @@ library package UML3CatiaMagic {
 		specializes DS_Views::CoreViews::bsv.
 		References: DS_Views::ViewPalettes::GeneralPalette; UML 2.5.1 Class diagram; E17.
 		*/
+		@PaletteForDiagramKind { kind = UML3DiagramKinds::classDiagram meta KerML::Type; }
 		part uml3ClassifiersCategory : ButtonsCategory :> buttonCategories {
 			doc /* UML3 classifiers: the boxes of a class diagram. */
 			attribute :>> isCollapsed default false;
@@ -472,6 +515,7 @@ library package UML3CatiaMagic {
 		that specializes DS_Views::CoreViews::bsv.
 		References: DS_Views::ViewPalettes::GeneralPalette; UML 2.5.1 Component diagram.
 		*/
+		@PaletteForDiagramKind { kind = UML3DiagramKinds::componentDiagram meta KerML::Type; }
 		part uml3ComponentsCategory : ButtonsCategory :> buttonCategories {
 			doc /* UML3 components and their ports. */
 			attribute :>> isCollapsed default false;
@@ -588,6 +632,7 @@ library package UML3CatiaMagic {
 		that specializes DS_Views::CoreViews::bsv.
 		References: DS_Views::ViewPalettes::GeneralPalette; UML 2.5.1 Deployment diagram.
 		*/
+		@PaletteForDiagramKind { kind = UML3DiagramKinds::deploymentDiagram meta KerML::Type; }
 		part uml3DeploymentCategory : ButtonsCategory :> buttonCategories {
 			doc /* UML3 deployment targets and artifacts. */
 			attribute :>> isCollapsed default false;
@@ -679,6 +724,7 @@ library package UML3CatiaMagic {
 		specializes DS_Views::CoreViews::bsv.
 		References: DS_Views::ViewPalettes::GeneralPalette; UML3Data.
 		*/
+		@PaletteForDiagramKind { kind = UML3DiagramKinds::entityRelationshipDiagram meta KerML::Type; }
 		part uml3LogicalDataCategory : ButtonsCategory :> buttonCategories {
 			doc /* The logical data model: entities and their relationships. */
 			attribute :>> isCollapsed default false;
@@ -800,6 +846,7 @@ library package UML3CatiaMagic {
 		that specializes DS_Views::CoreViews::bsv.
 		References: DS_Views::ViewPalettes::GeneralPalette; UML3Messaging.
 		*/
+		@PaletteForDiagramKind { kind = UML3DiagramKinds::messageSchema meta KerML::Type; }
 		part uml3MessagesCategory : ButtonsCategory :> buttonCategories {
 			doc /* UML3 message types, each with the standard header. */
 			attribute :>> isCollapsed default false;
@@ -891,6 +938,49 @@ library package UML3CatiaMagic {
 				attribute :>> description = "#broker part def: the middleware hosting the channels";
 				perform action : OperationFromTemplate :>> operation {
 					in ref = (UML3ElementTemplates::brokerTemplate meta KerML::Package).ownedElement;
+				}
+			}
+		}
+		part uml3MessageFlowsCategory : ButtonsCategory :> buttonCategories {
+			doc /* The UML3 flows that connect producers, channels and consumers. */
+			attribute :>> isCollapsed default false;
+			attribute :>> hasVisibleLabels default true;
+			attribute :>> label default "UML3 Message Flows";
+			attribute :>> description default "UML3 publishes, subscribes, sends and handles flows";
+			part publishesButton : Button :> abstractButtons {
+				doc /* Creates a #publishes flow from a producer's port to a channel. */
+				attribute :>> label = "publishes";
+				attribute :>> description = "#publishes flow: the producer publishes a message to a channel";
+				attribute :>> representation = SymbolicRepresentationKind::path;
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ElementTemplates::publishesTemplate meta KerML::Package).ownedElement as SysML::FlowUsage;
+				}
+			}
+			part subscribesButton : Button :> abstractButtons {
+				doc /* Creates a #subscribes flow from a channel to a consumer's port. */
+				attribute :>> label = "subscribes";
+				attribute :>> description = "#subscribes flow: the channel delivers a message to a consumer";
+				attribute :>> representation = SymbolicRepresentationKind::path;
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ElementTemplates::subscribesTemplate meta KerML::Package).ownedElement as SysML::FlowUsage;
+				}
+			}
+			part sendsButton : Button :> abstractButtons {
+				doc /* Creates a #sends flow from a sender to the receiver of a command or query. */
+				attribute :>> label = "sends";
+				attribute :>> description = "#sends flow: the sender addresses a message to one receiver";
+				attribute :>> representation = SymbolicRepresentationKind::path;
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ElementTemplates::sendsTemplate meta KerML::Package).ownedElement as SysML::FlowUsage;
+				}
+			}
+			part handlesButton : Button :> abstractButtons {
+				doc /* Creates a #handles flow from the handler back to the requester. */
+				attribute :>> label = "handles";
+				attribute :>> description = "#handles flow: the handler answers the requester";
+				attribute :>> representation = SymbolicRepresentationKind::path;
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ElementTemplates::handlesTemplate meta KerML::Package).ownedElement as SysML::FlowUsage;
 				}
 			}
 		}

@@ -140,7 +140,8 @@ library package UML3Views {
 
 		Usage: view architectureComponents : ComponentDiagram { expose OnlineStoreArchitecture::*; }
 		The filter selects elements marked #component, #service, #subsystem, #interfaceType, #assembly or
-		#delegation, every port def and port usage, and every connection usage. Interface and allocation
+		#delegation, elements marked with a dependency keyword (#realizes for an interface a component
+		realizes, #uses between components), every port def and port usage, and every connection usage. Interface and allocation
 		usages are connection usages too, so exposed #deploy and #manifest allocations are selected as well.
 		It renders as an interconnection diagram: parts as nested nodes with their ports on the boundary,
 		connections as edges.
@@ -151,7 +152,7 @@ library package UML3Views {
 		filter not (as KerML::Element).isLibraryElement;
 		filter @ComponentMetadata or @ServiceMetadata or @SubsystemMetadata or @InterfaceTypeMetadata
 			or @SysML::PortDefinition or @SysML::PortUsage or @AssemblyMetadata or @DelegationMetadata
-			or @SysML::ConnectionUsage;
+			or @SysML::ConnectionUsage or @DependencyKind;
 		render asInterconnectionDiagram;
 	}
 
@@ -236,8 +237,9 @@ library package UML3Views {
 		Usage: view messageSchemas : MessageSchemaView { expose OnlineStoreMessaging::*; }
 		Not a UML 2.5.1 diagram kind: in UML, message types are signals shown on class diagrams. The filter
 		selects elements marked #messageType, #command, #domainEvent, #queryMessage, #reply,
-		#documentMessage, #channel, #topic, #queue or #broker. Endpoint ports and the #publishes,
-		#subscribes, #sends and #handles flows are not selected.
+		#documentMessage, #channel, #topic, #queue or #broker, and the message flows #publishes,
+		#subscribes, #sends and #handles, which are flow usages rather than connections (I-04). Endpoint
+		ports are not selected, and flows nested inside a wiring part need a recursive expose to appear.
 		Compact form: it renders as a tree diagram. Use MessageSchemaDetailView to show payload attributes
 		and headers in compartments.
 		The first filter hides library elements that 'expose' brings in through imports (E06).
@@ -246,7 +248,7 @@ library package UML3Views {
 		filter not (as KerML::Element).isLibraryElement;
 		filter @MessageTypeMetadata or @CommandMetadata or @DomainEventMetadata or @QueryMessageMetadata
 			or @ReplyMetadata or @DocumentMessageMetadata or @ChannelMetadata or @TopicMetadata
-			or @QueueMetadata or @MessageBrokerMetadata;
+			or @QueueMetadata or @MessageBrokerMetadata or @Publishes or @Subscribes or @Sends or @Handles;
 		render asTreeDiagram;
 	}
 
@@ -263,7 +265,7 @@ library package UML3Views {
 		filter not (as KerML::Element).isLibraryElement;
 		filter @MessageTypeMetadata or @CommandMetadata or @DomainEventMetadata or @QueryMessageMetadata
 			or @ReplyMetadata or @DocumentMessageMetadata or @ChannelMetadata or @TopicMetadata
-			or @QueueMetadata or @MessageBrokerMetadata;
+			or @QueueMetadata or @MessageBrokerMetadata or @Publishes or @Subscribes or @Sends or @Handles;
 	}
 
 	view def SequenceDiagram :> SequenceView {
