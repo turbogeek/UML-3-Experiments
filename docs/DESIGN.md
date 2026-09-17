@@ -120,7 +120,7 @@ Collection kinds need no new types:
 
 | Check | Tool | Status |
 |---|---|---|
-| Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 13 files (7 library + 6 examples) load with 0 errors**, plus the IDL imports and 8 probes (2026-09-17) |
+| Parse, link and validate in a commercial implementation | CATIA Magic SysML v2 test harness (`tools/cameo_check.py`, REST `/load-sysml`) | **All 16 files (7 library + 6 examples + 3 CATIA Magic customization) load with 0 errors**, plus the IDL imports and 8 probes; the validation engine reports 0 failures on all 21 packages (2026-09-17) |
 | Keyword semantics (implied specialization/subsetting/inheritance) | CATIA Magic API via `verifyImpliedSpecializations.groovy` | **42/42 against the recorded baseline, including negative controls**; probe effects 8/8 (E15) |
 | Validation engine (KerML/SysML constraint suites) | `validateUML3Packages.groovy` | **0 failures on library + examples**; probes flagged exactly as predicted (E15) |
 | Diagram keyword labels | `probeKeywordDisplay.groovy` | semantic keywords render `«#keyword»`; plain metadata is not in the label |
