@@ -3,9 +3,37 @@
   "recorded": "2026-09-17, before the run",
   "setup": "Same 9 example views as E13. Run A: views as they are (no render). Run B: view usages with 'render asTreeDiagram' (asInterconnectionDiagram for the component view, asElementTable for the class table). Both runs call DisplayExposedElements.layout(result) and count intersecting sibling shape bounds.",
   "predictions": [
-    {"id": "P1", "claim": "Run A: DisplayMode.toDisplayMode(view) is UNDEFINED for every view, because no view declares a rendering", "confidence": "medium"},
-    {"id": "P2", "claim": "Run A: at least one view has overlapping sibling shapes after display and layout", "confidence": "medium"},
-    {"id": "P3", "claim": "Run B: the display mode is TREE for asTreeDiagram views and NESTED for asInterconnectionDiagram", "confidence": "medium"},
-    {"id": "P4", "claim": "Run B: no view has overlapping sibling shapes after layout", "confidence": "low"}
+    {
+      "id": "P1",
+      "claim": "Run A: DisplayMode.toDisplayMode(view) is UNDEFINED for every view, because no view declares a rendering",
+      "confidence": "medium",
+      "observed": "mostly confirmed",
+      "observation": "UNDEFINED for 7 views; the component view is NESTED (inherited from InterconnectionView) and the grid table UNKNOWN"
+    },
+    {
+      "id": "P2",
+      "claim": "Run A: at least one view has overlapping sibling shapes after display and layout",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "overlapping sibling shapes in 8 of 9 views (190 in the class diagram); SVG header texts all at one position"
+    },
+    {
+      "id": "P3",
+      "claim": "Run B: the display mode is TREE for asTreeDiagram views and NESTED for asInterconnectionDiagram",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "render asTreeDiagram gives TREE, asInterconnectionDiagram NESTED, asElementTable UNKNOWN"
+    },
+    {
+      "id": "P4",
+      "claim": "Run B: no view has overlapping sibling shapes after layout",
+      "confidence": "low",
+      "observed": "refuted",
+      "observation": "rendering alone does not lay out: overlaps unchanged. Calling the diagram's default layouter (LayoutManager.getDefaultLayouter(diagram) = SysML2DiagramLayouter, layout(diagram, null)) inside the session gives 0 overlaps in all 9 views, rendered or not"
+    }
+  ],
+  "furtherObservations": [
+    "The rendering changes the content: TREE shows compact name and keyword boxes (enum literals, metadata values); UNDEFINED shows full compartments (doc, attributes, items, ends), so documentation dominates the diagram",
+    "Decision 2026-09-17 (user): UML3 provides both compact views (render asTreeDiagram) and detail views (full compartments)"
   ]
 }

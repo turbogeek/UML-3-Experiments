@@ -29,10 +29,12 @@ if (!reqFile.exists()) return "RESULT|FAIL|missing " + reqFile
 String outDir = null
 List<String> views = []
 boolean inspectOnly = false
+boolean png = false
 reqFile.readLines("UTF-8").each { l ->
     if (l.startsWith("outDir=")) outDir = l.substring(7).trim()
     else if (l.startsWith("view=")) views << l.substring(5).trim()
     else if (l.trim() == "inspectOnly=true") inspectOnly = true   // report diagram presence only; no model change
+    else if (l.trim() == "png=true") png = true                   // also write <view>.png for human review
 }
 if (!outDir || views.isEmpty()) return "RESULT|FAIL|request needs outDir= and at least one view="
 new File(outDir).mkdirs()
@@ -103,8 +105,21 @@ SwingUtilities.invokeAndWait({
                 def display = displayClass.getConstructor(adpeClass).newInstance(diagram)
                 def result = display.display(java.util.stream.Stream.of(diagram))
                 out.append("RESULTMODE|" + path + "|" + clean(call0(result, "getDisplayMode")) + "|" + (call0(result, "getDisplayed")?.size()) + "\n")
-                try { display.layout(result); out.append("LAYOUT|" + path + "|done\n") }
-                catch (Throwable t) { out.append("ERROR|" + path + "|layout|" + clean(t) + "\n") }
+                try { display.layout(result); out.append("LAYOUT|" + path + "|display.layout|done\n") }
+                catch (Throwable t) { out.append("ERROR|" + path + "|display.layout|" + clean(t) + "\n") }
+                // Showing elements does not position them (E14 run A/B: all shapes at one spot). Lay the diagram out
+                // with its default layouter, the one behind the GUI 'Layout diagram' action, inside this session.
+                try {
+                    def layoutManager = Class.forName("com.nomagic.magicdraw.uml.symbols.layout.LayoutManager", true, cl).getInstance()
+                    def layouter = layoutManager.getDefaultLayouter(diagram)
+                    boolean can = layouter != null && layouter.canLayout(diagram)
+                    boolean done = can ? layouter.layout(diagram, null) : false
+                    out.append("LAYOUT|" + path + "|" + (layouter == null ? "null" : layouter.getClass().getSimpleName()) + "|canLayout=" + can + "|result=" + done + "\n")
+                } catch (Throwable t) {
+                    def cause = t
+                    while (cause.getCause() != null && cause.getCause() != cause) cause = cause.getCause()
+                    out.append("ERROR|" + path + "|defaultLayouter|" + clean(cause) + "\n")
+                }
                 diagrams[path] = diagram
             } catch (Throwable t) {
                 out.append("ERROR|" + path + "|create/display|" + clean(t) + "\n")
@@ -117,6 +132,10 @@ SwingUtilities.invokeAndWait({
     }
     try { out.append("TOP|" + clean(call0(project.getCommandHistory().getCommandForUndo(), "getName")) + "\n") } catch (Throwable ignored) {}
 } as Runnable)
+
+// E14: the 'Layout diagram' command seen after the first E13 run came from the GUI, not from this script; no layout
+// runs asynchronously. The default layouter call above positions the shapes synchronously inside the session.
+for (int i = 0; i < 3; i++) { SwingUtilities.invokeAndWait({ } as Runnable) }
 
 int exported = 0
 diagrams.each { path, diagram ->
@@ -184,6 +203,15 @@ diagrams.each { path, diagram ->
     }
     out.append("SVG|" + path + "|" + file.path + "|" + (file.exists() ? file.length() : -1) + "|" + mode + "\n")
     if (mode != null) exported++
+    if (png) {
+        def pngFile = new File(outDir, path.replace("::", ".") + ".png")
+        try {
+            SwingUtilities.invokeAndWait({ exporterClass.export(diagram, exporterClass.getField("PNG").getInt(null), pngFile) } as Runnable)
+            out.append("PNG|" + path + "|" + pngFile.path + "|" + (pngFile.exists() ? pngFile.length() : -1) + "\n")
+        } catch (Throwable t) {
+            out.append("ERROR|" + path + "|png|" + clean(t) + "\n")
+        }
+    }
 }
 out.append(exported == views.size() ? "RESULT|OK|" + exported + "\n" : "RESULT|FAIL|exported " + exported + " of " + views.size() + "\n")
 return out.toString()

@@ -3,11 +3,48 @@
   "recorded": "2026-09-17, before the first run",
   "setup": "Libraries and examples 01-05 loaded; the 9 views of examples/05-OnlineStoreViews.sysml requested; a bounded undo removes only the commands of this run",
   "predictions": [
-    {"id": "P1", "claim": "No view has a diagram before the run (E07: loading and evaluating views creates none)", "confidence": "high"},
-    {"id": "P2", "claim": "Diagrams.createDiagram(view, Diagrams.getViewDefinition(view), false) creates a diagram for every view without an exception, inside the session", "confidence": "medium"},
-    {"id": "P3", "claim": "The whole run leaves exactly one undoable command named 'UML3 View Diagrams' on top of the history", "confidence": "medium"},
-    {"id": "P4", "claim": "DisplayExposedElements shows at least the elements of each view's recorded 'includes' (tests/cameo/view-predictions.json) and none of its 'excludes' as shapes", "confidence": "low"},
-    {"id": "P5", "claim": "ImageExporter.export(diagram, SVG, file) writes a non-empty SVG for every view, and each 'includes' name occurs as text in the SVG", "confidence": "low"},
-    {"id": "P6", "claim": "Undoing the 'UML3 View Diagrams' command removes the diagrams: afterwards Diagrams.getDiagram(view) is null again", "confidence": "medium"}
-  ]
+    {
+      "id": "P1",
+      "claim": "No view has a diagram before the run (E07: loading and evaluating views creates none)",
+      "confidence": "high",
+      "observed": "partly refuted",
+      "observation": "8 of 9 views had no diagram; OnlineStoreViews::architectureComponents already had one in this project (an earlier GUI 'General View' diagram, E07)"
+    },
+    {
+      "id": "P2",
+      "claim": "Diagrams.createDiagram(view, Diagrams.getViewDefinition(view), false) creates a diagram for every view without an exception, inside the session",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "Diagrams.createDiagram(view, getViewDefinition(view), false) created a 'SysMLv2:General View' diagram for every view (8 created, 1 reused)"
+    },
+    {
+      "id": "P3",
+      "claim": "The whole run leaves exactly one undoable command named 'UML3 View Diagrams' on top of the history",
+      "confidence": "medium",
+      "observed": "confirmed with a correction",
+      "observation": "the run leaves one 'UML3 View Diagrams' command; a later 'Layout diagram' command came from the GUI (E14), not from the script"
+    },
+    {
+      "id": "P4",
+      "claim": "DisplayExposedElements shows at least the elements of each view's recorded 'includes' (tests/cameo/view-predictions.json) and none of its 'excludes' as shapes",
+      "confidence": "low",
+      "observed": "mostly confirmed",
+      "observation": "shapes cover the recorded includes except exposed dependencies: DisplayExposedElements does not draw Dependency elements (checkoutUsesGateway in VW1; customerMapping/orderMapping in VW5); no exclude was drawn"
+    },
+    {
+      "id": "P5",
+      "claim": "ImageExporter.export(diagram, SVG, file) writes a non-empty SVG for every view, and each 'includes' name occurs as text in the SVG",
+      "confidence": "low",
+      "observed": "refuted, then fixed",
+      "observation": "ImageExporter.SVG draws text as outlines (no <text>, 4.9 MB); ExportParamsBuilder.setUseSVGTextTag(true) with InternalImageExporter.exportPaintableComponent writes <text> elements (82 KB), after which every include is found as text"
+    },
+    {
+      "id": "P6",
+      "claim": "Undoing the 'UML3 View Diagrams' command removes the diagrams: afterwards Diagrams.getDiagram(view) is null again",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "undoing 'UML3 View Diagrams' removed the created diagrams (Diagrams.getDiagram(view) null again)"
+    }
+  ],
+  "observedRuns": "logs/cameo/e13 (export.txt, export2.txt, svg/)"
 }
