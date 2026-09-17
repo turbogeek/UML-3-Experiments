@@ -129,7 +129,7 @@ Collection kinds need no new types:
 | Design rules | `tools/check_rules.py` | examples 0 errors; 14 rules (R01–R12, R14, R15) each proven to fire |
 | UML3 palettes in CATIA Magic | `verifyPalettes.groovy` + `tools/check_palettes.py` | **6/6 views** get their UML3 palette; all 41 templated buttons copy the expected element kind and keyword; the UML3 Create View dialog is active; 7 negative controls fail the check |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
-| Name resolution, lint and keyword applicability | `tools/check_names.py` | Library, examples and requirements pass; 22 negative tests fail as expected (n21, n22: keyword rules inherited through imports); 0 false positives on 251 official OMG models |
+| Name resolution, lint and keyword applicability | `tools/check_names.py` | Library, examples and requirements pass; 23 negative tests fail as expected (n21, n22: keyword rules inherited through imports; n23: a reserved word as a declared name, E12); 0 false positives on 251 official OMG models |
 | Documentation | `tools/check_docs.py` | 0 findings on D01–D07 in library, examples and requirements |
 | Requirements | `tools/check_requirements.py` | 247 requirements and 59 use cases pass form, evidence, realization and trace checks |
 | OMG Pilot Implementation | `tools/pilot-check` | Not run (the local 0.55 build is broken) |

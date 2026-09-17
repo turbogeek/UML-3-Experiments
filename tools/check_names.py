@@ -727,6 +727,26 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
             i = nxt
             continue
         i += 1
+
+    # A reserved word cannot be a declared name: 'enum first { ... }' is rejected by CATIA Magic and by the
+    # ANTLR validator ("extraneous input 'first'"), because 'first' belongs to the succession syntax. The
+    # indexer simply does not read such a token as a name, so without this check the file looks clean (E12).
+    k = 0
+    while k < len(toks):
+        if toks[k].kind == "ident" and toks[k].text in DECL_KEYWORDS and _at_statement_start(toks, k):
+            j = k + 1
+            while j < len(toks) and toks[j].kind == "ident" and toks[j].text in DECL_SKIP:
+                j += 1
+            if j + 2 < len(toks) and toks[j].text == "<" and toks[j + 1].kind == "ident" and toks[j + 2].text == ">":
+                j += 3
+            if (j < len(toks) and toks[j].kind == "ident" and toks[j].text in NOT_A_NAME
+                    and toks[j].text not in SOFT_NAMES
+                    and j + 1 < len(toks) and toks[j + 1].text in ("{", ";", ":", ":>", "[", "=")):
+                findings.append(Finding("LINT", toks[j].line,
+                                        f"'{toks[j].text}' is a reserved word and cannot be a declared name"))
+            k = j
+            continue
+        k += 1
     return findings
 
 

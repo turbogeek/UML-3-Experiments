@@ -3,7 +3,7 @@ package UML3E12DocsProbe {
 	/*
 	E12 probe: how CATIA Magic stores and relates UML3 documentation.
 	Contents:
-	- A, B: documented part definitions; Kind: an enumeration with documented literals.
+	- A, B: documented part definitions; Kind: an enumeration with documented literals (initial, later).
 	- Design: a named comment about A and B; StarDoc: a part def whose doc keeps star decoration.
 	- statusCheck: a requirement using ModelingMetadata status done.
 	*/
@@ -27,8 +27,8 @@ package UML3E12DocsProbe {
 
 	enum def Kind {
 		doc /* Kinds. */
-		enum first { doc /* The first kind. */ }
-		enum second { doc /* The second kind. */ }
+		enum initial { doc /* The first kind; not named 'first', which is a reserved word (E12). */ }
+		enum later { doc /* The second kind. */ }
 	}
 
 	requirement <'E12-REQ-1'> statusCheck {

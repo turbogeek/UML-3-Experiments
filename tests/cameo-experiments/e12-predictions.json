@@ -6,32 +6,45 @@
     {
       "id": "P1",
       "claim": "The probe loads with 0 errors: 'comment Design about A, B' (a list), docs on enum literals and StatusKind::done are accepted",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "partly refuted, then confirmed",
+      "observation": "The probe as written did NOT load: 'enum first { ... }' is rejected ('extraneous input first expecting ...'), because first belongs to the succession syntax and cannot be a declared name. The ANTLR validator rejects it too; check_names did not (the indexer simply does not read a reserved word as a name), so check_names now reports it as LINT and tests/negative/n23 covers it. With the literals renamed (initial, later) the probe loads with 0 errors, including 'comment Design about A, B', docs on enumeration literals and StatusKind::done"
     },
     {
       "id": "P2",
       "claim": "Design is a Comment owned by the package with exactly 2 annotated elements, A and B",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "Design is a CommentImpl owned by the package whose annotated elements are exactly A and B"
     },
     {
       "id": "P3",
       "claim": "A's owned Documentation body is exactly 'Documentation of A.' (no delimiters, trimmed)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "A's owned Documentation body is 'Documentation of A.' - no delimiters, one trailing space"
     },
     {
       "id": "P4",
       "claim": "StarDoc's Documentation body has no leading '*' on its lines (KerML 8.2.3.3.3 note 1 strips them)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "StarDoc's body is 'First line with star decoration.\nSecond line.': CATIA Magic strips the leading '*' of each line (KerML 8.2.3.3.3), which is why the UML3 convention forbids star decoration - it is invisible in the tool and only clutters the source"
     },
     {
       "id": "P5",
       "claim": "Enumeration literals 'first' and 'second' each own one Documentation",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "Kind::initial and Kind::later are EnumerationUsageImpl elements, each owning one Documentation"
     },
     {
       "id": "P6",
       "claim": "The library files re-documented with 'comment ... about' lists (UML3Core and the others) still load with 0 errors and 0 validation failures",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "The re-documented libraries load with 0 errors and the validation engine reports 0 failures on all 21 packages (full run 2026-09-17)"
     }
-  ]
+  ],
+  "conclusion": "Documentation survives the round trip into CATIA Magic as model elements: a doc becomes an owned Documentation whose body has no delimiters and no star decoration, a named 'comment X about A, B' becomes one Comment annotating both elements, and enumeration literals own their own documentation. The experiment also found a checker gap (a reserved word used as a declared name) that CATIA Magic and the ANTLR validator catch but check_names did not."
 }

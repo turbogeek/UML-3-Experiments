@@ -92,7 +92,11 @@ def main() -> int:
     # 1. syntax, positive (files hitting documented ANTLR-validator gaps are exempt; see 1b)
     gaps = json.loads((ROOT / "tests" / "validator-known-gaps.json").read_text(encoding="utf-8"))
     exempt = {(ROOT / p).resolve() for p in gaps["exemptFromAntlrSyntax"]}
-    syntax_files = [f for f in library + examples if f.resolve() not in exempt]
+    # probe and experiment models are loaded into CATIA Magic too, so they go through the syntax check as well
+    probe_models = (sorted((ROOT / "tests" / "cameo-experiments").glob("*.sysml"))
+                    + sorted((ROOT / "tests" / "cameo-negative").glob("*.sysml"))
+                    + sorted((ROOT / "customization").rglob("*.sysml")))
+    syntax_files = [f for f in library + examples + probe_models if f.resolve() not in exempt]
     ok, errs = syntax_check(syntax_files)
     report["suites"]["syntax-positive"] = {"passed": ok, "files": len(syntax_files),
                                            "exempt": sorted(str(p) for p in exempt), "errors": errs}
