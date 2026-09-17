@@ -11,6 +11,7 @@ Suites (each result is recorded in logs/test-report.json):
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
+  catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
                       the SysMLv2 test harness REST API, undo the loads, stop the harness.
                       This is the authoritative semantic check.
@@ -313,6 +314,36 @@ def main() -> int:
                                       "violations": corpus.get("violations") or [cc.stderr.strip()[-500:]],
                                       "improvements": corpus.get("improvements", [])}
 
+    # 4e. CATIA Magic customization (customization/catia-magic): syntax, names against the stub of the vendor
+    #     library names (tests/catia-magic), documentation and design rules
+    cust = sorted((ROOT / "customization").rglob("*.sysml"))
+    stub = ROOT / "tests" / "catia-magic"
+    cust_cases = []
+    if cust:
+        syn_ok, syn_errs = syntax_check(cust)
+        cust_cases.append({"case": "syntax", "passed": syn_ok, "errors": syn_errs[:10]})
+        rc_n, names_rep = name_check(cust, library + sorted(stub.glob("*.sysml")), LOGS / "names-customization.json")
+        cust_cases.append({"case": "names", "passed": rc_n == 0,
+                           "errors": [f'{Path(f["file"]).name}:{x["line"]} {x["code"]} {x["message"]}'
+                                      for f in names_rep["files"] for x in f.get("findings", [])][:10]})
+        for profile, targets in (("library", [f for f in cust if f.parent.name == "catia-magic"]),
+                                 ("example", [f for f in cust if f.parent.name == "examples"])):
+            if not targets:
+                continue
+            rep_path = LOGS / f"docs-customization-{profile}.json"
+            d = run([sys.executable, str(ROOT / "tools" / "check_docs.py"), "--profile", profile,
+                     "--report", str(rep_path), *map(str, targets)])
+            rep = json.loads(rep_path.read_text(encoding="utf-8")) if d.returncode != 2 and rep_path.exists() else {}
+            cust_cases.append({"case": f"docs ({profile})", "passed": d.returncode == 0, "counts": rep.get("counts")})
+        rr_c = run([sys.executable, str(ROOT / "tools" / "check_rules.py"), "--stdlib", str(STDLIB),
+                    "--index", str(ROOT / "library"), str(stub), "--check", str(ROOT / "customization"),
+                    "--report", str(LOGS / "rules-customization.json")])
+        cust_cases.append({"case": "rules", "passed": rr_c.returncode == 0,
+                           "errors": [rr_c.stdout[-300:]] if rr_c.returncode else []})
+    report["suites"]["catia-customization"] = {
+        "passed": bool(cust_cases) and all(c["passed"] for c in cust_cases), "cases": cust_cases,
+        "errors": [f'{c["case"]}: {e}' for c in cust_cases for e in c.get("errors", [])]}
+
     # 5. authoritative check in CATIA Magic (optional; needs the harness running)
     if args.cameo:
         # 5a. probes: library + tests/cameo-negative, verify what Cameo builds, undo (harness stays up)
@@ -335,7 +366,8 @@ def main() -> int:
             report["suites"]["cameo-probes"]["errors"] += details["validationEngine"]["mismatches"]
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
-        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views", "--idl", "--svg"]
+        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views",
+               "--idl", "--svg", "--palettes"]
         if not args.keep_harness:
             cmd.append("--shutdown")
         r = run(cmd)
@@ -352,6 +384,10 @@ def main() -> int:
                    for r in details.get("idlRoundTrip", {}).get("results", []) if not r["passed"]]
         errors += [f'view diagram {r["view"]}: {"; ".join(r["problems"])}'
                    for r in details.get("viewDiagrams", {}).get("results", []) if not r["passed"]]
+        errors += [f'palette {r["view"]}: {"; ".join(r["problems"])}'
+                   for r in details.get("palettes", {}).get("results", []) if not r["passed"]]
+        errors += [f'Create View dialog: {e}' for e in
+                   ((details.get("palettes", {}).get("dialog") or {}).get("problems") or [])]
         if r.returncode and not errors:
             errors = [r.stderr.strip() or f"cameo_check exit code {r.returncode}"]
         report["suites"]["cameo"] = {

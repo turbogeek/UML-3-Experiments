@@ -139,7 +139,9 @@ def main() -> int:
     try:
         clauses = spec_clauses()
         idx = cn.Index()
-        for f in cn.collect([args.stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library")], (".sysml",)):
+        # citations name elements of the UML3 libraries and of the tool customizations (customization/<tool>)
+        for f in cn.collect([args.stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library")], (".sysml",)) \
+                + cn.collect([str(ROOT / "customization")], (".sysml",)):
             idx.add(cn.index_file(f))
         idx.finalize()
         uml_concepts = {tok for r in json.loads((ROOT / "traceability" / "uml2-to-uml3.json").read_text(encoding="utf-8"))["rows"]

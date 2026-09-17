@@ -1,0 +1,378 @@
+{
+  "description": "The UML3 palettes CATIA Magic builds from customization/catia-magic, as tools/cameo-scripts/verifyPalettes.groovy reads them through the DSL service (experiment E17). Each button lists label, the element kind its template owns and the UML3 keyword that element carries, so the check fails if a button stops creating a UML3 element. absentCategories are the General View categories the UML3 palettes remove.",
+  "absentCategories": [
+    "Actions",
+    "Other Actions",
+    "States",
+    "Cases",
+    "Requirements/Constraints"
+  ],
+  "dialog": {
+    "active": "UML3ViewCreationDialog",
+    "commands": [
+      "UML3 Package Diagram",
+      "UML3 Class Diagram",
+      "UML3 Component Diagram",
+      "UML3 Deployment Diagram",
+      "UML3 Entity Relationship Diagram",
+      "UML3 Message Schema View"
+    ]
+  },
+  "views": [
+    {
+      "view": "OnlineStoreCatiaMagicViews::domainClasses",
+      "visualization": "UML3 Class Diagram",
+      "categories": {
+        "UML3 Classifiers": [
+          [
+            "class",
+            "ItemDefinitionImpl",
+            "ClassMetadata"
+          ],
+          [
+            "active class",
+            "PartDefinitionImpl",
+            "ActiveClassMetadata"
+          ],
+          [
+            "interface",
+            "ItemDefinitionImpl",
+            "InterfaceTypeMetadata"
+          ],
+          [
+            "data type",
+            "AttributeDefinitionImpl",
+            "DataTypeMetadata"
+          ],
+          [
+            "signal",
+            "ItemDefinitionImpl",
+            "SignalMetadata"
+          ],
+          [
+            "exception",
+            "ItemDefinitionImpl",
+            "ExceptionTypeMetadata"
+          ]
+        ],
+        "UML3 Features": [
+          [
+            "operation",
+            "ActionUsageImpl",
+            "OperationMetadata"
+          ],
+          [
+            "query",
+            "CalculationUsageImpl",
+            "QueryMetadata"
+          ],
+          [
+            "constructor",
+            "ActionUsageImpl",
+            "ConstructorMetadata"
+          ]
+        ],
+        "UML3 Relationships": [
+          [
+            "association",
+            "ConnectionDefinitionImpl",
+            "AssociationMetadata"
+          ],
+          [
+            "aggregation",
+            "ConnectionDefinitionImpl",
+            "AggregationMetadata"
+          ],
+          [
+            "composition",
+            "ConnectionDefinitionImpl",
+            "CompositionMetadata"
+          ],
+          [
+            "uses",
+            "DependencyImpl",
+            "UsesDependency"
+          ],
+          [
+            "realizes",
+            "DependencyImpl",
+            "RealizesDependency"
+          ],
+          [
+            "calls",
+            "DependencyImpl",
+            "CallsDependency"
+          ],
+          [
+            "creates",
+            "DependencyImpl",
+            "CreatesDependency"
+          ],
+          [
+            "traces",
+            "DependencyImpl",
+            "TracesDependency"
+          ],
+          [
+            "instantiates",
+            "DependencyImpl",
+            "InstantiatesDependency"
+          ]
+        ]
+      }
+    },
+    {
+      "view": "OnlineStoreCatiaMagicViews::storePackages",
+      "visualization": "UML3 Package Diagram",
+      "categories": {
+        "UML3 Packages": [
+          [
+            "package",
+            "PackageImpl",
+            ""
+          ],
+          [
+            "layer",
+            "PackageImpl",
+            "Layer"
+          ],
+          [
+            "uses",
+            "DependencyImpl",
+            "UsesDependency"
+          ]
+        ]
+      }
+    },
+    {
+      "view": "OnlineStoreCatiaMagicViews::architectureComponents",
+      "visualization": "UML3 Component Diagram",
+      "categories": {
+        "UML3 Components": [
+          [
+            "component",
+            "PartDefinitionImpl",
+            "ComponentMetadata"
+          ],
+          [
+            "service",
+            "PartDefinitionImpl",
+            "ServiceMetadata"
+          ],
+          [
+            "subsystem",
+            "PartDefinitionImpl",
+            "SubsystemMetadata"
+          ],
+          [
+            "interface",
+            "ItemDefinitionImpl",
+            "InterfaceTypeMetadata"
+          ],
+          [
+            "service port def",
+            "PortDefinitionImpl",
+            "ServicePortMetadata"
+          ],
+          [
+            "provided port",
+            "PortUsageImpl",
+            "Provided"
+          ],
+          [
+            "required port",
+            "PortUsageImpl",
+            "Required"
+          ]
+        ],
+        "UML3 Wiring": [
+          [
+            "assembly",
+            "ConnectionUsageImpl",
+            "AssemblyMetadata"
+          ],
+          [
+            "delegation",
+            "ConnectionUsageImpl",
+            "DelegationMetadata"
+          ],
+          [
+            "realizes",
+            "DependencyImpl",
+            "RealizesDependency"
+          ]
+        ]
+      }
+    },
+    {
+      "view": "OnlineStoreCatiaMagicViews::deployment",
+      "visualization": "UML3 Deployment Diagram",
+      "categories": {
+        "UML3 Deployment": [
+          [
+            "node",
+            "PartDefinitionImpl",
+            "NodeMetadata"
+          ],
+          [
+            "device",
+            "PartDefinitionImpl",
+            "DeviceMetadata"
+          ],
+          [
+            "execution environment",
+            "PartDefinitionImpl",
+            "ExecutionEnvironmentMetadata"
+          ],
+          [
+            "artifact",
+            "ItemDefinitionImpl",
+            "ArtifactMetadata"
+          ]
+        ],
+        "UML3 Deployment Links": [
+          [
+            "communication path",
+            "ConnectionDefinitionImpl",
+            "CommunicationPathMetadata"
+          ],
+          [
+            "deploy",
+            "AllocationUsageImpl",
+            "DeploymentMetadata"
+          ],
+          [
+            "manifest",
+            "AllocationUsageImpl",
+            "ManifestationMetadata"
+          ]
+        ]
+      }
+    },
+    {
+      "view": "OnlineStoreCatiaMagicViews::logicalDataModel",
+      "visualization": "UML3 Entity Relationship Diagram",
+      "categories": {
+        "UML3 Logical Data": [
+          [
+            "entity",
+            "ItemDefinitionImpl",
+            "EntityMetadata"
+          ],
+          [
+            "aggregate root",
+            "ItemDefinitionImpl",
+            "AggregateRootMetadata"
+          ],
+          [
+            "value object",
+            "AttributeDefinitionImpl",
+            "ValueObjectMetadata"
+          ],
+          [
+            "relationship",
+            "ConnectionDefinitionImpl",
+            "RelationshipMetadata"
+          ]
+        ],
+        "UML3 Physical Data": [
+          [
+            "table",
+            "ItemDefinitionImpl",
+            "TableMetadata"
+          ],
+          [
+            "database view",
+            "ItemDefinitionImpl",
+            "DatabaseViewMetadata"
+          ],
+          [
+            "database",
+            "PartDefinitionImpl",
+            "DatabaseMetadata"
+          ],
+          [
+            "column",
+            "AttributeUsageImpl",
+            "ColumnMetadata"
+          ],
+          [
+            "primary key",
+            "AttributeUsageImpl",
+            "PrimaryKey"
+          ],
+          [
+            "foreign key",
+            "ItemUsageImpl",
+            "ForeignKey"
+          ],
+          [
+            "maps to",
+            "DependencyImpl",
+            "MapsTo"
+          ]
+        ]
+      }
+    },
+    {
+      "view": "OnlineStoreCatiaMagicViews::messageSchemas",
+      "visualization": "UML3 Message Schema View",
+      "categories": {
+        "UML3 Messages": [
+          [
+            "command",
+            "ItemDefinitionImpl",
+            "CommandMetadata"
+          ],
+          [
+            "domain event",
+            "ItemDefinitionImpl",
+            "DomainEventMetadata"
+          ],
+          [
+            "query message",
+            "ItemDefinitionImpl",
+            "QueryMessageMetadata"
+          ],
+          [
+            "reply",
+            "ItemDefinitionImpl",
+            "ReplyMetadata"
+          ],
+          [
+            "document message",
+            "ItemDefinitionImpl",
+            "DocumentMessageMetadata"
+          ],
+          [
+            "message type",
+            "ItemDefinitionImpl",
+            "MessageTypeMetadata"
+          ]
+        ],
+        "UML3 Channels": [
+          [
+            "topic",
+            "PartDefinitionImpl",
+            "TopicMetadata"
+          ],
+          [
+            "queue",
+            "PartDefinitionImpl",
+            "QueueMetadata"
+          ],
+          [
+            "channel",
+            "PartDefinitionImpl",
+            "ChannelMetadata"
+          ],
+          [
+            "broker",
+            "PartDefinitionImpl",
+            "MessageBrokerMetadata"
+          ]
+        ]
+      }
+    }
+  ]
+}

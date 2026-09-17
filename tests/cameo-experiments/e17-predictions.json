@@ -119,19 +119,39 @@
       "id": "P16",
       "run": "E17d",
       "claim": "The E17V9 form works for every tree-rendered UML3 view definition: E17V11 (PackageDiagram), E17V12 (DeploymentDiagram), E17V13 (EntityRelationshipDiagram) and E17V14 (MessageSchemaView) are registered, TREE, not flagged, and their content matches the corresponding example 05 views",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "E17V11 (PackageDiagram), E17V12 (DeploymentDiagram), E17V13 (EntityRelationshipDiagram) and E17V14 (MessageSchemaView) are registered, TREE, laid out with 0 overlaps and not flagged; v14's SVG is byte-identical to example 05's messageSchemas"
     },
     {
       "id": "P17",
       "run": "E17d",
       "claim": "E17V10 (:> bsv, UML3Views::ComponentDiagram without an owned rendering) inherits two renderings that are both asInterconnectionDiagram and is therefore flagged with validateViewDefinitionOnlyOneViewRendering",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "E17V10 and its view v10 are flagged: 'Current renderers: render asInterconnectionDiagram, render asInterconnectionDiagram' - two memberships for the same renderer still count as two"
     },
     {
       "id": "P18",
       "run": "E17d",
       "claim": "E17V10b, which redefines the inherited rendering by its name ('render rendering nestedRendering :>> asInterconnectionDiagram;') while two inherited features carry that name, either fails to load with an ambiguous-name error or resolves to one of them and is not flagged",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "partly confirmed",
+      "observation": "E17V10b loads (no ambiguity error) and the unqualified redefinition resolves to one of the two same-named inherited renderings, so the definition is still flagged: 'render rendering nestedRendering, render asInterconnectionDiagram'"
+    },
+    {
+      "id": "P19",
+      "run": "E17e",
+      "claim": "E17V15 redefines both inherited renderings by qualified name (DS_Views::CoreViews::'Symbolic View'::asInterconnectionDiagram and UML3Views::ComponentDiagram::asInterconnectionDiagram), loads, is registered with the UML3 palette, is NESTED and is not flagged",
+      "confidence": "low",
+      "observed": "confirmed",
+      "observation": "E17V15 loads, is registered under 'Base Symbolic View' with the UML3 palette, is NESTED with 0 overlapping shapes and is not flagged (0 failures on UML3ProbeComponentRendering): one owned rendering can redefine two inherited renderings that share a name when the redefinition uses qualified names"
     }
+  ],
+  "conclusion": "The customization works and is verified: 6 view definitions, 6 palettes and 41 templated buttons, each copying the expected element kind with its UML3 keyword; the UML3 Create View dialog is the active one; all 17 loaded packages validate with 0 failures; the six views render with the expected display mode and 0 overlapping shapes. Three rules for a custom view definition (vendor definition first; one owned rendering redefining the inherited ones; no detail views with palettes) are documented in docs/CATIA-MAGIC-CUSTOMIZATION.md. In the GUI the palette is built when the diagram is created: a diagram that existed before the customization was registered keeps the General View palette, and recreating it (or reloading the project) gives it the UML3 palette - see docs/images/uml3-catia-magic-palette.png, captured with tools/cameo-scripts/captureDiagramWindow.groovy.",
+  "furtherObservations": [
+    "Validation engine, first full version: 4 validateConnectorRelatedFeatures errors, because a connector that is not abstract needs two related features; the assembly, delegation, deploy and manifest templates now own two placeholder ends and use the connect/allocate form",
+    "The ANTLR sysml-validator rejected three constructs that the specification allows: unnamed definitions (Identification is optional, 8.2.2.1), short names on package declarations, and a body on a render statement (ViewRenderingUsage ends with UsageBody, 8.2.2.26). All three were fixed in the validator with tests (sysmlv2-validator 1b53f03, 076ac16)",
+    "DSLService.resetCache() is enough to register a newly loaded customization in the running tool; the project does not have to be reloaded for the model-level palette, only for diagrams that already exist"
   ]
 }

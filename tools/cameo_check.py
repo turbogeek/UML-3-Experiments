@@ -46,6 +46,8 @@ DISPLAY_SCRIPT = "probeKeywordDisplay.groovy"
 DISPLAY_EXPECTED = ROOT / "tests" / "cameo" / "display-expectations.json"
 VALIDATION_EXPECTED = ROOT / "tests" / "cameo-negative" / "validation-predictions.json"
 REPO_SCRIPTS = ROOT / "tools" / "cameo-scripts"
+CUSTOMIZATION = ROOT / "customization" / "catia-magic"
+PALETTE_EXPECTED = ROOT / "tests" / "cameo" / "palette-expectations.json"
 HYPOTHESES = ROOT / "tests" / "cameo" / "implied-specializations.json"
 # SCRIPTS_DIR hard-coded in start-v2language-test-harness.groovy
 HARNESS_SCRIPTS = Path(os.environ.get("USERPROFILE", str(Path.home()))) / "Documents" / "GitHub" / "sysmlv2-validator" / "utilityScripts"
@@ -127,6 +129,9 @@ def main() -> int:
     ap.add_argument("--svg", action="store_true",
                     help="open each view of tests/cameo/svg-expectations.json as a diagram, lay it out, export SVG and "
                          "check display mode, overlaps, drawn shapes and SVG labels (needs examples; IDL views need --idl)")
+    ap.add_argument("--palettes", action="store_true",
+                    help="load customization/catia-magic and check the UML3 palettes CATIA Magic builds "
+                         "(tests/cameo/palette-expectations.json)")
     ap.add_argument("--display", action="store_true",
                     help="check keyword labels against tests/cameo/display-expectations.json (needs examples loaded)")
     ap.add_argument("--hypotheses", help="hypotheses JSON to verify (default tests/cameo/implied-specializations.json)")
@@ -150,6 +155,10 @@ def main() -> int:
         files = [ROOT / "library" / f"{n}.sysml" for n in LIBRARY_ORDER]
         if not args.library_only:
             files += sorted((ROOT / "examples").glob("*.sysml"))
+        if args.palettes:
+            # the CATIA Magic customization builds on the libraries and the examples it draws
+            files += [CUSTOMIZATION / "UML3CatiaMagic.sysml", CUSTOMIZATION / "examples" / "OnlineStoreCatiaMagicViews.sysml",
+                      CUSTOMIZATION / "UML3CatiaMagicActivation.sysml"]
     missing = [str(f) for f in files if not f.exists()]
     if missing:
         print("MISSING FILES: " + ", ".join(missing), file=sys.stderr)
@@ -366,6 +375,31 @@ def main() -> int:
                 print(f"    {r['view']}: {'; '.join(r['problems'])}")
         failed = failed or not svg_report["passed"]
 
+    # UML3 palettes: what CATIA Magic's model-based customization makes of the UML3 view definitions (E17).
+    # Read-only: the DSL service is asked for each view's visualization, palette categories, buttons and the
+    # template element (with its UML3 keyword) that each templated button copies.
+    if args.palettes and not failed:
+        sys.path.insert(0, str(ROOT / "tools"))
+        import check_palettes as cpal  # noqa: E402
+        spec = json.loads(PALETTE_EXPECTED.read_text(encoding="utf-8"))
+        (HARNESS_SCRIPTS / "uml3-palette-request.txt").write_text(
+            "\n".join(["resetCache=true", "dialogs=true"] + ["view=" + v["view"] for v in spec["views"]]) + "\n",
+            encoding="utf-8")
+        _, pv = call(args.port, "/run-script", {"scriptName": "verifyPalettes.groovy"}, timeout=900)
+        text = pv.get("result") or pv.get("error") or ""
+        (LOGS / "palettes.txt").write_text(text, encoding="utf-8")
+        pal_report = cpal.check(text, spec)
+        report["palettes"] = pal_report
+        passed_n = sum(r["passed"] for r in pal_report["results"])
+        print(f"{'PASS' if pal_report['passed'] else 'FAIL'}  UML3 palettes ({passed_n}/{len(pal_report['results'])} views, "
+              f"Create View dialog {'ok' if (pal_report['dialog'] or {}).get('passed') else 'not checked/failed'})")
+        for r in pal_report["results"]:
+            if not r["passed"]:
+                print(f"    {r['view']}: {'; '.join(r['problems'])}")
+        if pal_report["dialog"] and not pal_report["dialog"]["passed"]:
+            print(f"    dialog: {'; '.join(pal_report['dialog']['problems'])}")
+        failed = failed or not pal_report["passed"]
+
     # Implied-specialization hypotheses (only meaningful when every default file loaded)
     if not failed and not args.files and (not args.library_only or args.hypotheses):
         _, ver = call(args.port, "/run-script", {"scriptName": VERIFY_SCRIPT})
@@ -377,6 +411,14 @@ def main() -> int:
             if r.get("status") != "PASS":
                 print(f"    {r}")
         failed = failed or not ver_ok
+
+    if args.palettes:
+        # ProjectViewCreationConfig starts with neither UML3 nor OnlineStore, so name it for the guarded undo
+        extra = HARNESS_SCRIPTS / "uml3-undo-extra.txt"
+        names = extra.read_text(encoding="utf-8").split() if extra.exists() else []
+        if "ProjectViewCreationConfig" not in names:
+            names.append("ProjectViewCreationConfig")
+        extra.write_text("\n".join(names) + "\n", encoding="utf-8")
 
     if args.undo:
         # When UML3 packages were already loaded before this run (e.g. a model the user is reviewing), undo exactly
