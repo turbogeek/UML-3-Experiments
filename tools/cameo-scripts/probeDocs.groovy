@@ -14,7 +14,8 @@ def nameOf = { e -> try { e != null && e.respondsTo("getName") ? e.getName() : n
 def call0 = { Object o, String m -> try { (o != null && o.respondsTo(m)) ? o."$m"() : null } catch (Throwable t) { null } }
 def membersOf = { e -> (call0(e, "getOwnedMember") ?: []) }
 def roots = RootNamespaces.getAllRoots(proj) ?: []
-def findPath = { List path ->
+def findPath
+findPath = { List path ->
     def cur = null
     for (r in roots) { def hit = membersOf(r).find { nameOf(it) == path[0] }; if (hit != null) { cur = hit; break } }
     for (int i = 1; i < path.size() && cur != null; i++) { def want = path[i]; cur = membersOf(cur).find { nameOf(it) == want } }
