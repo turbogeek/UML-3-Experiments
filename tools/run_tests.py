@@ -10,6 +10,7 @@ Suites (each result is recorded in logs/test-report.json):
                       (guards the checker against false positives)
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
+  keywords            tools/check_keywords.py: docs/UML3-Keywords.md matches the libraries (keyword, terse id, base)
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization,
                       and tools/check_diagram_kinds.py (model vs view filters vs palettes, with fixtures)
@@ -249,6 +250,13 @@ def main() -> int:
         expected = sorted(c for c in codes.split(",") if c.strip())
         doc_cases.append({"case": "fixture " + fname, "expected": expected, "observed": observed, "passed": observed == expected})
     report["suites"]["docs"] = {"passed": all(c["passed"] for c in doc_cases), "cases": doc_cases}
+
+    # 4b2. the generated keyword reference (docs/UML3-Keywords.md) matches the libraries: every keyword, its
+    #      terse id and its base, so a keyword added to a library cannot be missing from the reference
+    kw = run([sys.executable, str(ROOT / "tools" / "check_keywords.py"), "--report", str(LOGS / "keywords.json")])
+    kw_rep = json.loads((LOGS / "keywords.json").read_text(encoding="utf-8")) if kw.returncode != 2 else {}
+    report["suites"]["keywords"] = {"passed": kw.returncode == 0, "counts": kw_rep.get("counts"),
+                                    "findings": kw_rep.get("findings", [kw.stderr.strip()[-300:]])}
 
     # 4b3. requirements and use cases (docs/REQUIREMENTS-GUIDE.md): ANTLR syntax, name resolution against the
     #      libraries, form/evidence/realization/use-case checks and the generated docs/UML3-Requirements.md

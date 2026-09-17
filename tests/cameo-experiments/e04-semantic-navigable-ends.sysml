@@ -1,5 +1,5 @@
 /* EXPECT-CAMEO: OK
- * Experiment E04: can @Navigable become a SEMANTIC keyword on association END features without
+ * Experiment E04: can @navigable become a SEMANTIC keyword on association END features without
  * breaking connection definitions or the connection usages that bind their ends?
  * Tests body form (as used in the examples) and prefix form on an 'end item'.
  * Predictions: e04-predictions.json (committed before running). */

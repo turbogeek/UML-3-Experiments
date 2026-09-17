@@ -26,7 +26,7 @@
     },
     {
       "id": "P4",
-      "claim": "Every templated button's OperationFromTemplate.getTemplate() is the unnamed template element of the expected kind carrying the expected UML3 keyword metadata (class -> item def with ClassMetadata; data type -> attribute def with DataTypeMetadata; association -> connection def with AssociationMetadata; uses -> dependency with UsesDependency)",
+      "claim": "Every templated button's OperationFromTemplate.getTemplate() is the unnamed template element of the expected kind carrying the expected UML3 keyword metadata (class -> item def with classType; data type -> attribute def with dataType; association -> connection def with association; uses -> dependency with uses)",
       "confidence": "medium",
       "observed": "confirmed",
       "observation": "Checked on the registered variants (see P11)"
@@ -78,10 +78,10 @@
     {
       "id": "P11",
       "run": "E17b",
-      "claim": "Each templated button resolves to its template element: class and interface -> ItemDefinition with ClassMetadata / InterfaceTypeMetadata, data type -> AttributeDefinition with DataTypeMetadata, association -> ConnectionDefinition with AssociationMetadata, uses -> Dependency with UsesDependency",
+      "claim": "Each templated button resolves to its template element: class and interface -> ItemDefinition with classType / interfaceType, data type -> AttributeDefinition with dataType, association -> ConnectionDefinition with association, uses -> Dependency with uses",
       "confidence": "medium",
       "observed": "confirmed",
-      "observation": "class -> ItemDefinitionImpl ClassMetadata; interface -> ItemDefinitionImpl InterfaceTypeMetadata; data type -> AttributeDefinitionImpl DataTypeMetadata; association -> ConnectionDefinitionImpl AssociationMetadata; uses -> DependencyImpl UsesDependency; enum def and generalization use code ADD_ENUM_DEF and ADD_SUBCLASSIFICATION"
+      "observation": "class -> ItemDefinitionImpl classType; interface -> ItemDefinitionImpl interfaceType; data type -> AttributeDefinitionImpl dataType; association -> ConnectionDefinitionImpl association; uses -> DependencyImpl uses; enum def and generalization use code ADD_ENUM_DEF and ADD_SUBCLASSIFICATION"
     },
     {
       "id": "P12",

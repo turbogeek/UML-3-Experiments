@@ -12,7 +12,7 @@ package OnlineStoreArchitecture {
 	- Contracts: OrderManagement (#interfaceType); OrderApiPort and PaymentApiPort (ServicePort defs).
 	- Components: WebStorefront (#component, #boundary), OrderService and PaymentService (#service), with
 	  #provided and #required ports and @Technology; StoreSystem (#subsystem) with #assembly connectors.
-	- Layers: Presentation and Application (#layer packages with @Layer).
+	- Layers: Presentation and Application (#layer packages with @layer).
 	- Deployment: OrderServiceImage (#artifact), KubernetesPod (#executionEnvironment), WorkerNode
 	  (#device), ClusterNetwork (#communicationPath) and productionCluster with #manifest and #deploy
 	  allocations.
@@ -68,7 +68,7 @@ package OnlineStoreArchitecture {
 		(UML socket). Conjugation reverses in and out features; ServicePort::contract has no direction, so
 		here the conjugate only identifies the consuming side of the same contract. tools/check_rules.py R07
 		checks that #provided ports are not conjugated and #required ports are.
-		References: UML3Components::Provided; UML3Components::Required; UML 2.5.1 Port; SysML 7.12.3.
+		References: UML3Components::provided; UML3Components::required; UML 2.5.1 Port; SysML 7.12.3.
 		*/
 
 	#component #boundary part def WebStorefront {
@@ -137,11 +137,11 @@ package OnlineStoreArchitecture {
 
 	comment LayerAssignment about Presentation, Application
 		/*
-		Layers. Each layer is a package marked #layer whose @Layer metadata gives its position in the layer
+		Layers. Each layer is a package marked #layer whose @layer metadata gives its position in the layer
 		stack (level) and the architecture style. A component belongs to a layer through a usage of it
 		inside the layer package: storefrontUi in Presentation, orderApplication in Application. These
 		usages are separate from the parts of StoreSystem.
-		References: UML3Components::Layer.
+		References: UML3Components::layer.
 		*/
 
 	#layer package Presentation {
@@ -150,10 +150,10 @@ package OnlineStoreArchitecture {
 		The presentation layer: the user-facing part of the store, level 1 of the layered architecture.
 
 		Contents:
-		- Layer metadata: @Layer with level 1 and the layered style.
+		- Layer metadata: @layer with level 1 and the layered style.
 		- storefrontUi: the web storefront in this layer.
 		*/
-		@Layer { level = 1; style = ArchitectureStyle::layered; }
+		@layer { level = 1; style = ArchitectureStyle::layered; }
 		part storefrontUi : WebStorefront { doc /* The web storefront in this layer. */ }
 	}
 
@@ -164,10 +164,10 @@ package OnlineStoreArchitecture {
 		architecture.
 
 		Contents:
-		- Layer metadata: @Layer with level 2 and the layered style.
+		- Layer metadata: @layer with level 2 and the layered style.
 		- orderApplication: the order service in this layer.
 		*/
-		@Layer { level = 2; style = ArchitectureStyle::layered; }
+		@layer { level = 2; style = ArchitectureStyle::layered; }
 		part orderApplication : OrderService { doc /* The order service in this layer. */ }
 	}
 

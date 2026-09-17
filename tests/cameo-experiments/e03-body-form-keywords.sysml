@@ -7,8 +7,8 @@ package UML3ExperimentBodyKeywords {
 
 	#table item def BODYFORM {
 		/* F: single semantic keyword, body form only */
-		attribute F : Uuid { @PrimaryKey; }
+		attribute F : Uuid { @primaryKey; }
 		/* G: two semantic keywords, both body form */
-		attribute G : Uuid { @Unique; @Indexed; }
+		attribute G : Uuid { @unique; @indexed; }
 	}
 }

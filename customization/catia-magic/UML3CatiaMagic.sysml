@@ -59,9 +59,9 @@ library package UML3CatiaMagic {
 		template needs directed ends, so it owns two placeholder parts with UML3Messaging ports and flows
 		between their message features; undirected placeholders are not related features (E17, I-36).
 		Verified in E17: every templated button resolves to its template element and keyword (class to an
-		item definition with ClassMetadata, data type to an attribute definition with DataTypeMetadata,
-		association to a connection definition with AssociationMetadata, uses to a dependency with
-		UsesDependency).
+		item definition with classType, data type to an attribute definition with dataType,
+		association to a connection definition with association, uses to a dependency with
+		uses).
 		References: CATIA Magic SysML v2 Plugin 2026x R1 'Creating templates for custom buttons'; E16; E17.
 		*/
 
@@ -271,7 +271,7 @@ library package UML3CatiaMagic {
 			part layerButton : Button :> abstractButtons {
 				doc /* Creates a #layer package, an architecture layer. */
 				attribute :>> label = "layer";
-				attribute :>> description = "#layer package: an architecture layer (set @Layer values afterwards)";
+				attribute :>> description = "#layer package: an architecture layer (set @layer values afterwards)";
 				perform action : OperationFromTemplate :>> operation {
 					in ref = (UML3ElementTemplates::layerPackageTemplate meta KerML::Package).ownedElement;
 				}

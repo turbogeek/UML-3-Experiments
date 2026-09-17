@@ -3,7 +3,7 @@
   "specializes": [
     {
       "id": "F1",
-      "why": "F: single body-form @PrimaryKey is applied",
+      "why": "F: single body-form @primaryKey is applied",
       "subject": [
         "UML3ExperimentBodyKeywords",
         "BODYFORM",
@@ -17,7 +17,7 @@
     },
     {
       "id": "G1",
-      "why": "G: first body-form @Unique is applied",
+      "why": "G: first body-form @unique is applied",
       "subject": [
         "UML3ExperimentBodyKeywords",
         "BODYFORM",
@@ -31,7 +31,7 @@
     },
     {
       "id": "G2",
-      "why": "G: second body-form @Indexed is NOT applied",
+      "why": "G: second body-form @indexed is NOT applied",
       "subject": [
         "UML3ExperimentBodyKeywords",
         "BODYFORM",

@@ -7,7 +7,7 @@ Per view:
                  registers a custom view definition only through its FIRST general type)
   CATEGORIES     every expected UML3 category is in the palette, and no category listed in absentCategories is
   BUTTONS        every expected button is there with the element kind and UML3 keyword its template carries
-                 (a 'class' button must copy an ItemDefinition annotated with ClassMetadata), and no templated
+                 (a 'class' button must copy an ItemDefinition annotated with classType), and no templated
                  button is left without a template
   DIALOG         the UML3 Create View dialog is the active one and offers the expected commands (optional)
 

@@ -6,7 +6,7 @@ package RulesR15 {
 	private import UML3Core::*;
 	abstract attribute def Choice :> DataType;
 	abstract attribute choices : Choice[0..*] nonunique :> dataTypes;
-	metadata def <choice> ChoiceMetadata :> DataTypeMetadata {
+	metadata def <choiceType> chc :> dataType {
 		:>> baseType = choices meta SysML::Usage;
 	}
 	item def Settings { attribute limit : Integer = 10; }

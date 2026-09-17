@@ -292,14 +292,14 @@ package UML3VerificationRequirements {
 		*/
 		#realizes dependency from UML3Core to 'UML3-VER-001';
 		#realizes dependency from UML3Core to 'UML3-VER-002';
-		#realizes dependency from UML3Data::TableMetadata to 'UML3-VER-003';
-		#realizes dependency from UML3Core::InterfaceTypeMetadata to 'UML3-VER-003';
-		#realizes dependency from UML3Components::Provided to 'UML3-VER-003';
-		#realizes dependency from UML3Data::EntityMetadata to 'UML3-VER-005';
-		#realizes dependency from UML3Messaging::MessageTypeMetadata to 'UML3-VER-005';
+		#realizes dependency from UML3Data::table to 'UML3-VER-003';
+		#realizes dependency from UML3Core::interfaceType to 'UML3-VER-003';
+		#realizes dependency from UML3Components::provided to 'UML3-VER-003';
+		#realizes dependency from UML3Data::entity to 'UML3-VER-005';
+		#realizes dependency from UML3Messaging::messageType to 'UML3-VER-005';
 		#realizes dependency from UML3Messaging::QualityOfService to 'UML3-VER-005';
-		#realizes dependency from UML3Data::DatabaseViewMetadata to 'UML3-VER-005';
-		#realizes dependency from UML3Components::Required to 'UML3-VER-005';
+		#realizes dependency from UML3Data::dbView to 'UML3-VER-005';
+		#realizes dependency from UML3Components::required to 'UML3-VER-005';
 		#realizes dependency from UML3Requirements to 'UML3-VER-011';
 		#realizes dependency from UML3Core to 'UML3-VER-012';
 		#realizes dependency from UML3IDL to 'UML3-VER-012';

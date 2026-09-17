@@ -188,7 +188,7 @@
       "package": "UML3ProbeKeywordOverridesBase",
       "flagged": true,
       "confidence": "high",
-      "why": "E15: redefining the baseType bound by UML3Core::DataTypeMetadata violates validateFeatureValueOverriding (KerML 8.3.4.10.2); the same failure was seen on UML3IDL (UnionMetadata :> DataTypeMetadata) on 2026-09-17"
+      "why": "E15: redefining the baseType bound by UML3Core::dataType violates validateFeatureValueOverriding (KerML 8.3.4.10.2); the same failure was seen on UML3IDL (union :> dataType) on 2026-09-17"
     },
     {
       "package": "UML3ProbeKeywordCategory",

@@ -6,7 +6,7 @@ The approach uses only the extension mechanisms SysML v2 already standardizes:
 
 * **Model libraries** of abstract base definitions (`Class`, `Operation`, `Component`, `DomainEvent`, `Entity`, `Table`...).
 * **Semantic metadata keywords** (`#entity`, `#service`, `#primaryKey`...), the SysML v2 replacement for UML stereotypes. A keyword makes the element really specialize its library base (KerML 9.2.16), so models stay queryable and CATIA Magic shows the keyword as a `«#keyword»` label.
-* **Plain metadata** for values such as `@Facets`, `@Index`, `@QualityOfService` and `@ForeignKey { onDelete }`.
+* **Plain metadata** for values such as `@Facets`, `@Index`, `@QualityOfService` and `@foreignKey { onDelete }`.
 
 The KerML/SysML grammar is not changed, so UML3 models are ordinary SysML v2.
 
@@ -50,6 +50,10 @@ package Shop {
 
 ### Keyword naming rules
 * Keywords are lowerCamelCase.
+* Every keyword has two spellings: the keyword itself and, where it saves at least three characters, a terse id
+  (`#classType` = `#cls`, `#executionEnvironment` = `#execEnv`, `#primaryKey` = `#pk`). Both are the same
+  definition, so filters and queries can use either. Diagrams show the keyword, never the terse id. The full list
+  is [docs/UML3-Keywords.md](docs/UML3-Keywords.md).
 * SysML reserved words and KerML keywords can't be keyword names. Where the UML name is taken, a `Type` suffix or a verb is used: `#classType`, `#interfaceType`, `#messageType`, `#dbView`, `#uses`.
 * Semantic keywords must not go on packages or dependencies, or on elements whose type family is disjoint from the keyword's base (data vs. occurrence, structure vs. behavior). The checker reports this as `APPLICABILITY`.
 
@@ -68,6 +72,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, UML3 elements, views and examples verified |
 | Names, lint, keyword applicability | `tools/check_names.py` | library, examples and requirements pass; 23 negative tests fail as expected, including keyword rules inherited through imports and reserved words used as names |
 | Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 14 rules proven to fire; clean control stays clean |
+| Keyword reference | `tools/check_keywords.py`, suite `keywords` | `docs/UML3-Keywords.md` regenerated from the libraries: 74 keywords, 59 with a terse id; the suite fails if a keyword is added without it |
 | Documentation | `tools/check_docs.py` | library, examples and requirements: 0 findings on rules D01–D07; one fixture per rule plus a clean control; documentation-only rewrites proven model-identical (`tools/compare_model_tokens.py`) |
 | Requirements and use cases | `tools/check_requirements.py` | 247 requirements, 59 use cases: form, evidence, realization and traces resolve; every requirement is traced by a use case |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |

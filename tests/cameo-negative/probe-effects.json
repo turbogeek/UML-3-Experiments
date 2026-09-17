@@ -7,7 +7,7 @@
     {"id": "Q05", "why": "#column item def: does the item def subclassify Base::DataValue?", "subject": ["UML3ProbeColumnOnItemDef", "CUSTOMER"], "general": ["Base", "DataValue"], "expected": true},
     {"id": "Q06", "why": "E15: a category keyword (:> DataTypeKind) applies its own base", "subject": ["UML3ProbeKeywordCategory", "Selection"], "general": ["UML3ProbeKeywordCategory", "ProbeChoice"], "expected": true},
     {"id": "Q07", "why": "E15: the category keyword's base specializes DataType, so the element is a UML3 DataType", "subject": ["UML3ProbeKeywordCategory", "Selection"], "general": ["UML3Core", "DataType"], "expected": true},
-    {"id": "Q08", "why": "E15 control: #dataType still applies DataType after DataTypeMetadata moved under DataTypeKind", "subject": ["UML3ProbeKeywordCategory", "Amount"], "general": ["UML3Core", "DataType"], "expected": true},
+    {"id": "Q08", "why": "E15 control: #dataType still applies DataType after dataType moved under DataTypeKind", "subject": ["UML3ProbeKeywordCategory", "Amount"], "general": ["UML3Core", "DataType"], "expected": true},
     {"id": "Q09", "why": "E15 negative control: the category keyword does not add the other keyword's base", "subject": ["UML3ProbeKeywordCategory", "Amount"], "general": ["UML3ProbeKeywordCategory", "ProbeChoice"], "expected": false}
   ],
   "inheritsFeature": []

@@ -307,6 +307,6 @@ package UML3ViewRequirements {
 		#realizes dependency from UML3Views::ComponentDiagram to 'UML3-VIEW-007';
 		#realizes dependency from UML3Views::ClassTable to 'UML3-VIEW-007';
 		#realizes dependency from UML3Views::ClassTable to 'UML3-VIEW-008';
-		#realizes dependency from UML3Core::ClassMetadata to 'UML3-VIEW-010';
+		#realizes dependency from UML3Core::classType to 'UML3-VIEW-010';
 	}
 }

@@ -34,7 +34,7 @@ package RulesClean {
 
 	abstract attribute def Choice :> DataType;
 	abstract attribute choices : Choice[0..*] nonunique :> dataTypes;
-	metadata def <choice> ChoiceMetadata :> DataTypeKind {
+	metadata def <choiceType> chc :> DataTypeKind {
 		:>> baseType = choices meta SysML::Usage;
 	}
 	item def Settings { attribute retries : Integer default 3; }

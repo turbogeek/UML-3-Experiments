@@ -10,10 +10,10 @@ library package ViewsFixture {
 	private import UML3Core::*;
 	view def ProbeDiagram {
 		doc /* The view definition under test. */
-		filter @ClassMetadata;
+		filter @classType;
 	}
 	view def UnlistedDiagram {
 		doc /* A view definition that no diagram kind lists. */
-		filter @ClassMetadata;
+		filter @classType;
 	}
 }

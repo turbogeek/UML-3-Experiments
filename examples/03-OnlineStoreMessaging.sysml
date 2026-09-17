@@ -14,7 +14,7 @@ package OnlineStoreMessaging {
 	- Endpoints: OrderEventsOut and OrderEventsIn (ProducerPort and ConsumerPort narrowed to OrderPlaced),
 	  PaymentClientPort (RequestReplyPort).
 	- Channels: OrderEventsTopic (#topic with @QualityOfService), hosted by KafkaCluster (#broker).
-	- Participants: CheckoutService, PaymentProcessor and FulfillmentService (#service, @Idempotent).
+	- Participants: CheckoutService, PaymentProcessor and FulfillmentService (#service, @idempotent).
 	- Wiring: eventDrivenStore with #publishes, #subscribes, #sends and #handles flows.
 	- Interaction: CheckoutInteraction with lifelines, event occurrences, successions and messages.
 	References: docs/UML2-to-UML3-Traceability.md.
@@ -176,10 +176,10 @@ package OnlineStoreMessaging {
 		/*
 		The service that fulfills placed orders; it consumes OrderPlaced events.
 
-		@Idempotent declares that handling the same event twice has the same effect as handling it once,
+		@idempotent declares that handling the same event twice has the same effect as handling it once,
 		which the at-least-once delivery of OrderEventsTopic requires.
 		*/
-		@Idempotent;
+		@idempotent;
 		port events : OrderEventsIn { doc /* Receives OrderPlaced events. */ }
 	}
 
@@ -204,7 +204,7 @@ package OnlineStoreMessaging {
 			reaches fulfillment through the in item of fulfillment.events. No flow connects checkout to
 			fulfillment directly: the topic decouples the publisher from its subscribers, and another
 			subscriber needs only one more #subscribes flow.
-			References: UML3Messaging::Publishes; UML3Messaging::Subscribes; SysML 7.16.
+			References: UML3Messaging::publishes; UML3Messaging::subscribes; SysML 7.16.
 			*/
 		#publishes flow publishOrderPlaced of OrderPlaced from checkout.events.outboundMessages
 			to kafka.ordersTopic.inbound.inboundMessages {
@@ -222,7 +222,7 @@ package OnlineStoreMessaging {
 			because that port is conjugated. returnPaymentResult carries the reply back from the response
 			item of the processor (out, by conjugation) to the response item of checkout (in). No broker is
 			involved.
-			References: UML3Messaging::Sends; UML3Messaging::Handles.
+			References: UML3Messaging::sends; UML3Messaging::handles.
 			*/
 		#sends flow sendCapturePayment of CapturePayment from checkout.payments.request
 			to paymentProcessor.payments.request {

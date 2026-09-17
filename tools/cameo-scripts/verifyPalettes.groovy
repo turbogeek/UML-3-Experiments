@@ -76,7 +76,11 @@ def keywordsOf = { e ->
         if (!cls.contains("MetadataUsage") && !cls.contains("MetadataFeature")) return
         def mc = call0(m, "getMetadataDefinition") ?: call0(m, "getMetaclass")
         if (mc == null) { def types = call0(m, "getType"); mc = (types instanceof Collection && !types.isEmpty()) ? types.iterator().next() : null }
-        names << (mc != null ? (nameOf(mc) ?: mc.getClass().getSimpleName()) : cls)
+        // the keyword AS WRITTEN AND SHOWN: a keyword def carries the keyword in its short name and a terse id
+        // in its declared name ('metadata def <classType> cls'), and CATIA Magic's keyword label uses the short
+        // name too, so report that and fall back to the declared name for defs without one
+        def kwName = call0(mc, "getShortName") ?: nameOf(mc)
+        names << (mc != null ? (kwName ?: mc.getClass().getSimpleName()) : cls)
     }
     return names
 }

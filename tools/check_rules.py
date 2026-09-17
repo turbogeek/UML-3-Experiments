@@ -7,7 +7,7 @@ It reuses the index of check_names.py (declarations, keywords, bodies) and repor
   R01  ERROR     #table has at least one #primaryKey column
   R02  WARNING   #entity / #aggregateRoot has an identity (#primaryKey or #id)
   R03  ERROR     #foreignKey ref points to an #entity / #aggregateRoot / #table;
-                 a #foreignKey column's @ForeignKey referencedTable names an existing #table
+                 a #foreignKey column's @foreignKey referencedTable names an existing #table
        WARNING   a #foreignKey column without referencedTable
   R04  WARNING   #association / #relationship / #aggregation / #composition is binary (2 ends)
   R05  WARNING   operations of an #interfaceType are abstract
@@ -23,9 +23,13 @@ It reuses the index of check_names.py (declarations, keywords, bodies) and repor
   R15  ERROR     a redefinition gives a value to a feature whose value is already bound (not 'default') in a
                  general type, e.g. a keyword metadata def that specializes #dataType and rebinds baseType
                  (KerML validateFeatureValueOverriding; CATIA Magic E15)
+  R16  ERROR     a keyword metadata def carries the keyword in its SHORT name (the name CATIA Magic shows as
+                 «#keyword», E21) and a terse id or a descriptive name as its declared name:
+                 'metadata def <classType> cls', 'metadata def <query> QueryMetadata'. A terse id saves at
+                 least three characters and is unique across the libraries
 
 Keywords are normalized to the qualified name of the library metadata def they resolve to, so
-'#primaryKey' (prefix, short name) and '@PrimaryKey' (body, declared name) are the same keyword.
+'#primaryKey' (the declared name) and '#pk' (the short id) are the same keyword.
 
 Usage:
   python check_rules.py --stdlib <sysml.library> --index library --check examples [--report r.json]
@@ -44,24 +48,25 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_names as cn  # noqa: E402
 
 KW = {  # rule vocabulary -> qualified metadata def names
-    "table": "UML3Data::TableMetadata", "dbView": "UML3Data::DatabaseViewMetadata",
-    "entity": "UML3Data::EntityMetadata", "aggregateRoot": "UML3Data::AggregateRootMetadata",
-    "primaryKey": "UML3Data::PrimaryKey", "foreignKey": "UML3Data::ForeignKey",
-    "id": "UML3Core::Identifier",
-    "association": "UML3Core::AssociationMetadata", "aggregation": "UML3Core::AggregationMetadata",
-    "composition": "UML3Core::CompositionMetadata", "relationship": "UML3Data::RelationshipMetadata",
-    "interfaceType": "UML3Core::InterfaceTypeMetadata",
-    "operation": "UML3Core::OperationMetadata", "query": "UML3Core::QueryMetadata",
-    "provided": "UML3Components::Provided", "required": "UML3Components::Required",
-    "messageType": "UML3Messaging::MessageTypeMetadata", "command": "UML3Messaging::CommandMetadata",
-    "domainEvent": "UML3Messaging::DomainEventMetadata", "queryMessage": "UML3Messaging::QueryMessageMetadata",
-    "reply": "UML3Messaging::ReplyMetadata", "documentMessage": "UML3Messaging::DocumentMessageMetadata",
-    "topic": "UML3Messaging::TopicMetadata", "queue": "UML3Messaging::QueueMetadata",
+    "table": "UML3Data::table", "dbView": "UML3Data::dbView",
+    "entity": "UML3Data::entity", "aggregateRoot": "UML3Data::aggregateRoot",
+    "primaryKey": "UML3Data::primaryKey", "foreignKey": "UML3Data::foreignKey",
+    "id": "UML3Core::id",
+    "association": "UML3Core::association", "aggregation": "UML3Core::aggregation",
+    "composition": "UML3Core::composition", "relationship": "UML3Data::relationship",
+    "interfaceType": "UML3Core::interfaceType",
+    "operation": "UML3Core::operation", "query": "UML3Core::query",
+    "provided": "UML3Components::provided", "required": "UML3Components::required",
+    "messageType": "UML3Messaging::messageType", "command": "UML3Messaging::command",
+    "domainEvent": "UML3Messaging::domainEvent", "queryMessage": "UML3Messaging::queryMessage",
+    "reply": "UML3Messaging::reply", "documentMessage": "UML3Messaging::documentMessage",
+    "topic": "UML3Messaging::topic", "queue": "UML3Messaging::queue",
     "qos": "UML3Messaging::QualityOfService",
 }
 MESSAGE_KWS = {KW[k] for k in ("messageType", "command", "domainEvent", "queryMessage", "reply", "documentMessage")}
 ASSOCIATION_KWS = {KW[k] for k in ("association", "aggregation", "composition", "relationship")}
 IDENTITY_TARGET_KWS = {KW[k] for k in ("entity", "aggregateRoot", "table")}
+MIN_SHORT_SAVING = 3  # characters a short id must save over the keyword, otherwise it is not worth learning
 
 
 @dataclass
@@ -95,12 +100,35 @@ class Model:
         self.files = files  # id(scope) -> file path, for scopes declared in checked files
         self._elements: dict[int, Element] = {}
 
+        # R16 vocabulary, read from every indexed metadata def (library included)
+        mdefs = [s for s in idx._scopes if s.is_metadata_def]
+        self.terse_ids: dict[str, list[str]] = {}       # declared name (lowerCamelCase) -> qualified names
+        self.keywords_by_word: dict[str, str] = {}      # short name (the keyword) -> qualified name
+        for s in mdefs:
+            if s.name[:1].islower():
+                self.terse_ids.setdefault(s.name, []).append(s.qname)
+            kw = _short_name(s)
+            if kw:
+                self.keywords_by_word[kw] = s.qname
+        # SemanticMetadata and the abstract categories under it (DataTypeKind, DependencyKind)
+        self.keyword_categories = {"SemanticMetadata"}
+        for _ in range(3):  # categories of categories, if they are ever nested deeper
+            self.keyword_categories |= {s.name for s in mdefs
+                                        if set(s.supers) & self.keyword_categories and "abstract" in
+                                        [t.text for t in s.decl]}
+
     # -- keyword resolution ------------------------------------------------------------
     def resolve_keyword(self, name: str) -> str | None:
+        """Canonical qualified keyword: the name users write, whichever slot holds it. A keyword def carries the
+        keyword as its short name and a terse id as its declared name ('metadata def <classType> cls'), so
+        '#classType', '#cls' and '@UML3Core::classType' all normalize to 'UML3Core::classType'."""
         cands = self.idx.metadata_defs(name.rpartition("::")[2])
         uml3 = [c for c in cands if c.qname.startswith("UML3")]
         chosen = uml3 or cands
-        return chosen[0].qname if chosen else None
+        if not chosen:
+            return None
+        owner, meta = chosen[0].qname.rpartition("::")[0], chosen[0]
+        return owner + "::" + self.keyword_label(meta.qname) if owner else meta.qname
 
     def element(self, scope: cn.Scope) -> Element:
         if id(scope) in self._elements:
@@ -158,7 +186,7 @@ class Model:
                 e.semantic_keywords.append(q)
 
     def keyword_label(self, qualified: str) -> str:
-        """Short name users write ('column') for a metadata def ('UML3Data::ColumnMetadata')."""
+        """Short name users write ('column') for a metadata def ('UML3Data::column')."""
         meta = self.idx._by_qname.get(qualified)
         owner = self.idx._by_qname.get(qualified.rpartition("::")[0])
         if meta is not None and owner is not None:
@@ -230,9 +258,9 @@ def check(model: Model, scopes: list[cn.Scope]) -> list[Finding]:
             else:
                 ref_table = _string_value(s.body, "referencedTable")
                 if ref_table is None:
-                    add("R03", "WARNING", e, "#foreignKey column has no @ForeignKey { referencedTable = ...; }")
+                    add("R03", "WARNING", e, "#foreignKey column has no @foreignKey { referencedTable = ...; }")
                 elif ref_table not in table_names:
-                    add("R03", "ERROR", e, f"@ForeignKey referencedTable '{ref_table}' is not a #table")
+                    add("R03", "ERROR", e, f"@foreignKey referencedTable '{ref_table}' is not a #table")
 
         if s.is_def and kws & ASSOCIATION_KWS:
             ends = sum(1 for m in mems if m.is_end)
@@ -311,7 +339,52 @@ def check(model: Model, scopes: list[cn.Scope]) -> list[Finding]:
                     add("R15", "ERROR", e, f"redefines '{name}', whose value is already bound (not 'default') in "
                                            f"'{owner.qname}':{hint} KerML validateFeatureValueOverriding forbids "
                                            "overriding it (CATIA Magic E15)")
+
+        if _is_keyword_def(model, s, e):
+            keyword = _short_name(s)
+            if keyword is None:
+                add("R16", "ERROR", e, f"keyword metadata def '{s.name}' has no short name; the keyword goes in "
+                                       "the short-name slot, because that is the name CATIA Magic shows on a "
+                                       f"shape («#keyword», E21): 'metadata def <keyword> {s.name}'")
+            elif keyword.endswith("Metadata") or not keyword[:1].islower():
+                add("R16", "ERROR", e, f"keyword '{keyword}' of '{s.name}' is not a lowerCamelCase keyword word; "
+                                       "it is what users write and what a diagram shows")
+            elif s.name[:1].islower():  # a terse id, not a descriptive name
+                if len(s.name) > len(keyword):
+                    add("R16", "ERROR", e, f"keyword '{s.name}' and terse id '{keyword}' are in the wrong slots; "
+                                           f"write 'metadata def <{s.name}> {keyword}', because CATIA Magic "
+                                           f"labels a shape with the short name («#{keyword}», E21)")
+                elif len(keyword) - len(s.name) < MIN_SHORT_SAVING:
+                    add("R16", "ERROR", e, f"terse id '{s.name}' saves {len(keyword) - len(s.name)} characters "
+                                           f"over '#{keyword}'; give one only when it saves {MIN_SHORT_SAVING} "
+                                           "or more, otherwise use the descriptive name")
+                else:
+                    clash = [q for q in model.terse_ids.get(s.name, []) if q != s.qname]
+                    if clash:
+                        add("R16", "ERROR", e, f"terse id '{s.name}' is also used by {', '.join(clash)}; "
+                                               "terse ids are unique across the UML3 libraries")
+                    elif s.name in model.keywords_by_word and model.keywords_by_word[s.name] != s.qname:
+                        add("R16", "ERROR", e, f"terse id '{s.name}' is the keyword of "
+                                               f"{model.keywords_by_word[s.name]}")
     return out
+
+
+def _short_name(scope: cn.Scope) -> str | None:
+    """The '<id>' of a declaration, or None."""
+    d = scope.decl
+    for k, t in enumerate(d):
+        if t.text == "<" and k + 2 < len(d) and d[k + 1].kind == "ident" and d[k + 2].text == ">":
+            return d[k + 1].text
+    return None
+
+
+def _is_keyword_def(model: Model, scope: cn.Scope, e: Element) -> bool:
+    """A metadata def users write as a keyword: concrete, and either carrying a short id or specializing a
+    semantic keyword category. Plain metadata that only carries values (Technology, Column) and the abstract
+    categories (DataTypeKind) are named after the concept and are not covered by R16."""
+    if not scope.is_metadata_def or e.abstract:
+        return False
+    return _short_name(scope) is not None or bool(set(scope.supers) & model.keyword_categories)
 
 
 def _valued_redefinitions(scope: cn.Scope) -> dict[str, bool]:

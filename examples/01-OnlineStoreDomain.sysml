@@ -16,7 +16,7 @@ package OnlineStoreDomain {
 	- Interfaces: PaymentGateway and Auditable (#interfaceType), realized by StripeGateway (#final).
 	- Other class keywords: StoreSettings (#singleton), PaymentDeclined (#exceptionType).
 	- Generalization set: PaymentMethod, specialized by CardPayment and WalletPayment (@GeneralizationSet).
-	- Associations: Places (#association with @Navigable ends), Review (association class) and Contains
+	- Associations: Places (#association with @navigable ends), Review (association class) and Contains
 	  (#composition).
 	- Template: Repository (#template, #templateParameter), bound by CustomerRepository.
 	- Dependencies: checkoutUsesGateway (#uses) and repositoryCreatesCustomers (#creates).
@@ -263,7 +263,7 @@ package OnlineStoreDomain {
 		/*
 		The configuration of the store; there is a single instance at runtime.
 
-		#singleton (UML3Core::Singleton) records the one-instance constraint next to #classType.
+		#singleton (UML3Core::singleton) records the one-instance constraint next to #classType.
 		*/
 		attribute defaultCurrency : CurrencyCode { doc /* The currency the store uses by default. */ }
 	}
@@ -275,7 +275,7 @@ package OnlineStoreDomain {
 
 		A UML3Core::ExceptionType (#exceptionType): an exception is a signal object that travels from where
 		it is raised to its handler. No operation in this model declares that it raises PaymentDeclined;
-		UML3 declares that with a #raises dependency (UML3IDL::RaisesDependency) or in the operation's doc.
+		UML3 declares that with a #raises dependency (UML3IDL::raises) or in the operation's doc.
 		*/
 		attribute declineCode : String { doc /* The provider's code for why the payment was declined. */ }
 	}
@@ -318,12 +318,12 @@ package OnlineStoreDomain {
 		/*
 		Association and navigable ends. Places makes the relationship between customers and orders a
 		first-class element. Its end multiplicities read as in UML: an order has exactly one customer, a
-		customer has any number of orders. Both ends are @Navigable. The order end is mirrored in Customer by
+		customer has any number of orders. Both ends are @navigable. The order end is mirrored in Customer by
 		the ref feature orders, with the same type and multiplicity, so a customer reaches its orders as an
 		ordinary feature. The mirror is a convention: the model does not relate orders to the end (SysML v2
 		cross subsetting, 'crosses', could), and Order has no mirror of the customer end, so navigating
 		from an order to its customer goes through Places.
-		References: UML3Core::Association; UML3Core::Navigable; KerML 7.4.5.
+		References: UML3Core::Association; UML3Core::navigable; KerML 7.4.5.
 		*/
 
 	#association connection def Places {
@@ -332,10 +332,10 @@ package OnlineStoreDomain {
 		The association between a customer and the orders the customer placed.
 
 		A UML Association (#association, UML3Core::Association): a connection def with one end per
-		participant, both @Navigable (see NavigableEnds).
+		participant, both @navigable (see NavigableEnds).
 		*/
-		end [1] ref customer : Customer { @Navigable; doc /* The customer who placed the order. */ }
-		end [0..*] ref order : Order { @Navigable; doc /* An order the customer placed. */ }
+		end [1] ref customer : Customer { @navigable; doc /* The customer who placed the order. */ }
+		end [0..*] ref order : Order { @navigable; doc /* An order the customer placed. */ }
 	}
 
 	#association connection def Review {
@@ -345,10 +345,10 @@ package OnlineStoreDomain {
 
 		A UML AssociationClass: a #association connection def that also owns attributes, so every link
 		between a reviewer and a reviewed product carries its own rating and text. Only the reviewed end is
-		@Navigable, and Customer has no ref feature that mirrors it.
+		@navigable, and Customer has no ref feature that mirrors it.
 		*/
 		end [0..*] ref reviewer : Customer { doc /* The customer who wrote the review. */ }
-		end [0..*] ref reviewed : Product { @Navigable; doc /* The product that was reviewed. */ }
+		end [0..*] ref reviewed : Product { @navigable; doc /* The product that was reviewed. */ }
 		attribute rating : UInt8 {
 			doc /* The rating, from 1 to 5. */
 			@Facets { minInclusive = 1; maxInclusive = 5; }
@@ -386,7 +386,7 @@ package OnlineStoreDomain {
 		UML3Core::Class. CustomerRepository binds it, the UML3 form of Repository<Customer>: it specializes
 		Repository and redefines entity with the concrete type Customer. It inherits count and adds
 		findByEmail.
-		References: UML3Core::Template; UML3Core::TemplateParameter; UML 2.5.1 TemplateBinding.
+		References: UML3Core::template; UML3Core::templateParameter; UML 2.5.1 TemplateBinding.
 		*/
 
 	abstract #template item def Repository {
@@ -394,7 +394,7 @@ package OnlineStoreDomain {
 		/*
 		A generic repository of domain objects that can count them; the stored class is a template parameter.
 
-		A #template (UML3Core::Template), abstract because it is used only through bindings (see
+		A #template (UML3Core::template), abstract because it is used only through bindings (see
 		TemplateBinding).
 		*/
 		abstract ref #templateParameter item entity : Class[0..*] {
@@ -430,7 +430,7 @@ package OnlineStoreDomain {
 		an order needs a payment gateway. repositoryCreatesCustomers: CustomerRepository creates Customer
 		objects (#creates). Dependency keywords are plain metadata restricted to dependencies, because a
 		dependency is a relationship and cannot specialize a library type.
-		References: UML3Core::UsesDependency; UML3Core::CreatesDependency; UML 2.5.1 Usage.
+		References: UML3Core::uses; UML3Core::creates; UML 2.5.1 Usage.
 		*/
 	#uses dependency checkoutUsesGateway from Order to PaymentGateway {
 		doc /* Order uses PaymentGateway (UML «use»): paying for an order needs a payment gateway. */

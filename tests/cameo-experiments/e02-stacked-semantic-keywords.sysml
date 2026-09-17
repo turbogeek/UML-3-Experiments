@@ -13,7 +13,7 @@ package UML3ExperimentStackedKeywords {
 		/* B: same keywords, reversed order */
 		#primaryKey #column attribute B : Uuid;
 		/* C: first keyword as prefix, second in body form */
-		#column attribute C : Uuid { @PrimaryKey; }
+		#column attribute C : Uuid { @primaryKey; }
 		/* D: single keyword (positive control) */
 		#primaryKey attribute D : Uuid;
 		/* E: two markers of the same pattern (both Anything-typed bases) */

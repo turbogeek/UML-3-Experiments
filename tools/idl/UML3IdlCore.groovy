@@ -1217,7 +1217,14 @@ class IdlFromModel {
     static boolean isLibrary(Object o) { return callOn(o, "isLibraryElement") == Boolean.TRUE }
 
     List metadataUsages(Object e) { return list(e, "getOwnedElement").findAll { kind(it) == "MetadataUsage" } }
-    static String metadataName(Object mu) { return nameOf(callOn(mu, "getMetadataDefinition")) }
+    // the keyword as written: a keyword def carries the keyword in its short name and a terse id in its declared
+    // name ('metadata def <dataType> dt'), so match on the short name and fall back to the declared name for
+    // plain metadata such as IdlOneway
+    static String metadataName(Object mu) {
+        Object md = callOn(mu, "getMetadataDefinition")
+        Object s = callOn(md, "getShortName")
+        return s != null ? s.toString() : nameOf(md)
+    }
     Object metadata(Object e, String defName) { return metadataUsages(e).find { metadataName(it) == defName } }
     boolean has(Object e, String defName) { return metadata(e, defName) != null }
 
@@ -1327,7 +1334,7 @@ class IdlFromModel {
         } else if (b[0] == 0L && b[1] == 1L && !unionBranch) {
             m.annotations << new IdlAnnotation(name: "optional")
         }
-        if (has(u, "Identifier")) m.annotations << new IdlAnnotation(name: "key")
+        if (has(u, "id")) m.annotations << new IdlAnnotation(name: "key")
         Object mid = metadata(u, "IdlMemberId")
         if (mid != null) m.annotations << new IdlAnnotation(name: "id", args: [String.valueOf(metaValue(mid, "memberId"))])
         if (f.minInclusive != null || f.maxInclusive != null) {
@@ -1364,7 +1371,7 @@ class IdlFromModel {
 
     List<IdlDefinition> definitions(Object ns) {
         // raises dependencies owned by this namespace
-        list(ns, "getOwnedElement").findAll { kind(it) == "Dependency" && list(it, "getOwnedElement").any { mu -> metadataName(mu) == "RaisesDependency" } }.each { dep ->
+        list(ns, "getOwnedElement").findAll { kind(it) == "Dependency" && list(it, "getOwnedElement").any { mu -> metadataName(mu) == "raises" } }.each { dep ->
             list(dep, "getClient").each { client ->
                 List<String> r = raisesByOperation.get(client)
                 if (r == null) { r = []; raisesByOperation.put(client, r) }
@@ -1399,11 +1406,11 @@ class IdlFromModel {
                     out << attributeDefinition(el)
                     break
                 case "ItemDefinition":
-                    if (has(el, "ExceptionTypeMetadata")) {
+                    if (has(el, "exceptionType")) {
                         IdlExceptionDef x = new IdlExceptionDef(kind: "exception", name: n, annotations: defAnnotations(el))
                         x.members = attributeUsages(el).collect { member(it, false) }
                         out << x
-                    } else if (has(el, "InterfaceTypeMetadata")) {
+                    } else if (has(el, "interfaceType")) {
                         out << interfaceDefinition(el)
                     } else {
                         warnings << ("item def '" + n + "' is neither #exceptionType nor #interfaceType; skipped")
@@ -1421,7 +1428,7 @@ class IdlFromModel {
     IdlDefinition attributeDefinition(Object d) {
         String n = nameOf(d)
         List<Object> supers = list(d, "getOwnedSubclassification").collect { callOn(it, "getSuperclassifier") }.findAll { it != null }
-        if (has(d, "UnionMetadata")) {
+        if (has(d, "union")) {
             IdlUnion u = new IdlUnion(kind: "union", name: n, annotations: defAnnotations(d))
             attributeUsages(d).each { a ->
                 if (has(a, "Discriminator")) {
@@ -1440,7 +1447,7 @@ class IdlFromModel {
             }
             return u
         }
-        if (has(d, "DataTypeMetadata")) {
+        if (has(d, "dataType")) {
             IdlStruct s = new IdlStruct(kind: "struct", name: n, annotations: defAnnotations(d))
             Object base = supers.find { !isLibrary(it) }
             if (base != null) s.base = scoped(base)

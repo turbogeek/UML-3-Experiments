@@ -6,7 +6,7 @@ library package UML3DiagramKinds {
 
 	One part per diagram kind records three things: the keywords whose elements a view of that kind shows,
 	the keywords a modeling tool should let the user create on it, and the UML3Views definitions that render
-	it. Keywords and view definitions are held as metaobjects ('ClassMetadata meta KerML::Type'), not as
+	it. Keywords and view definitions are held as metaobjects ('classType meta KerML::Type'), not as
 	strings, so a rename cannot leave a stale entry behind.
 
 	Usage: a tool customization, report or generator reads the keywords of a kind instead of repeating them:
@@ -42,8 +42,8 @@ library package UML3DiagramKinds {
 		Usage: declare one part per diagram kind and bind the three lists.
 		  part classDiagram : DiagramKind {
 		    attribute :>> label = "class diagram";
-		    attribute :>> shows = (ClassMetadata meta KerML::Type);
-		    attribute :>> creates = (ClassMetadata meta KerML::Type);
+		    attribute :>> shows = (classType meta KerML::Type);
+		    attribute :>> creates = (classType meta KerML::Type);
 		    attribute :>> views = (UML3Views::ClassDiagram meta KerML::Type);
 		  }
 		References: UML3Views; docs/DESIGN.md issue I-35.
@@ -83,8 +83,8 @@ library package UML3DiagramKinds {
 		attribute :>> label = "package diagram";
 		attribute :>> shows = (SysML::Package meta KerML::Type);
 		attribute :>> creates = (
-			Layer meta KerML::Type,
-			UsesDependency meta KerML::Type);
+			layer meta KerML::Type,
+			uses meta KerML::Type);
 		attribute :>> views = (UML3Views::PackageDiagram meta KerML::Type);
 	}
 
@@ -98,37 +98,37 @@ library package UML3DiagramKinds {
 		*/
 		attribute :>> label = "class diagram";
 		attribute :>> shows = (
-			ClassMetadata meta KerML::Type,
-			ActiveClassMetadata meta KerML::Type,
-			InterfaceTypeMetadata meta KerML::Type,
+			classType meta KerML::Type,
+			activeClass meta KerML::Type,
+			interfaceType meta KerML::Type,
 			DataTypeKind meta KerML::Type,
-			SignalMetadata meta KerML::Type,
-			ExceptionTypeMetadata meta KerML::Type,
-			Template meta KerML::Type,
+			signal meta KerML::Type,
+			exceptionType meta KerML::Type,
+			template meta KerML::Type,
 			SysML::EnumerationDefinition meta KerML::Type,
-			AssociationMetadata meta KerML::Type,
-			AggregationMetadata meta KerML::Type,
-			CompositionMetadata meta KerML::Type,
+			association meta KerML::Type,
+			aggregation meta KerML::Type,
+			composition meta KerML::Type,
 			DependencyKind meta KerML::Type);
 		attribute :>> creates = (
-			ClassMetadata meta KerML::Type,
-			ActiveClassMetadata meta KerML::Type,
-			InterfaceTypeMetadata meta KerML::Type,
-			DataTypeMetadata meta KerML::Type,
-			SignalMetadata meta KerML::Type,
-			ExceptionTypeMetadata meta KerML::Type,
-			OperationMetadata meta KerML::Type,
-			QueryMetadata meta KerML::Type,
-			ConstructorMetadata meta KerML::Type,
-			AssociationMetadata meta KerML::Type,
-			AggregationMetadata meta KerML::Type,
-			CompositionMetadata meta KerML::Type,
-			UsesDependency meta KerML::Type,
-			RealizesDependency meta KerML::Type,
-			CallsDependency meta KerML::Type,
-			CreatesDependency meta KerML::Type,
-			TracesDependency meta KerML::Type,
-			InstantiatesDependency meta KerML::Type);
+			classType meta KerML::Type,
+			activeClass meta KerML::Type,
+			interfaceType meta KerML::Type,
+			dataType meta KerML::Type,
+			signal meta KerML::Type,
+			exceptionType meta KerML::Type,
+			operation meta KerML::Type,
+			query meta KerML::Type,
+			constructor meta KerML::Type,
+			association meta KerML::Type,
+			aggregation meta KerML::Type,
+			composition meta KerML::Type,
+			uses meta KerML::Type,
+			realizes meta KerML::Type,
+			calls meta KerML::Type,
+			creates meta KerML::Type,
+			traces meta KerML::Type,
+			instantiates meta KerML::Type);
 		attribute :>> views = (
 			UML3Views::ClassDiagram meta KerML::Type,
 			UML3Views::ClassDetailDiagram meta KerML::Type);
@@ -143,8 +143,8 @@ library package UML3DiagramKinds {
 		*/
 		attribute :>> label = "class table";
 		attribute :>> shows = (
-			ClassMetadata meta KerML::Type,
-			InterfaceTypeMetadata meta KerML::Type,
+			classType meta KerML::Type,
+			interfaceType meta KerML::Type,
 			DataTypeKind meta KerML::Type,
 			SysML::EnumerationDefinition meta KerML::Type);
 		attribute :>> views = (UML3Views::ClassTable meta KerML::Type);
@@ -161,27 +161,27 @@ library package UML3DiagramKinds {
 		*/
 		attribute :>> label = "component diagram";
 		attribute :>> shows = (
-			ComponentMetadata meta KerML::Type,
-			ServiceMetadata meta KerML::Type,
-			SubsystemMetadata meta KerML::Type,
-			InterfaceTypeMetadata meta KerML::Type,
+			component meta KerML::Type,
+			service meta KerML::Type,
+			subsystem meta KerML::Type,
+			interfaceType meta KerML::Type,
 			SysML::PortDefinition meta KerML::Type,
 			SysML::PortUsage meta KerML::Type,
-			AssemblyMetadata meta KerML::Type,
-			DelegationMetadata meta KerML::Type,
+			assembly meta KerML::Type,
+			delegation meta KerML::Type,
 			SysML::ConnectionUsage meta KerML::Type,
 			DependencyKind meta KerML::Type);
 		attribute :>> creates = (
-			ComponentMetadata meta KerML::Type,
-			ServiceMetadata meta KerML::Type,
-			SubsystemMetadata meta KerML::Type,
-			InterfaceTypeMetadata meta KerML::Type,
-			ServicePortMetadata meta KerML::Type,
-			Provided meta KerML::Type,
-			Required meta KerML::Type,
-			AssemblyMetadata meta KerML::Type,
-			DelegationMetadata meta KerML::Type,
-			RealizesDependency meta KerML::Type);
+			component meta KerML::Type,
+			service meta KerML::Type,
+			subsystem meta KerML::Type,
+			interfaceType meta KerML::Type,
+			servicePort meta KerML::Type,
+			provided meta KerML::Type,
+			required meta KerML::Type,
+			assembly meta KerML::Type,
+			delegation meta KerML::Type,
+			realizes meta KerML::Type);
 		attribute :>> views = (UML3Views::ComponentDiagram meta KerML::Type);
 	}
 
@@ -194,21 +194,21 @@ library package UML3DiagramKinds {
 		*/
 		attribute :>> label = "deployment diagram";
 		attribute :>> shows = (
-			ArtifactMetadata meta KerML::Type,
-			NodeMetadata meta KerML::Type,
-			DeviceMetadata meta KerML::Type,
-			ExecutionEnvironmentMetadata meta KerML::Type,
-			CommunicationPathMetadata meta KerML::Type,
-			DeploymentMetadata meta KerML::Type,
-			ManifestationMetadata meta KerML::Type);
+			artifact meta KerML::Type,
+			node meta KerML::Type,
+			device meta KerML::Type,
+			executionEnvironment meta KerML::Type,
+			communicationPath meta KerML::Type,
+			deploy meta KerML::Type,
+			manifest meta KerML::Type);
 		attribute :>> creates = (
-			NodeMetadata meta KerML::Type,
-			DeviceMetadata meta KerML::Type,
-			ExecutionEnvironmentMetadata meta KerML::Type,
-			ArtifactMetadata meta KerML::Type,
-			CommunicationPathMetadata meta KerML::Type,
-			DeploymentMetadata meta KerML::Type,
-			ManifestationMetadata meta KerML::Type);
+			node meta KerML::Type,
+			device meta KerML::Type,
+			executionEnvironment meta KerML::Type,
+			artifact meta KerML::Type,
+			communicationPath meta KerML::Type,
+			deploy meta KerML::Type,
+			manifest meta KerML::Type);
 		attribute :>> views = (
 			UML3Views::DeploymentDiagram meta KerML::Type,
 			UML3Views::DeploymentDetailDiagram meta KerML::Type);
@@ -224,26 +224,26 @@ library package UML3DiagramKinds {
 		*/
 		attribute :>> label = "entity relationship diagram";
 		attribute :>> shows = (
-			EntityMetadata meta KerML::Type,
-			AggregateRootMetadata meta KerML::Type,
-			ValueObjectMetadata meta KerML::Type,
-			RelationshipMetadata meta KerML::Type,
-			TableMetadata meta KerML::Type,
-			DatabaseViewMetadata meta KerML::Type,
-			DatabaseMetadata meta KerML::Type,
-			MapsTo meta KerML::Type);
+			entity meta KerML::Type,
+			aggregateRoot meta KerML::Type,
+			valueObject meta KerML::Type,
+			relationship meta KerML::Type,
+			table meta KerML::Type,
+			dbView meta KerML::Type,
+			database meta KerML::Type,
+			mapsTo meta KerML::Type);
 		attribute :>> creates = (
-			EntityMetadata meta KerML::Type,
-			AggregateRootMetadata meta KerML::Type,
-			ValueObjectMetadata meta KerML::Type,
-			RelationshipMetadata meta KerML::Type,
-			TableMetadata meta KerML::Type,
-			DatabaseViewMetadata meta KerML::Type,
-			DatabaseMetadata meta KerML::Type,
-			ColumnMetadata meta KerML::Type,
-			PrimaryKey meta KerML::Type,
-			ForeignKey meta KerML::Type,
-			MapsTo meta KerML::Type);
+			entity meta KerML::Type,
+			aggregateRoot meta KerML::Type,
+			valueObject meta KerML::Type,
+			relationship meta KerML::Type,
+			table meta KerML::Type,
+			dbView meta KerML::Type,
+			database meta KerML::Type,
+			column meta KerML::Type,
+			primaryKey meta KerML::Type,
+			foreignKey meta KerML::Type,
+			mapsTo meta KerML::Type);
 		attribute :>> views = (
 			UML3Views::EntityRelationshipDiagram meta KerML::Type,
 			UML3Views::EntityRelationshipDetailDiagram meta KerML::Type);
@@ -258,35 +258,35 @@ library package UML3DiagramKinds {
 		*/
 		attribute :>> label = "message schema";
 		attribute :>> shows = (
-			MessageTypeMetadata meta KerML::Type,
-			CommandMetadata meta KerML::Type,
-			DomainEventMetadata meta KerML::Type,
-			QueryMessageMetadata meta KerML::Type,
-			ReplyMetadata meta KerML::Type,
-			DocumentMessageMetadata meta KerML::Type,
-			ChannelMetadata meta KerML::Type,
-			TopicMetadata meta KerML::Type,
-			QueueMetadata meta KerML::Type,
-			MessageBrokerMetadata meta KerML::Type,
-			Publishes meta KerML::Type,
-			Subscribes meta KerML::Type,
-			Sends meta KerML::Type,
-			Handles meta KerML::Type);
+			messageType meta KerML::Type,
+			command meta KerML::Type,
+			domainEvent meta KerML::Type,
+			queryMessage meta KerML::Type,
+			reply meta KerML::Type,
+			documentMessage meta KerML::Type,
+			channel meta KerML::Type,
+			topic meta KerML::Type,
+			queue meta KerML::Type,
+			broker meta KerML::Type,
+			publishes meta KerML::Type,
+			subscribes meta KerML::Type,
+			sends meta KerML::Type,
+			handles meta KerML::Type);
 		attribute :>> creates = (
-			CommandMetadata meta KerML::Type,
-			DomainEventMetadata meta KerML::Type,
-			QueryMessageMetadata meta KerML::Type,
-			ReplyMetadata meta KerML::Type,
-			DocumentMessageMetadata meta KerML::Type,
-			MessageTypeMetadata meta KerML::Type,
-			TopicMetadata meta KerML::Type,
-			QueueMetadata meta KerML::Type,
-			ChannelMetadata meta KerML::Type,
-			MessageBrokerMetadata meta KerML::Type,
-			Publishes meta KerML::Type,
-			Subscribes meta KerML::Type,
-			Sends meta KerML::Type,
-			Handles meta KerML::Type);
+			command meta KerML::Type,
+			domainEvent meta KerML::Type,
+			queryMessage meta KerML::Type,
+			reply meta KerML::Type,
+			documentMessage meta KerML::Type,
+			messageType meta KerML::Type,
+			topic meta KerML::Type,
+			queue meta KerML::Type,
+			channel meta KerML::Type,
+			broker meta KerML::Type,
+			publishes meta KerML::Type,
+			subscribes meta KerML::Type,
+			sends meta KerML::Type,
+			handles meta KerML::Type);
 		attribute :>> views = (
 			UML3Views::MessageSchemaView meta KerML::Type,
 			UML3Views::MessageSchemaDetailView meta KerML::Type);

@@ -1,0 +1,44 @@
+{
+  "experiment": "E21",
+  "title": "Which name slot is the keyword? CATIA Magic's keyword label reads the short name",
+  "date": "2026-09-17",
+  "context": "The keyword re-slotting (users asked for terse ids so UML3 metatypes are quicker to write) first put the keyword word in the DECLARED name and the terse id in the SHORT name ('metadata def <cls> classType'). The regression suite then reported 10 of 19 keyword labels changed: CATIA Magic rendered «#cls», «#stc», «#pk», «#tpl», «#tplParam», «#sgl», «#cmp», «#bnd», «#prv», «#req», «#svc», «#idem» instead of the UML-like «#classType», «#static»,.... The cases that still passed are exactly the keywords with no short name (X02 «#final»), so ModelTextCreator.createMetadataKeywordsText uses the short name and falls back to the declared name. The OMG standard library agrees: it writes 'metadata def <cause> CauseMetadata', '<moe> MeasureOfEffectiveness'. The slots were therefore flipped to 'metadata def <classType> cls': the keyword is the short name (what a shape shows, what the documentation tells users to write) and the terse id is the declared name (the second writable spelling).",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "With the keyword in the short-name slot, all 19 keyword-label cases render «#keyword» again, including the 10 that regressed",
+      "expected": true,
+      "confidence": "high",
+      "why": "the label falls back to the declared name only when there is no short name (X02), so a present short name is what is shown"
+    },
+    {
+      "id": "P2",
+      "claim": "All 17 files load and the validation engine reports 0 failures with terse declared names (cls, dt, pk, execEnv, ...)",
+      "expected": true,
+      "confidence": "high",
+      "why": "the pre-flip run already loaded and validated cleanly with the names in the other order; a name slot carries no semantics (E20)"
+    },
+    {
+      "id": "P3",
+      "claim": "10/10 views keep their UML3 palette and all 45 templated buttons resolve, with verifyPalettes now reporting each template's keyword by short name ('classType', 'layer', 'provided', 'publishes')",
+      "expected": true,
+      "confidence": "high",
+      "why": "the templates are unchanged; only the reported spelling moves from the declared to the short name"
+    },
+    {
+      "id": "P4",
+      "claim": "Writing the terse id ('#cls item def X') is equivalent to writing the keyword ('#classType item def X'): same implied specialization",
+      "expected": true,
+      "confidence": "high",
+      "why": "E20 showed the short name, the declared name and an alias all resolve to the same metadata def (K1-K4 PASS)"
+    },
+    {
+      "id": "P5",
+      "claim": "The diagram-kind read-back still finds 8/8 kinds although UML3DiagramKinds names the keywords by short name ('classType meta KerML::Type')",
+      "expected": true,
+      "confidence": "medium",
+      "why": "name resolution does not care which slot holds a name, but the read-back compares the tool's names with the checker's, and the checker reads the source text"
+    }
+  ],
+  "conclusion": null
+}

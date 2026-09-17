@@ -3,7 +3,7 @@ package N05 {
 	private import UML3Data::*;
 	#table item def T {
 		#foreignKey attribute FK : ScalarValues::String {
-			@ForeignKey { onDelete = ReferentialAction::deleteEverything; }
+			@foreignKey { onDelete = ReferentialAction::deleteEverything; }
 		}
 	}
 }

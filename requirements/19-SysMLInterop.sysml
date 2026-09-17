@@ -292,6 +292,6 @@ package UML3SysMLInteropRequirements {
 		#realizes dependency from UML3IDL to 'UML3-SYS-002';
 		#realizes dependency from UML3Views to 'UML3-SYS-002';
 		#realizes dependency from UML3Components::Deployment to 'UML3-SYS-005';
-		#realizes dependency from UML3Components::DeploymentMetadata to 'UML3-SYS-005';
+		#realizes dependency from UML3Components::deploy to 'UML3-SYS-005';
 	}
 }

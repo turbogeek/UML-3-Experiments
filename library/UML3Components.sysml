@@ -19,12 +19,12 @@ library package UML3Components {
 
 	Contents:
 	- Components: Component, Subsystem, Service (#component, #subsystem, #service).
-	- Ports: ServicePort (#servicePort), marked with Provided or Required (#provided, #required).
+	- Ports: ServicePort (#servicePort), marked with provided or required (#provided, #required).
 	- Connectors: AssemblyConnector, DelegationConnector (#assembly, #delegation).
 	- Artifacts and nodes: Artifact, Node, Device, ExecutionEnvironment
 	  (#artifact, #node, #device, #executionEnvironment).
 	- Deployment: CommunicationPath, Deployment, Manifestation (#communicationPath, #deploy, #manifest).
-	- Architecture metadata: Boundary (#boundary), Layer with ArchitectureStyle (@Layer), @Technology.
+	- Architecture metadata: boundary (#boundary), layer with ArchitectureStyle (@layer), @Technology.
 	References: UML 2.5.1 Component; UML 2.5.1 Deployment; SysML 7.12; SysML 7.15; docs/DESIGN.md.
 	*/
 
@@ -96,7 +96,7 @@ library package UML3Components {
 		doc /* All services; #service usages subset this feature. */
 	}
 
-	comment PortContractDesign about ServicePort, Provided, Required, AssemblyConnector, DelegationConnector
+	comment PortContractDesign about ServicePort, provided, required, AssemblyConnector, DelegationConnector
 		/*
 		Provided and required interfaces. A UML port with a provided or required interface is a SysML port
 		whose port def binds a contract, an InterfaceType. One port def serves both sides of the contract:
@@ -287,10 +287,10 @@ library package UML3Components {
 		doc /* All manifestations; #manifest usages subset this feature. */
 	}
 
-	comment ComponentKeywordDesign about ComponentMetadata, SubsystemMetadata, ServiceMetadata,
-		ServicePortMetadata, AssemblyMetadata, DelegationMetadata, ArtifactMetadata, NodeMetadata,
-		DeviceMetadata, ExecutionEnvironmentMetadata, CommunicationPathMetadata, DeploymentMetadata,
-		ManifestationMetadata
+	comment ComponentKeywordDesign about component, subsystem, service,
+		servicePort, assembly, delegation, artifact, node,
+		device, executionEnvironment, communicationPath, deploy,
+		manifest
 		/*
 		Semantic keywords of the architecture concepts, built like those of UML3Core: each specializes
 		SemanticMetadata and redefines baseType to the collection usage of its concept. A keyworded
@@ -298,37 +298,37 @@ library package UML3Components {
 		References: KerML 9.2.16; SysML 7.27.3; SysML 7.27.4.
 		*/
 
-	metadata def <component> ComponentMetadata :> SemanticMetadata {
+	metadata def <component> cmp :> SemanticMetadata {
 		doc /* Keyword #component: the element is a UML3 Component; a usage subsets components. */
 		:>> baseType = components meta SysML::Usage;
 	}
 
-	metadata def <subsystem> SubsystemMetadata :> SemanticMetadata {
+	metadata def <subsystem> subsys :> SemanticMetadata {
 		doc /* Keyword #subsystem: the element is a UML3 Subsystem, a component that groups other components. */
 		:>> baseType = subsystems meta SysML::Usage;
 	}
 
-	metadata def <service> ServiceMetadata :> SemanticMetadata {
+	metadata def <service> svc :> SemanticMetadata {
 		doc /* Keyword #service: the element is a UML3 Service, a deployable component with a network API. */
 		:>> baseType = services meta SysML::Usage;
 	}
 
-	metadata def <servicePort> ServicePortMetadata :> SemanticMetadata {
+	metadata def <servicePort> svcPort :> SemanticMetadata {
 		doc /* Keyword #servicePort: a port def specializes ServicePort, a port usage subsets servicePorts. */
 		:>> baseType = servicePorts meta SysML::Usage;
 	}
 
-	metadata def <assembly> AssemblyMetadata :> SemanticMetadata {
+	metadata def <assembly> asm :> SemanticMetadata {
 		doc /* Keyword #assembly: the connection is an AssemblyConnector from a required to a provided port. */
 		:>> baseType = assemblyConnectors meta SysML::Usage;
 	}
 
-	metadata def <delegation> DelegationMetadata :> SemanticMetadata {
+	metadata def <delegation> dlg :> SemanticMetadata {
 		doc /* Keyword #delegation: the connection is a DelegationConnector (component port to part port). */
 		:>> baseType = delegationConnectors meta SysML::Usage;
 	}
 
-	metadata def <artifact> ArtifactMetadata :> SemanticMetadata {
+	metadata def <artifact> art :> SemanticMetadata {
 		doc /* Keyword #artifact: the element is a UML3 Artifact. */
 		:>> baseType = artifacts meta SysML::Usage;
 	}
@@ -338,39 +338,39 @@ library package UML3Components {
 		:>> baseType = nodes meta SysML::Usage;
 	}
 
-	metadata def <device> DeviceMetadata :> SemanticMetadata {
+	metadata def <device> dev :> SemanticMetadata {
 		doc /* Keyword #device: the element is a UML3 Device, a physical computational resource. */
 		:>> baseType = devices meta SysML::Usage;
 	}
 
-	metadata def <executionEnvironment> ExecutionEnvironmentMetadata :> SemanticMetadata {
+	metadata def <executionEnvironment> execEnv :> SemanticMetadata {
 		doc /* Keyword #executionEnvironment: the element is a UML3 ExecutionEnvironment, a software host. */
 		:>> baseType = executionEnvironments meta SysML::Usage;
 	}
 
-	metadata def <communicationPath> CommunicationPathMetadata :> SemanticMetadata {
+	metadata def <communicationPath> commPath :> SemanticMetadata {
 		doc /* Keyword #communicationPath: the connection is a UML3 CommunicationPath between nodes. */
 		:>> baseType = communicationPaths meta SysML::Usage;
 	}
 
-	metadata def <deploy> DeploymentMetadata :> SemanticMetadata {
+	metadata def <deploy> dpl :> SemanticMetadata {
 		doc /* Keyword #deploy: the allocation is a UML3 Deployment of an artifact to the node that hosts it. */
 		:>> baseType = deployments meta SysML::Usage;
 	}
 
-	metadata def <manifest> ManifestationMetadata :> SemanticMetadata {
+	metadata def <manifest> mfst :> SemanticMetadata {
 		doc /* Keyword #manifest: the allocation is a UML3 Manifestation of a component in an artifact. */
 		:>> baseType = manifestations meta SysML::Usage;
 	}
 
-	comment ArchitectureMarkerDesign about providedPorts, requiredPorts, boundaryElements, Provided,
-		Required, Boundary
+	comment ArchitectureMarkerDesign about providedPorts, requiredPorts, boundaryElements, provided,
+		required, boundary
 		/*
 		Marker keywords, built with the marker pattern of UML3Core: the baseType is a reference usage typed
 		by Base::Anything, which belongs to no disjoint type family, so a marker is valid on plain and
 		conjugated ports, on parts and on definitions. A marked usage subsets the marker set, e.g.
 		providedPorts. On a definition the implied specialization is only Anything, so a marked definition
-		is found by its metadata, e.g. filter @Boundary.
+		is found by its metadata, e.g. filter @boundary.
 		CATIA Magic shows the markers as labels («#provided», «#required», «#boundary») but applies the
 		implied specialization of only the first semantic keyword of an element (E02, E03). Write the concept
 		keyword first, as in #component #boundary part def WebStorefront; check_rules.py R12 warns when a
@@ -388,7 +388,7 @@ library package UML3Components {
 		doc /* All usages marked #boundary; a marked definition only carries the metadata. */
 	}
 
-	metadata def <provided> Provided :> SemanticMetadata {
+	metadata def <provided> prv :> SemanticMetadata {
 		doc
 		/*
 		Keyword #provided: the port offers its contract to others (UML provided interface / lollipop).
@@ -400,7 +400,7 @@ library package UML3Components {
 		:>> baseType = providedPorts meta SysML::Usage;
 	}
 
-	metadata def <required> Required :> SemanticMetadata {
+	metadata def <required> req :> SemanticMetadata {
 		doc
 		/*
 		Keyword #required: the port needs its contract from others (UML required interface / socket).
@@ -413,9 +413,9 @@ library package UML3Components {
 		:>> baseType = requiredPorts meta SysML::Usage;
 	}
 
-	comment ArchitectureMetadataDesign about ArchitectureStyle, Layer, Technology
+	comment ArchitectureMetadataDesign about ArchitectureStyle, layer, Technology
 		/*
-		Architecture metadata. Layer and Technology are plain metadata, not semantic keywords: they carry
+		Architecture metadata. The layer and Technology metadata are plain metadata, not semantic keywords: they carry
 		values and add no specialization, and a layer is usually a package, which semantic metadata cannot
 		annotate because its annotated elements must be types. CATIA Magic does not show plain metadata in
 		the keyword label of a shape.
@@ -425,9 +425,9 @@ library package UML3Components {
 	enum def ArchitectureStyle {
 		doc
 		/*
-		An architecture style, the value of the 'style' attribute of Layer.
+		An architecture style, the value of the 'style' attribute of layer.
 
-		Usage: @Layer { level = 1; style = ArchitectureStyle::layered; }
+		Usage: @layer { level = 1; style = ArchitectureStyle::layered; }
 		*/
 		enum layered {
 			doc /* Layers ordered by level; each layer uses the services of the layers below it. */
@@ -454,7 +454,7 @@ library package UML3Components {
 		/*
 		Plain metadata that marks a package (or component) as an architectural layer.
 
-		Usage: package Presentation { @Layer { level = 1; style = ArchitectureStyle::layered; } }
+		Usage: package Presentation { @layer { level = 1; style = ArchitectureStyle::layered; } }
 		*/
 		attribute level : Natural[0..1] {
 			doc /* The position of the layer in its stack; examples/02 gives presentation 1 and application 2. */
@@ -464,7 +464,7 @@ library package UML3Components {
 		}
 	}
 
-	metadata def <boundary> Boundary :> SemanticMetadata {
+	metadata def <boundary> bnd :> SemanticMetadata {
 		doc
 		/*
 		Keyword #boundary: a hexagonal or clean-architecture boundary element (adapter, port, gateway).

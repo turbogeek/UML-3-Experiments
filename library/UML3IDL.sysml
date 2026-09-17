@@ -90,7 +90,7 @@ library package UML3IDL {
 		*/
 	}
 
-	comment UnionDesign about Union, idlUnions, UnionMetadata, Discriminator, Case
+	comment UnionDesign about Union, idlUnions, union, Discriminator, Case
 		/*
 		Discriminated unions. The #union keyword makes an attribute def a Union, which is a UML3Core
 		DataType, so a union is a value without identity, like a struct. In its body, @Discriminator marks
@@ -125,7 +125,7 @@ library package UML3IDL {
 		Keyword #union: an IDL Union (a definition specializes Union, a usage subsets idlUnions).
 		Rationale: it specializes the category UML3Core::DataTypeKind because a union is a data type, so
 		views that select data types by '@DataTypeKind' (for example UML3Views::ClassDiagram) also select
-		unions. It cannot specialize UML3Core::DataTypeMetadata, whose bound baseType KerML forbids a
+		unions. It cannot specialize UML3Core::dataType, whose bound baseType KerML forbids a
 		redefinition to override (E15).
 		References: KerML 8.3.4.10.2; UML3Core::DataTypeKind.
 		*/
@@ -225,7 +225,7 @@ library package UML3IDL {
 		}
 	}
 
-	comment IdlOperationDesign about IdlOneway, IdlReturn, RaisesDependency
+	comment IdlOperationDesign about IdlOneway, IdlReturn, raises
 		/*
 		Operations. An IDL interface operation is an abstract #operation action (UML3Core) of the
 		interface, with in, out and inout parameters as in IDL. These elements carry what the action does

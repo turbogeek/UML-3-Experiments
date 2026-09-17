@@ -18,9 +18,9 @@ package DiagramKindsFixturePaletteMissing {
 	part probeKind : DiagramKind {
 		doc /* The kind under test. */
 		attribute :>> label = "probe diagram";
-		attribute :>> shows = (ClassMetadata meta KerML::Type);
-		attribute :>> creates = (ClassMetadata meta KerML::Type,
-			SignalMetadata meta KerML::Type);
+		attribute :>> shows = (classType meta KerML::Type);
+		attribute :>> creates = (classType meta KerML::Type,
+			signal meta KerML::Type);
 		attribute :>> views = (ViewsFixture::ProbeDiagram meta KerML::Type);
 	}
 }

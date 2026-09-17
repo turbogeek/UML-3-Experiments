@@ -185,7 +185,7 @@ library package UML3Messaging {
 		Usage: #queryMessage item def GetOrderStatus { attribute orderId : Uuid; }
 
 		Rationale: the name avoids a clash with #query, the UML3Core keyword for query operations
-		(UML3Core::QueryMetadata).
+		(UML3Core::query).
 		References: UML 2.5.1 Signal; UML 2.5.1 Operation.
 		*/
 	}
@@ -408,7 +408,7 @@ library package UML3Messaging {
 	}
 
 	comment MessagingDeliveryDesign about SerializationFormat, DeliveryGuarantee, OrderingGuarantee,
-		Serialization, QualityOfService, idempotentElements, Idempotent
+		Serialization, QualityOfService, idempotentElements, idempotent
 		/*
 		Delivery semantics. Encoding and quality of service are configuration values, so they are plain
 		metadata with attributes (@Serialization, @QualityOfService) whose value sets are enumerations.
@@ -558,16 +558,16 @@ library package UML3Messaging {
 	}
 
 	abstract ref idempotentElements : Anything[0..*] nonunique {
-		doc /* All usages marked #idempotent. On a definition the keyword is a label only (see Idempotent). */
+		doc /* All usages marked #idempotent. On a definition the keyword is a label only (see idempotent). */
 	}
 
-	metadata def <idempotent> Idempotent :> SemanticMetadata {
+	metadata def <idempotent> idem :> SemanticMetadata {
 		doc
 		/*
 		Keyword #idempotent: handling the same message more than once has the same effect as handling
 		it once.
 
-		Usage: on a consumer, a handler action or an operation, for example '@Idempotent;' in the body
+		Usage: on a consumer, a handler action or an operation, for example '@idempotent;' in the body
 		of #service part def FulfillmentService. Consumers of atLeastOnce channels receive duplicates,
 		so they should be idempotent; discarding messages whose header.messageId was already handled
 		is one way. On a definition the implied specialization is to Base::Anything, which adds
@@ -577,9 +577,9 @@ library package UML3Messaging {
 		:>> baseType = idempotentElements meta SysML::Usage;
 	}
 
-	comment MessagingKeywordDesign about MessageTypeMetadata, CommandMetadata, DomainEventMetadata,
-		QueryMessageMetadata, ReplyMetadata, DocumentMessageMetadata, ChannelMetadata, TopicMetadata,
-		QueueMetadata, MessageBrokerMetadata
+	comment MessagingKeywordDesign about messageType, command, domainEvent,
+		queryMessage, reply, documentMessage, channel, topic,
+		queue, broker
 		/*
 		Semantic keywords for messaging, built like those of UML3Core: each specializes SemanticMetadata
 		and binds baseType to a library collection usage. A keyworded definition specializes the library
@@ -591,7 +591,7 @@ library package UML3Messaging {
 		References: KerML 7.4.13; KerML 9.2.16; SysML 7.27.3.
 		*/
 
-	metadata def <messageType> MessageTypeMetadata :> SemanticMetadata {
+	metadata def <messageType> msg :> SemanticMetadata {
 		doc
 		/*
 		Keyword #messageType: the item is a UML3 MessageType (a definition specializes MessageType, a
@@ -599,15 +599,15 @@ library package UML3Messaging {
 		*/
 		:>> baseType = messageTypes meta SysML::Usage;
 	}
-	metadata def <command> CommandMetadata :> SemanticMetadata {
+	metadata def <command> cmd :> SemanticMetadata {
 		doc /* Keyword #command: the item is a Command, a request for one handler to act. */
 		:>> baseType = commands meta SysML::Usage;
 	}
-	metadata def <domainEvent> DomainEventMetadata :> SemanticMetadata {
+	metadata def <domainEvent> evt :> SemanticMetadata {
 		doc /* Keyword #domainEvent: the item is a DomainEvent, a fact that has happened. */
 		:>> baseType = domainEvents meta SysML::Usage;
 	}
-	metadata def <queryMessage> QueryMessageMetadata :> SemanticMetadata {
+	metadata def <queryMessage> qmsg :> SemanticMetadata {
 		doc /* Keyword #queryMessage: the item is a QueryMessage, a request for information. */
 		:>> baseType = queryMessages meta SysML::Usage;
 	}
@@ -615,11 +615,11 @@ library package UML3Messaging {
 		doc /* Keyword #reply: the item is a Reply to a command or query message. */
 		:>> baseType = replies meta SysML::Usage;
 	}
-	metadata def <documentMessage> DocumentMessageMetadata :> SemanticMetadata {
+	metadata def <documentMessage> docMsg :> SemanticMetadata {
 		doc /* Keyword #documentMessage: the item is a DocumentMessage, data transferred without intent. */
 		:>> baseType = documentMessages meta SysML::Usage;
 	}
-	metadata def <channel> ChannelMetadata :> SemanticMetadata {
+	metadata def <channel> chan :> SemanticMetadata {
 		doc /* Keyword #channel: the part is a UML3 Channel. */
 		:>> baseType = channels meta SysML::Usage;
 	}
@@ -631,13 +631,13 @@ library package UML3Messaging {
 		doc /* Keyword #queue: the part is a point-to-point Queue. */
 		:>> baseType = queues meta SysML::Usage;
 	}
-	metadata def <broker> MessageBrokerMetadata :> SemanticMetadata {
+	metadata def <broker> brk :> SemanticMetadata {
 		doc /* Keyword #broker: the part is a MessageBroker that hosts channels. */
 		:>> baseType = messageBrokers meta SysML::Usage;
 	}
 
 	comment MessagingFlowRoleDesign about publishingFlows, subscribingFlows, sendingFlows, handlingFlows,
-		Publishes, Subscribes, Sends, Handles
+		publishes, subscribes, sends, handles
 		/*
 		Flow role keywords: they state the role a flow plays in the messaging design, which the flow
 		itself does not show. A flow usage is a connector, and so a feature and a type, so semantic
@@ -662,7 +662,7 @@ library package UML3Messaging {
 		doc /* All flows marked #handles. */
 	}
 
-	metadata def <publishes> Publishes :> SemanticMetadata {
+	metadata def <publishes> pub :> SemanticMetadata {
 		doc
 		/*
 		Keyword #publishes: the flow carries messages from a producer into a channel, usually a #topic.
@@ -674,7 +674,7 @@ library package UML3Messaging {
 		*/
 		:>> baseType = publishingFlows meta SysML::Usage;
 	}
-	metadata def <subscribes> Subscribes :> SemanticMetadata {
+	metadata def <subscribes> sbs :> SemanticMetadata {
 		doc
 		/*
 		Keyword #subscribes: the flow carries messages from a channel, usually a #topic, to a consumer
@@ -700,7 +700,7 @@ library package UML3Messaging {
 		*/
 		:>> baseType = sendingFlows meta SysML::Usage;
 	}
-	metadata def <handles> Handles :> SemanticMetadata {
+	metadata def <handles> hdl :> SemanticMetadata {
 		doc
 		/*
 		Keyword #handles: the flow is on the handler's side of a point-to-point or request/reply

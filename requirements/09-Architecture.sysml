@@ -289,24 +289,24 @@ package UML3ArchitectureRequirements {
 		Contents:
 		- #realizes dependencies from UML3Components elements to ARCH requirements.
 		*/
-		#realizes dependency from UML3Components::ComponentMetadata to 'UML3-ARCH-001';
-		#realizes dependency from UML3Components::SubsystemMetadata to 'UML3-ARCH-001';
-		#realizes dependency from UML3Components::ServiceMetadata to 'UML3-ARCH-001';
+		#realizes dependency from UML3Components::component to 'UML3-ARCH-001';
+		#realizes dependency from UML3Components::subsystem to 'UML3-ARCH-001';
+		#realizes dependency from UML3Components::service to 'UML3-ARCH-001';
 		#realizes dependency from UML3Components::ServicePort to 'UML3-ARCH-002';
-		#realizes dependency from UML3Components::Provided to 'UML3-ARCH-002';
-		#realizes dependency from UML3Components::Required to 'UML3-ARCH-002';
-		#realizes dependency from UML3Components::AssemblyMetadata to 'UML3-ARCH-003';
-		#realizes dependency from UML3Components::DelegationMetadata to 'UML3-ARCH-003';
-		#realizes dependency from UML3Components::Required to 'UML3-ARCH-004';
-		#realizes dependency from UML3Components::Layer to 'UML3-ARCH-006';
-		#realizes dependency from UML3Components::Boundary to 'UML3-ARCH-006';
+		#realizes dependency from UML3Components::provided to 'UML3-ARCH-002';
+		#realizes dependency from UML3Components::required to 'UML3-ARCH-002';
+		#realizes dependency from UML3Components::assembly to 'UML3-ARCH-003';
+		#realizes dependency from UML3Components::delegation to 'UML3-ARCH-003';
+		#realizes dependency from UML3Components::required to 'UML3-ARCH-004';
+		#realizes dependency from UML3Components::layer to 'UML3-ARCH-006';
+		#realizes dependency from UML3Components::boundary to 'UML3-ARCH-006';
 		#realizes dependency from UML3Components::Technology to 'UML3-ARCH-009';
-		#realizes dependency from UML3Components::ArtifactMetadata to 'UML3-ARCH-010';
-		#realizes dependency from UML3Components::NodeMetadata to 'UML3-ARCH-010';
-		#realizes dependency from UML3Components::DeviceMetadata to 'UML3-ARCH-010';
-		#realizes dependency from UML3Components::ExecutionEnvironmentMetadata to 'UML3-ARCH-010';
-		#realizes dependency from UML3Components::CommunicationPathMetadata to 'UML3-ARCH-010';
-		#realizes dependency from UML3Components::DeploymentMetadata to 'UML3-ARCH-011';
-		#realizes dependency from UML3Components::ManifestationMetadata to 'UML3-ARCH-011';
+		#realizes dependency from UML3Components::artifact to 'UML3-ARCH-010';
+		#realizes dependency from UML3Components::node to 'UML3-ARCH-010';
+		#realizes dependency from UML3Components::device to 'UML3-ARCH-010';
+		#realizes dependency from UML3Components::executionEnvironment to 'UML3-ARCH-010';
+		#realizes dependency from UML3Components::communicationPath to 'UML3-ARCH-010';
+		#realizes dependency from UML3Components::deploy to 'UML3-ARCH-011';
+		#realizes dependency from UML3Components::manifest to 'UML3-ARCH-011';
 	}
 }

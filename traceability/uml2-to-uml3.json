@@ -19,7 +19,7 @@
       ],
       "uml3": [
         "UML3Core::Class",
-        "UML3Core::ClassMetadata"
+        "UML3Core::classType"
       ],
       "notation": "#classType item def Customer { ... }",
       "example": {
@@ -37,7 +37,7 @@
       ],
       "uml3": [
         "UML3Core::ActiveClass",
-        "UML3Core::ActiveClassMetadata"
+        "UML3Core::activeClass"
       ],
       "notation": "#activeClass part def Scheduler;"
     },
@@ -60,7 +60,7 @@
       "status": "UML3",
       "sysml": [],
       "uml3": [
-        "UML3Core::Final"
+        "UML3Core::final"
       ],
       "notation": "#final part def StripeGateway",
       "example": {
@@ -115,7 +115,7 @@
       "status": "UML3",
       "sysml": [],
       "uml3": [
-        "UML3Core::Static"
+        "UML3Core::static"
       ],
       "notation": "#static attribute registeredCount : Int64;",
       "example": {
@@ -129,7 +129,7 @@
       "status": "UML3",
       "sysml": [],
       "uml3": [
-        "UML3Core::Identifier"
+        "UML3Core::id"
       ],
       "notation": "#id attribute customerId : Uuid;",
       "example": {
@@ -184,9 +184,9 @@
         "SysML::CalculationUsage"
       ],
       "uml3": [
-        "UML3Core::OperationMetadata",
-        "UML3Core::QueryMetadata",
-        "UML3Core::ConstructorMetadata"
+        "UML3Core::operation",
+        "UML3Core::query",
+        "UML3Core::constructor"
       ],
       "notation": "#operation action cancel { in reason : Text[0..1]; out succeeded : Boolean; }",
       "example": {
@@ -229,7 +229,7 @@
       "sysml": [],
       "uml3": [
         "UML3Core::ExceptionType",
-        "UML3Core::ExceptionTypeMetadata"
+        "UML3Core::exceptionType"
       ],
       "notation": "#exceptionType item def PaymentDeclined { ... }",
       "rationale": "Exceptions are modeled as #exceptionType items; SysML v2 has no raises list on actions. Signal via 'send' / handle via 'accept'."
@@ -273,7 +273,7 @@
       ],
       "uml3": [
         "UML3Core::InterfaceType",
-        "UML3Core::InterfaceTypeMetadata"
+        "UML3Core::interfaceType"
       ],
       "notation": "#interfaceType item def PaymentGateway { abstract #operation action authorize { ... } }",
       "example": {
@@ -290,7 +290,7 @@
         "KerML::Subclassification"
       ],
       "uml3": [
-        "UML3Core::RealizesDependency"
+        "UML3Core::realizes"
       ],
       "notation": "part def StripeGateway :> PaymentGateway, Auditable",
       "example": {
@@ -307,7 +307,7 @@
         "SysML::AttributeDefinition"
       ],
       "uml3": [
-        "UML3Core::DataTypeMetadata"
+        "UML3Core::dataType"
       ],
       "notation": "attribute def Price { ... }",
       "example": {
@@ -354,7 +354,7 @@
       ],
       "uml3": [
         "UML3Core::Signal",
-        "UML3Core::SignalMetadata"
+        "UML3Core::signal"
       ],
       "notation": "#signal item def PaymentConfirmed;",
       "example": {
@@ -387,7 +387,7 @@
       ],
       "uml3": [
         "UML3Core::Association",
-        "UML3Core::AssociationMetadata"
+        "UML3Core::association"
       ],
       "notation": "#association connection def Places { end [1] ref customer : Customer; end [0..*] ref order : Order; }",
       "example": {
@@ -404,7 +404,7 @@
         "SysML::AttributeUsage"
       ],
       "uml3": [
-        "UML3Core::AssociationMetadata"
+        "UML3Core::association"
       ],
       "notation": "#association connection def Review { end ...; attribute rating : UInt8; }",
       "example": {
@@ -421,8 +421,8 @@
         "SysML::ReferenceUsage"
       ],
       "uml3": [
-        "UML3Core::AggregationMetadata",
-        "UML3Core::CompositionMetadata"
+        "UML3Core::aggregation",
+        "UML3Core::composition"
       ],
       "notation": "composite: part/item usage; shared: ref usage; first-class: #composition connection def",
       "example": {
@@ -438,12 +438,12 @@
         "KerML::EndFeatureMembership"
       ],
       "uml3": [
-        "UML3Core::Navigable"
+        "UML3Core::navigable"
       ],
-      "notation": "end [1] ref customer : Customer { @Navigable; }",
+      "notation": "end [1] ref customer : Customer { @navigable; }",
       "example": {
         "file": "examples/01-OnlineStoreDomain.sysml",
-        "contains": "ref customer : Customer { @Navigable; }"
+        "contains": "ref customer : Customer { @navigable; }"
       }
     },
     {
@@ -463,12 +463,12 @@
         "KerML::Dependency"
       ],
       "uml3": [
-        "UML3Core::UsesDependency",
-        "UML3Core::RealizesDependency",
-        "UML3Core::CreatesDependency",
-        "UML3Core::CallsDependency",
-        "UML3Core::TracesDependency",
-        "UML3Core::InstantiatesDependency"
+        "UML3Core::uses",
+        "UML3Core::realizes",
+        "UML3Core::creates",
+        "UML3Core::calls",
+        "UML3Core::traces",
+        "UML3Core::instantiates"
       ],
       "notation": "#uses dependency checkoutUsesGateway from Order to PaymentGateway;",
       "example": {
@@ -504,8 +504,8 @@
         "KerML::Feature"
       ],
       "uml3": [
-        "UML3Core::Template",
-        "UML3Core::TemplateParameter"
+        "UML3Core::template",
+        "UML3Core::templateParameter"
       ],
       "notation": "abstract #template item def Repository { abstract ref #templateParameter item entity : Class[0..*]; }",
       "example": {
@@ -568,10 +568,10 @@
         "SysML::MetadataUsage",
         "KerML::LibraryPackage"
       ],
-      "notation": "library package + metadata def <kw> X :> SemanticMetadata { :>> baseType = ...; }",
+      "notation": "library package + metadata def <keyword> id :> SemanticMetadata { :>> baseType = ...; }",
       "example": {
         "file": "library/UML3Core.sysml",
-        "contains": "metadata def <classType> ClassMetadata :> SemanticMetadata"
+        "contains": "metadata def <classType> cls :> SemanticMetadata"
       },
       "notes": "UML3 itself is the example. Semantic metadata makes stereotypes imply real specialization (KerML 9.2.16), unlike UML stereotypes. CATIA Magic applies only the first semantic keyword per element (E02/E03)."
     },
@@ -586,8 +586,8 @@
       ],
       "uml3": [
         "UML3Components::ServicePort",
-        "UML3Components::Provided",
-        "UML3Components::Required"
+        "UML3Components::provided",
+        "UML3Components::required"
       ],
       "notation": "#provided port orderApi : OrderApiPort;  #required port paymentApi : ~PaymentApiPort;",
       "example": {
@@ -605,8 +605,8 @@
         "SysML::BindingConnectorAsUsage"
       ],
       "uml3": [
-        "UML3Components::AssemblyMetadata",
-        "UML3Components::DelegationMetadata"
+        "UML3Components::assembly",
+        "UML3Components::delegation"
       ],
       "notation": "#assembly connect web.orderApi to orders.orderApi;",
       "example": {
@@ -633,9 +633,9 @@
       ],
       "uml3": [
         "UML3Components::Component",
-        "UML3Components::ComponentMetadata",
-        "UML3Components::ServiceMetadata",
-        "UML3Components::SubsystemMetadata"
+        "UML3Components::component",
+        "UML3Components::service",
+        "UML3Components::subsystem"
       ],
       "notation": "#service part def OrderService { ... }",
       "example": {
@@ -653,11 +653,11 @@
         "SysML::ConnectionDefinition"
       ],
       "uml3": [
-        "UML3Components::ArtifactMetadata",
-        "UML3Components::NodeMetadata",
-        "UML3Components::DeviceMetadata",
-        "UML3Components::ExecutionEnvironmentMetadata",
-        "UML3Components::CommunicationPathMetadata"
+        "UML3Components::artifact",
+        "UML3Components::node",
+        "UML3Components::device",
+        "UML3Components::executionEnvironment",
+        "UML3Components::communicationPath"
       ],
       "notation": "#artifact item def OrderServiceImage; #device part def WorkerNode;",
       "example": {
@@ -673,8 +673,8 @@
         "SysML::AllocationUsage"
       ],
       "uml3": [
-        "UML3Components::DeploymentMetadata",
-        "UML3Components::ManifestationMetadata"
+        "UML3Components::deploy",
+        "UML3Components::manifest"
       ],
       "notation": "#deploy allocate orderImage to nodeA.pods;",
       "example": {
@@ -1065,8 +1065,8 @@
         "SysML::ItemDefinition"
       ],
       "uml3": [
-        "UML3Messaging::Publishes",
-        "UML3Messaging::MessageTypeMetadata"
+        "UML3Messaging::publishes",
+        "UML3Messaging::messageType"
       ],
       "notation": "#publishes flow publishOrderPlaced of OrderPlaced from ... to ...;",
       "example": {

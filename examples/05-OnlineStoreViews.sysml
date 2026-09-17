@@ -117,7 +117,7 @@ package OnlineStoreViews {
 		StoreDb, CUSTOMER_ACCOUNT, PURCHASE_ORDER, OPEN_ORDERS_V and the #mapsTo dependencies
 		customerMapping and orderMapping.
 		Rationale: tables, keys and the mapping back to the logical model are reviewed together.
-		References: UML3Views::EntityRelationshipDiagram; UML3Data::Table; UML3Data::MapsTo; SysML 7.26.2.
+		References: UML3Views::EntityRelationshipDiagram; UML3Data::Table; UML3Data::mapsTo; SysML 7.26.2.
 		*/
 		expose OnlineStoreDatabase::Physical::*;
 	}

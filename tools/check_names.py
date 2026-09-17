@@ -515,7 +515,7 @@ class Index:
 
     def _imported_metadata_def(self, name: str) -> Scope | None:
         """Metadata def named by a supertype reference that lexical lookup cannot resolve because the owning package
-        only imports it (UML3IDL::UnionMetadata :> DataTypeKind through 'private import UML3Core::*'). Resolves a
+        only imports it (UML3IDL::union :> DataTypeKind through 'private import UML3Core::*'). Resolves a
         unique simple name, preferring UML3 libraries, as check_rules.Model.resolve_keyword does (tests n21, n22)."""
         cands = self.metadata_defs(name.rpartition("::")[2])
         chosen = [c for c in cands if c.qname.startswith("UML3")] or cands

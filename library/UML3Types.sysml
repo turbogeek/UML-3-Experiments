@@ -254,7 +254,7 @@ library package UML3Types {
 		The multiplicity makes entries unique, not keys; unique keys need a constraint or a modeling rule.
 
 		Rationale: binding by redefinition types the key and the value, in the template style of
-		UML3Core::Template; KerML Collections::Map is the untyped alternative (key and value are Anything).
+		UML3Core::template; KerML Collections::Map is the untyped alternative (key and value are Anything).
 		References: UML 2.5.1 TemplateBinding; KerML 7.3.4.5; KerML 9.3.3.
 		*/
 		abstract attribute mapKey {

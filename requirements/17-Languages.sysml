@@ -286,10 +286,10 @@ package UML3LanguageRequirements {
 		  (tools/idl, tools/cameo-scripts) implement the mapping with these elements.
 		*/
 		#realizes dependency from UML3IDL::IdlFile to 'UML3-LANG-001';
-		#realizes dependency from UML3IDL::UnionMetadata to 'UML3-LANG-001';
+		#realizes dependency from UML3IDL::union to 'UML3-LANG-001';
 		#realizes dependency from UML3IDL::Discriminator to 'UML3-LANG-001';
 		#realizes dependency from UML3IDL::Case to 'UML3-LANG-001';
-		#realizes dependency from UML3IDL::RaisesDependency to 'UML3-LANG-001';
+		#realizes dependency from UML3IDL::raises to 'UML3-LANG-001';
 		#realizes dependency from UML3IDL::IdlOneway to 'UML3-LANG-001';
 		#realizes dependency from UML3IDL::IdlReturn to 'UML3-LANG-002';
 		#realizes dependency from UML3IDL::IdlMemberId to 'UML3-LANG-002';

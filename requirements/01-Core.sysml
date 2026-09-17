@@ -244,7 +244,7 @@ package UML3CoreRequirements {
 		*/
 		#realizes dependency from UML3Core to 'UML3-CORE-001';
 		#realizes dependency from UML3Core to 'UML3-CORE-002';
-		#realizes dependency from UML3Core::ClassMetadata to 'UML3-CORE-003';
+		#realizes dependency from UML3Core::classType to 'UML3-CORE-003';
 		#realizes dependency from UML3Core::SemanticKeywordDesign to 'UML3-CORE-003';
 		#realizes dependency from UML3Core to 'UML3-CORE-004';
 		#realizes dependency from UML3Core to 'UML3-CORE-005';

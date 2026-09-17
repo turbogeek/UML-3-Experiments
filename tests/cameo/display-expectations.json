@@ -78,7 +78,7 @@
       "subject": "OnlineStoreMessaging::FulfillmentService",
       "contains": "\u00ab#idempotent\u00bb",
       "expected": true,
-      "why": "marker applied in BODY form '@Idempotent;'",
+      "why": "marker applied in BODY form '@idempotent;'",
       "confidence": "medium"
     },
     {
@@ -110,7 +110,7 @@
       "subject": "OnlineStoreDatabase::Logical::CustomerAccount",
       "contains": "\u00ab#audited\u00bb",
       "expected": true,
-      "why": "marker applied in BODY form '@Audited;'",
+      "why": "marker applied in BODY form '@audited;'",
       "confidence": "medium"
     },
     {
@@ -142,7 +142,7 @@
       "subject": "OnlineStoreDomain::Places::customer",
       "contains": "\u00ab#navigable\u00bb",
       "expected": true,
-      "why": "@Navigable converted to semantic (E04)",
+      "why": "@navigable converted to semantic (E04)",
       "confidence": "high"
     },
     {

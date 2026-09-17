@@ -1,7 +1,7 @@
 {
   "experiment": "E15 keyword categories: refining a UML3 semantic keyword in an extension library",
   "recorded": "2026-09-17, before the run",
-  "setup": "Trigger: run_tests.py --cameo on 2026-09-17 failed because the validation engine flagged UML3IDL with validateFeatureValueOverriding on UnionMetadata (':> DataTypeMetadata' with ':>> baseType = idlUnions ...'). Probes tests/cameo-negative/p06-keyword-overrides-bound-base.sysml (the failing shape, isolated) and p07-keyword-category.sysml (the category pattern: abstract metadata def UML3Core::DataTypeKind :> SemanticMetadata with baseType unbound; DataTypeMetadata and the probe keyword specialize it). Checks: probe load status, validation engine per package (validation-predictions.json), implied specializations Q06-Q09 (probe-effects.json), and the IDL views (svg-expectations.json: PaymentDetail, a #union, is drawn by ClassDiagram, whose filter now uses @DataTypeKind).",
+  "setup": "Trigger: run_tests.py --cameo on 2026-09-17 failed because the validation engine flagged UML3IDL with validateFeatureValueOverriding on union (':> dataType' with ':>> baseType = idlUnions ...'). Probes tests/cameo-negative/p06-keyword-overrides-bound-base.sysml (the failing shape, isolated) and p07-keyword-category.sysml (the category pattern: abstract metadata def UML3Core::DataTypeKind :> SemanticMetadata with baseType unbound; dataType and the probe keyword specialize it). Checks: probe load status, validation engine per package (validation-predictions.json), implied specializations Q06-Q09 (probe-effects.json), and the IDL views (svg-expectations.json: PaymentDetail, a #union, is drawn by ClassDiagram, whose filter now uses @DataTypeKind).",
   "predictions": [
     {
       "id": "P1",
@@ -33,7 +33,7 @@
     },
     {
       "id": "P5",
-      "claim": "UML3IDL and UML3Core are not flagged after UnionMetadata and DataTypeMetadata specialize DataTypeKind",
+      "claim": "UML3IDL and UML3Core are not flagged after union and dataType specialize DataTypeKind",
       "confidence": "medium",
       "observed": "confirmed",
       "observation": "run_tests.py --cameo: validation engine passed with UML3IDL and UML3Core not flagged; the 2026-09-17 failure is gone"

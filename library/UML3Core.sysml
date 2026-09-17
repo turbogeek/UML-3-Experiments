@@ -256,9 +256,9 @@ library package UML3Core {
 		doc /* All composition links; #composition usages subset this feature. */
 	}
 
-	comment SemanticKeywordDesign about ClassMetadata, ActiveClassMetadata, InterfaceTypeMetadata, DataTypeMetadata,
-		SignalMetadata, ExceptionTypeMetadata, OperationMetadata, QueryMetadata, ConstructorMetadata,
-		AssociationMetadata, AggregationMetadata, CompositionMetadata
+	comment SemanticKeywordDesign about classType, activeClass, interfaceType, dataType,
+		signal, exceptionType, operation, query, constructor,
+		association, aggregation, composition
 		/*
 		Semantic keywords: the UML3 replacement for UML stereotypes. Each is a metadata definition that
 		specializes SemanticMetadata and redefines baseType to a library usage. Applying it to an element
@@ -269,22 +269,22 @@ library package UML3Core {
 		References: KerML 7.4.13; KerML 9.2.16; SysML 7.27.3; E01; E02; E03.
 		*/
 
-	metadata def <classType> ClassMetadata :> SemanticMetadata {
+	metadata def <classType> cls :> SemanticMetadata {
 		doc /* Keyword #classType: the element is a UML3 Class (a definition specializes Class, a usage subsets classes). */
 		:>> baseType = classes meta SysML::Usage;
 	}
 
-	metadata def <activeClass> ActiveClassMetadata :> SemanticMetadata {
+	metadata def <activeClass> acls :> SemanticMetadata {
 		doc /* Keyword #activeClass: the element is a UML3 ActiveClass; apply to part definitions and usages. */
 		:>> baseType = activeClasses meta SysML::Usage;
 	}
 
-	metadata def <interfaceType> InterfaceTypeMetadata :> SemanticMetadata {
+	metadata def <interfaceType> ifc :> SemanticMetadata {
 		doc /* Keyword #interfaceType: the element is a UML3 InterfaceType (a contract of abstract operations). */
 		:>> baseType = interfaceTypes meta SysML::Usage;
 	}
 
-	comment KeywordCategoryDesign about DataTypeKind, DataTypeMetadata
+	comment KeywordCategoryDesign about DataTypeKind, dataType
 		/*
 		Keyword categories. An extension keyword that refines a UML3 keyword, such as the IDL #union for
 		#dataType, cannot specialize the UML3 keyword's metadata definition: that definition binds baseType,
@@ -308,28 +308,28 @@ library package UML3Core {
 
 		Usage: an extension keyword specializes the category and binds its own base, which must specialize
 		UML3Core::dataTypes; a view selects all data type keywords with '@DataTypeKind'.
-		  metadata def <union> UnionMetadata :> DataTypeKind { :>> baseType = idlUnions meta SysML::Usage; }
-		  view def ClassDiagram :> GeneralView { filter @ClassMetadata or @DataTypeKind; }
+		  metadata def union :> DataTypeKind { :>> baseType = idlUnions meta SysML::Usage; }
+		  view def ClassDiagram :> GeneralView { filter @classType or @DataTypeKind; }
 		References: KerML 7.4.13; KerML 8.4.4.13.3; UML 2.5.1 DataType.
 		*/
 	}
 
-	metadata def <dataType> DataTypeMetadata :> DataTypeKind {
+	metadata def <dataType> dt :> DataTypeKind {
 		doc /* Keyword #dataType: the element is a UML3 DataType; apply to attribute definitions and usages only. */
 		:>> baseType = dataTypes meta SysML::Usage;
 	}
 
-	metadata def <signal> SignalMetadata :> SemanticMetadata {
+	metadata def <signal> sig :> SemanticMetadata {
 		doc /* Keyword #signal: the element is a UML3 Signal (an asynchronous stimulus). */
 		:>> baseType = signals meta SysML::Usage;
 	}
 
-	metadata def <exceptionType> ExceptionTypeMetadata :> SemanticMetadata {
+	metadata def <exceptionType> exc :> SemanticMetadata {
 		doc /* Keyword #exceptionType: the element is a UML3 ExceptionType raised by operations. */
 		:>> baseType = exceptionTypes meta SysML::Usage;
 	}
 
-	metadata def <operation> OperationMetadata :> SemanticMetadata {
+	metadata def <operation> op :> SemanticMetadata {
 		doc /* Keyword #operation: the action is a UML3 Operation of its owning class or interface. */
 		:>> baseType = operations meta SysML::Usage;
 	}
@@ -339,29 +339,29 @@ library package UML3Core {
 		:>> baseType = queries meta SysML::Usage;
 	}
 
-	metadata def <constructor> ConstructorMetadata :> SemanticMetadata {
+	metadata def <constructor> ctor :> SemanticMetadata {
 		doc /* Keyword #constructor: the action creates and initializes an instance of its owning class. */
 		:>> baseType = constructors meta SysML::Usage;
 	}
 
-	metadata def <association> AssociationMetadata :> SemanticMetadata {
+	metadata def <association> asc :> SemanticMetadata {
 		doc /* Keyword #association: the connection is a UML3 Association. */
 		:>> baseType = associations meta SysML::Usage;
 	}
 
-	metadata def <aggregation> AggregationMetadata :> SemanticMetadata {
+	metadata def <aggregation> agg :> SemanticMetadata {
 		doc /* Keyword #aggregation: the connection is a shared aggregation (hollow diamond). */
 		:>> baseType = aggregations meta SysML::Usage;
 	}
 
-	metadata def <composition> CompositionMetadata :> SemanticMetadata {
+	metadata def <composition> cps :> SemanticMetadata {
 		doc /* Keyword #composition: the connection is a composite aggregation (filled diamond). */
 		:>> baseType = compositions meta SysML::Usage;
 	}
 
 	comment MarkerKeywordDesign about staticFeatures, finalElements, identifierFeatures, singletonElements,
-		templateElements, templateParameters, navigableEnds, Static, Final, Identifier, Navigable, Singleton,
-		Template, TemplateParameter
+		templateElements, templateParameters, navigableEnds, static, final, id, navigable, singleton,
+		template, templateParameter
 		/*
 		Marker keywords: UML properties with no SysML v2 equivalent.
 
@@ -392,7 +392,7 @@ library package UML3Core {
 		doc /* All features marked #templateParameter. */
 	}
 
-	metadata def <static> Static :> SemanticMetadata {
+	metadata def <static> stc :> SemanticMetadata {
 		doc
 		/*
 		Keyword #static (UML isStatic): the feature belongs to the classifier, not to each instance.
@@ -430,13 +430,13 @@ library package UML3Core {
 		doc /* All association ends marked #navigable. */
 	}
 
-	metadata def <navigable> Navigable :> SemanticMetadata {
+	metadata def <navigable> nav :> SemanticMetadata {
 		doc
 		/*
 		Keyword #navigable: the association end can be navigated from the opposite end.
 
 		Usage, prefix form:  end [1] #navigable item customer : Customer;
-		Usage, body form:    end [1] ref customer : Customer { @Navigable; }
+		Usage, body form:    end [1] ref customer : Customer { @navigable; }
 		Verified in CATIA Magic: ends join navigableEnds and show «#navigable», and connection usages that
 		bind the ends remain valid.
 		References: UML 2.5.1 Association; E04.
@@ -444,7 +444,7 @@ library package UML3Core {
 		:>> baseType = navigableEnds meta SysML::Usage;
 	}
 
-	metadata def <singleton> Singleton :> SemanticMetadata {
+	metadata def <singleton> sgl :> SemanticMetadata {
 		doc
 		/*
 		Keyword #singleton: the class has at most one instance at runtime.
@@ -456,7 +456,7 @@ library package UML3Core {
 		:>> baseType = singletonElements meta SysML::Usage;
 	}
 
-	metadata def <template> Template :> SemanticMetadata {
+	metadata def <template> tpl :> SemanticMetadata {
 		doc
 		/*
 		Keyword #template: a templateable classifier, the UML3 form of a generic type.
@@ -470,7 +470,7 @@ library package UML3Core {
 		:>> baseType = templateElements meta SysML::Usage;
 	}
 
-	metadata def <templateParameter> TemplateParameter :> SemanticMetadata {
+	metadata def <templateParameter> tplParam :> SemanticMetadata {
 		doc
 		/*
 		Keyword #templateParameter: an abstract feature that stands for a template parameter; bind it with ':>>'.
@@ -532,8 +532,8 @@ library package UML3Core {
 		}
 	}
 
-	comment DependencyKeywordDesign about DependencyKind, UsesDependency, RealizesDependency, CreatesDependency,
-		CallsDependency, TracesDependency, InstantiatesDependency
+	comment DependencyKeywordDesign about DependencyKind, uses, realizes, creates,
+		calls, traces, instantiates
 		/*
 		Dependency keywords. SysML v2 dependencies are relationships, not types, so they cannot be given
 		semantics by specialization. These keywords are plain metadata restricted to dependencies; they
@@ -559,7 +559,7 @@ library package UML3Core {
 		*/
 	}
 
-	metadata def <realizes> RealizesDependency :> DependencyKind {
+	metadata def <realizes> rlz :> DependencyKind {
 		doc
 		/*
 		Keyword #realizes: the client realizes the supplier's specification where specialization is not
@@ -568,7 +568,7 @@ library package UML3Core {
 		*/
 	}
 
-	metadata def <creates> CreatesDependency :> DependencyKind {
+	metadata def <creates> crt :> DependencyKind {
 		doc
 		/*
 		Keyword #creates (UML «create»): the client creates instances of the supplier.
@@ -584,7 +584,7 @@ library package UML3Core {
 		*/
 	}
 
-	metadata def <traces> TracesDependency :> DependencyKind {
+	metadata def <traces> trc :> DependencyKind {
 		doc
 		/*
 		Keyword #traces (UML «trace»): a historical or refinement link between elements that describe the
@@ -593,7 +593,7 @@ library package UML3Core {
 		*/
 	}
 
-	metadata def <instantiates> InstantiatesDependency :> DependencyKind {
+	metadata def <instantiates> inst :> DependencyKind {
 		doc
 		/*
 		Keyword #instantiates (UML «instantiate»): operations of the client create instances of the supplier.

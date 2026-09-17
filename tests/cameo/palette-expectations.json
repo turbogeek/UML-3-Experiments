@@ -27,96 +27,96 @@
           [
             "class",
             "ItemDefinitionImpl",
-            "ClassMetadata"
+            "classType"
           ],
           [
             "active class",
             "PartDefinitionImpl",
-            "ActiveClassMetadata"
+            "activeClass"
           ],
           [
             "interface",
             "ItemDefinitionImpl",
-            "InterfaceTypeMetadata"
+            "interfaceType"
           ],
           [
             "data type",
             "AttributeDefinitionImpl",
-            "DataTypeMetadata"
+            "dataType"
           ],
           [
             "signal",
             "ItemDefinitionImpl",
-            "SignalMetadata"
+            "signal"
           ],
           [
             "exception",
             "ItemDefinitionImpl",
-            "ExceptionTypeMetadata"
+            "exceptionType"
           ]
         ],
         "UML3 Features": [
           [
             "operation",
             "ActionUsageImpl",
-            "OperationMetadata"
+            "operation"
           ],
           [
             "query",
             "CalculationUsageImpl",
-            "QueryMetadata"
+            "query"
           ],
           [
             "constructor",
             "ActionUsageImpl",
-            "ConstructorMetadata"
+            "constructor"
           ]
         ],
         "UML3 Relationships": [
           [
             "association",
             "ConnectionDefinitionImpl",
-            "AssociationMetadata"
+            "association"
           ],
           [
             "aggregation",
             "ConnectionDefinitionImpl",
-            "AggregationMetadata"
+            "aggregation"
           ],
           [
             "composition",
             "ConnectionDefinitionImpl",
-            "CompositionMetadata"
+            "composition"
           ],
           [
             "uses",
             "DependencyImpl",
-            "UsesDependency"
+            "uses"
           ],
           [
             "realizes",
             "DependencyImpl",
-            "RealizesDependency"
+            "realizes"
           ],
           [
             "calls",
             "DependencyImpl",
-            "CallsDependency"
+            "calls"
           ],
           [
             "creates",
             "DependencyImpl",
-            "CreatesDependency"
+            "creates"
           ],
           [
             "traces",
             "DependencyImpl",
-            "TracesDependency"
+            "traces"
           ],
           [
             "instantiates",
             "DependencyImpl",
-            "InstantiatesDependency"
+            "instantiates"
           ]
         ]
       }
@@ -134,12 +134,12 @@
           [
             "layer",
             "PackageImpl",
-            "Layer"
+            "layer"
           ],
           [
             "uses",
             "DependencyImpl",
-            "UsesDependency"
+            "uses"
           ]
         ]
       }
@@ -152,54 +152,54 @@
           [
             "component",
             "PartDefinitionImpl",
-            "ComponentMetadata"
+            "component"
           ],
           [
             "service",
             "PartDefinitionImpl",
-            "ServiceMetadata"
+            "service"
           ],
           [
             "subsystem",
             "PartDefinitionImpl",
-            "SubsystemMetadata"
+            "subsystem"
           ],
           [
             "interface",
             "ItemDefinitionImpl",
-            "InterfaceTypeMetadata"
+            "interfaceType"
           ],
           [
             "service port def",
             "PortDefinitionImpl",
-            "ServicePortMetadata"
+            "servicePort"
           ],
           [
             "provided port",
             "PortUsageImpl",
-            "Provided"
+            "provided"
           ],
           [
             "required port",
             "PortUsageImpl",
-            "Required"
+            "required"
           ]
         ],
         "UML3 Wiring": [
           [
             "assembly",
             "ConnectionUsageImpl",
-            "AssemblyMetadata"
+            "assembly"
           ],
           [
             "delegation",
             "ConnectionUsageImpl",
-            "DelegationMetadata"
+            "delegation"
           ],
           [
             "realizes",
             "DependencyImpl",
-            "RealizesDependency"
+            "realizes"
           ]
         ]
       }
@@ -212,39 +212,39 @@
           [
             "node",
             "PartDefinitionImpl",
-            "NodeMetadata"
+            "node"
           ],
           [
             "device",
             "PartDefinitionImpl",
-            "DeviceMetadata"
+            "device"
           ],
           [
             "execution environment",
             "PartDefinitionImpl",
-            "ExecutionEnvironmentMetadata"
+            "executionEnvironment"
           ],
           [
             "artifact",
             "ItemDefinitionImpl",
-            "ArtifactMetadata"
+            "artifact"
           ]
         ],
         "UML3 Deployment Links": [
           [
             "communication path",
             "ConnectionDefinitionImpl",
-            "CommunicationPathMetadata"
+            "communicationPath"
           ],
           [
             "deploy",
             "AllocationUsageImpl",
-            "DeploymentMetadata"
+            "deploy"
           ],
           [
             "manifest",
             "AllocationUsageImpl",
-            "ManifestationMetadata"
+            "manifest"
           ]
         ]
       }
@@ -257,59 +257,59 @@
           [
             "entity",
             "ItemDefinitionImpl",
-            "EntityMetadata"
+            "entity"
           ],
           [
             "aggregate root",
             "ItemDefinitionImpl",
-            "AggregateRootMetadata"
+            "aggregateRoot"
           ],
           [
             "value object",
             "AttributeDefinitionImpl",
-            "ValueObjectMetadata"
+            "valueObject"
           ],
           [
             "relationship",
             "ConnectionDefinitionImpl",
-            "RelationshipMetadata"
+            "relationship"
           ]
         ],
         "UML3 Physical Data": [
           [
             "table",
             "ItemDefinitionImpl",
-            "TableMetadata"
+            "table"
           ],
           [
             "database view",
             "ItemDefinitionImpl",
-            "DatabaseViewMetadata"
+            "dbView"
           ],
           [
             "database",
             "PartDefinitionImpl",
-            "DatabaseMetadata"
+            "database"
           ],
           [
             "column",
             "AttributeUsageImpl",
-            "ColumnMetadata"
+            "column"
           ],
           [
             "primary key",
             "AttributeUsageImpl",
-            "PrimaryKey"
+            "primaryKey"
           ],
           [
             "foreign key",
             "ItemUsageImpl",
-            "ForeignKey"
+            "foreignKey"
           ],
           [
             "maps to",
             "DependencyImpl",
-            "MapsTo"
+            "mapsTo"
           ]
         ]
       }
@@ -322,76 +322,76 @@
           [
             "command",
             "ItemDefinitionImpl",
-            "CommandMetadata"
+            "command"
           ],
           [
             "domain event",
             "ItemDefinitionImpl",
-            "DomainEventMetadata"
+            "domainEvent"
           ],
           [
             "query message",
             "ItemDefinitionImpl",
-            "QueryMessageMetadata"
+            "queryMessage"
           ],
           [
             "reply",
             "ItemDefinitionImpl",
-            "ReplyMetadata"
+            "reply"
           ],
           [
             "document message",
             "ItemDefinitionImpl",
-            "DocumentMessageMetadata"
+            "documentMessage"
           ],
           [
             "message type",
             "ItemDefinitionImpl",
-            "MessageTypeMetadata"
+            "messageType"
           ]
         ],
         "UML3 Channels": [
           [
             "topic",
             "PartDefinitionImpl",
-            "TopicMetadata"
+            "topic"
           ],
           [
             "queue",
             "PartDefinitionImpl",
-            "QueueMetadata"
+            "queue"
           ],
           [
             "channel",
             "PartDefinitionImpl",
-            "ChannelMetadata"
+            "channel"
           ],
           [
             "broker",
             "PartDefinitionImpl",
-            "MessageBrokerMetadata"
+            "broker"
           ]
         ],
         "UML3 Message Flows": [
           [
             "publishes",
             "FlowUsageImpl",
-            "Publishes"
+            "publishes"
           ],
           [
             "subscribes",
             "FlowUsageImpl",
-            "Subscribes"
+            "subscribes"
           ],
           [
             "sends",
             "FlowUsageImpl",
-            "Sends"
+            "sends"
           ],
           [
             "handles",
             "FlowUsageImpl",
-            "Handles"
+            "handles"
           ]
         ]
       }
@@ -404,96 +404,96 @@
           [
             "class",
             "ItemDefinitionImpl",
-            "ClassMetadata"
+            "classType"
           ],
           [
             "active class",
             "PartDefinitionImpl",
-            "ActiveClassMetadata"
+            "activeClass"
           ],
           [
             "interface",
             "ItemDefinitionImpl",
-            "InterfaceTypeMetadata"
+            "interfaceType"
           ],
           [
             "data type",
             "AttributeDefinitionImpl",
-            "DataTypeMetadata"
+            "dataType"
           ],
           [
             "signal",
             "ItemDefinitionImpl",
-            "SignalMetadata"
+            "signal"
           ],
           [
             "exception",
             "ItemDefinitionImpl",
-            "ExceptionTypeMetadata"
+            "exceptionType"
           ]
         ],
         "UML3 Features": [
           [
             "operation",
             "ActionUsageImpl",
-            "OperationMetadata"
+            "operation"
           ],
           [
             "query",
             "CalculationUsageImpl",
-            "QueryMetadata"
+            "query"
           ],
           [
             "constructor",
             "ActionUsageImpl",
-            "ConstructorMetadata"
+            "constructor"
           ]
         ],
         "UML3 Relationships": [
           [
             "association",
             "ConnectionDefinitionImpl",
-            "AssociationMetadata"
+            "association"
           ],
           [
             "aggregation",
             "ConnectionDefinitionImpl",
-            "AggregationMetadata"
+            "aggregation"
           ],
           [
             "composition",
             "ConnectionDefinitionImpl",
-            "CompositionMetadata"
+            "composition"
           ],
           [
             "uses",
             "DependencyImpl",
-            "UsesDependency"
+            "uses"
           ],
           [
             "realizes",
             "DependencyImpl",
-            "RealizesDependency"
+            "realizes"
           ],
           [
             "calls",
             "DependencyImpl",
-            "CallsDependency"
+            "calls"
           ],
           [
             "creates",
             "DependencyImpl",
-            "CreatesDependency"
+            "creates"
           ],
           [
             "traces",
             "DependencyImpl",
-            "TracesDependency"
+            "traces"
           ],
           [
             "instantiates",
             "DependencyImpl",
-            "InstantiatesDependency"
+            "instantiates"
           ]
         ]
       }
@@ -506,39 +506,39 @@
           [
             "node",
             "PartDefinitionImpl",
-            "NodeMetadata"
+            "node"
           ],
           [
             "device",
             "PartDefinitionImpl",
-            "DeviceMetadata"
+            "device"
           ],
           [
             "execution environment",
             "PartDefinitionImpl",
-            "ExecutionEnvironmentMetadata"
+            "executionEnvironment"
           ],
           [
             "artifact",
             "ItemDefinitionImpl",
-            "ArtifactMetadata"
+            "artifact"
           ]
         ],
         "UML3 Deployment Links": [
           [
             "communication path",
             "ConnectionDefinitionImpl",
-            "CommunicationPathMetadata"
+            "communicationPath"
           ],
           [
             "deploy",
             "AllocationUsageImpl",
-            "DeploymentMetadata"
+            "deploy"
           ],
           [
             "manifest",
             "AllocationUsageImpl",
-            "ManifestationMetadata"
+            "manifest"
           ]
         ]
       }
@@ -551,59 +551,59 @@
           [
             "entity",
             "ItemDefinitionImpl",
-            "EntityMetadata"
+            "entity"
           ],
           [
             "aggregate root",
             "ItemDefinitionImpl",
-            "AggregateRootMetadata"
+            "aggregateRoot"
           ],
           [
             "value object",
             "AttributeDefinitionImpl",
-            "ValueObjectMetadata"
+            "valueObject"
           ],
           [
             "relationship",
             "ConnectionDefinitionImpl",
-            "RelationshipMetadata"
+            "relationship"
           ]
         ],
         "UML3 Physical Data": [
           [
             "table",
             "ItemDefinitionImpl",
-            "TableMetadata"
+            "table"
           ],
           [
             "database view",
             "ItemDefinitionImpl",
-            "DatabaseViewMetadata"
+            "dbView"
           ],
           [
             "database",
             "PartDefinitionImpl",
-            "DatabaseMetadata"
+            "database"
           ],
           [
             "column",
             "AttributeUsageImpl",
-            "ColumnMetadata"
+            "column"
           ],
           [
             "primary key",
             "AttributeUsageImpl",
-            "PrimaryKey"
+            "primaryKey"
           ],
           [
             "foreign key",
             "ItemUsageImpl",
-            "ForeignKey"
+            "foreignKey"
           ],
           [
             "maps to",
             "DependencyImpl",
-            "MapsTo"
+            "mapsTo"
           ]
         ]
       }
@@ -616,76 +616,76 @@
           [
             "command",
             "ItemDefinitionImpl",
-            "CommandMetadata"
+            "command"
           ],
           [
             "domain event",
             "ItemDefinitionImpl",
-            "DomainEventMetadata"
+            "domainEvent"
           ],
           [
             "query message",
             "ItemDefinitionImpl",
-            "QueryMessageMetadata"
+            "queryMessage"
           ],
           [
             "reply",
             "ItemDefinitionImpl",
-            "ReplyMetadata"
+            "reply"
           ],
           [
             "document message",
             "ItemDefinitionImpl",
-            "DocumentMessageMetadata"
+            "documentMessage"
           ],
           [
             "message type",
             "ItemDefinitionImpl",
-            "MessageTypeMetadata"
+            "messageType"
           ]
         ],
         "UML3 Channels": [
           [
             "topic",
             "PartDefinitionImpl",
-            "TopicMetadata"
+            "topic"
           ],
           [
             "queue",
             "PartDefinitionImpl",
-            "QueueMetadata"
+            "queue"
           ],
           [
             "channel",
             "PartDefinitionImpl",
-            "ChannelMetadata"
+            "channel"
           ],
           [
             "broker",
             "PartDefinitionImpl",
-            "MessageBrokerMetadata"
+            "broker"
           ]
         ],
         "UML3 Message Flows": [
           [
             "publishes",
             "FlowUsageImpl",
-            "Publishes"
+            "publishes"
           ],
           [
             "subscribes",
             "FlowUsageImpl",
-            "Subscribes"
+            "subscribes"
           ],
           [
             "sends",
             "FlowUsageImpl",
-            "Sends"
+            "sends"
           ],
           [
             "handles",
             "FlowUsageImpl",
-            "Handles"
+            "handles"
           ]
         ]
       }

@@ -18,7 +18,7 @@ The library pairs every concept with an abstract collection usage and a keyword 
 abstract item def Entity :> Class;
 abstract item entities : Entity[0..*] nonunique :> classes;
 
-metadata def <entity> EntityMetadata :> SemanticMetadata {
+metadata def <entity> entity :> SemanticMetadata {
     :>> baseType = entities meta SysML::Usage;
 }
 ```
@@ -35,6 +35,23 @@ So one keyword covers both the definition ("class") and the instance ("object").
 ## Naming rules
 
 * Keywords are lowerCamelCase short names. Base definitions are UpperCamelCase.
+* **A keyword definition uses both name slots.** The short name is the keyword, the declared name is a terse id:
+
+  ```sysml
+  metadata def <classType> cls :> SemanticMetadata { :>> baseType = classes meta SysML::Usage; }
+  ```
+
+  `#classType` and `#cls` are then two spellings of one definition (E20), and so are `@classType` and `@cls` in a
+  body, a view filter or a query. The keyword goes in the **short** slot because that is the name a tool shows on
+  a shape: CATIA Magic's keyword label reads the short name and falls back to the declared name (E21), so with the
+  slots the other way round a class would be labelled `«#cls»`. The OMG standard library uses the same order
+  (`metadata def <cause> CauseMetadata`, `<moe> MeasureOfEffectiveness`).
+* A terse id is given only where it saves at least three characters and is unique across the libraries; the other
+  15 keywords are already as short as an id (`#id`, `#uses`, `#table`, `#union`) and keep a descriptive declared
+  name (`Identifier`, `UsesDependency`, `TableMetadata`, `UnionMetadata`). `tools/check_rules.py` R16 enforces
+  both, and the full list is generated into [UML3-Keywords.md](UML3-Keywords.md).
+* An `alias` is not used for the second spelling. An alias exists to deconflict names imported into one namespace,
+  so a reader cannot tell whether it is a rename or a shorthand; the two name slots have exactly one meaning each.
 * A keyword must not be a reserved word. This covers the SysML words (`interface`, `message`, `use`, `event`, `view`, `end`, `flow`...) and also the KerML words (`class`, `datatype`, `feature`, `type`, `composite`, `value`, `sequence`), because tools with a merged KerML/SysML lexer reject those as names. Where the UML name is reserved, add `Type` or turn it into a verb: `#classType`, `#interfaceType`, `#messageType`, `#dbView`, `#uses`. Negative tests `n07` and `n08` enforce this.
 
 ## UML → SysML v2 mapping
@@ -57,7 +74,7 @@ So one keyword covers both the definition ("class") and the instance ("object").
 | Operation (in/out/inout, return) | nested `action` / `calc` with directed parameters | `#operation`, `#query` (calc), `#constructor` |
 | Association (+ end multiplicities) | `connection def` with two `end` features | `#association` |
 | Association class | `connection def` that also has attributes | `#association` |
-| Navigability | `ref` feature on the opposite participant | `@Navigable` in the end body |
+| Navigability | `ref` feature on the opposite participant | `@navigable` in the end body |
 | Aggregation / composition | composite (`part`/`item`) vs `ref` usage | `#aggregation`, `#composition` |
 | Generalization | `:>` | — |
 | GeneralizationSet (covering/disjoint) | — | `@GeneralizationSet`, `@InGeneralizationSet` |
@@ -92,7 +109,7 @@ Collection kinds need no new types:
 | Artifact, Node, Device, ExecutionEnvironment | `#artifact`, `#node`, `#device`, `#executionEnvironment` |
 | Deployment / manifestation | `#deploy allocate artifact to node`, `#manifest allocate component to artifact` |
 | Communication path | `#communicationPath connection def` |
-| Layers / styles / technology | `#layer package` + `@Layer`, `#boundary`, `@Technology` |
+| Layers / styles / technology | `#layer package` + `@layer`, `#boundary`, `@Technology` |
 
 ### Messaging (UML3Messaging)
 
@@ -111,7 +128,7 @@ Collection kinds need no new types:
 |---|---|
 | Entity / aggregate root / value object | `#entity`, `#aggregateRoot`, `#valueObject` |
 | Relationship and cardinality | `#relationship connection def` whose `end` multiplicities give the cardinality; attributes on it turn M:N into a join table |
-| Keys and constraints | `#primaryKey` (several = composite key; `@PrimaryKey { generation }`), `#foreignKey` + `@ForeignKey { onDelete, onUpdate, referencedTable, referencedColumn }`, `#unique`, `#indexed`, `@Index` |
+| Keys and constraints | `#primaryKey` (several = composite key; `@primaryKey { generation }`), `#foreignKey` + `@foreignKey { onDelete, onUpdate, referencedTable, referencedColumn }`, `#unique`, `#indexed`, `@Index` |
 | Physical schema | `#database part def`, `#table item def`, `#column attribute` + `@Column { sqlType, columnDefault }`, `#dbView` |
 | Governance | `#audited`, `#transient`, `@Sensitivity { classification = "PII"; }` |
 | Logical → physical | `#mapsTo dependency from TABLE to Entity` |
@@ -213,7 +230,7 @@ Still open: confirming on an actual diagram whether plain metadata appears in th
 
 ### Marker keywords converted to semantic metadata, and the stacked-keyword deviation
 
-All marker keywords that go on types were converted to the E01 pattern (commit `bc2cb63`). Plain metadata remains only where needed: dependencies and packages (`#uses`…, `#mapsTo`, `#layer`), valued configuration (`@Facets`, `@Index`, `@Column`, `@QualityOfService`…), and, until E04, `@Navigable` (see below). In CATIA Magic, 9/9 files load, the validation engine reports 0 failures, labels are 17/17 (including flows, conjugated ports and body form), and 38/39 predicted specializations held.
+All marker keywords that go on types were converted to the E01 pattern (commit `bc2cb63`). Plain metadata remains only where needed: dependencies and packages (`#uses`…, `#mapsTo`, `#layer`), valued configuration (`@Facets`, `@Index`, `@Column`, `@QualityOfService`…), and, until E04, `@navigable` (see below). In CATIA Magic, 9/9 files load, the validation engine reports 0 failures, labels are 17/17 (including flows, conjugated ports and body form), and 38/39 predicted specializations held.
 
 The failing case (`#column #primaryKey attribute ACCOUNT_ID` is not in `primaryKeyFeatures`) led to two experiments, with predictions committed before each run:
 
@@ -221,25 +238,25 @@ The failing case (`#column #primaryKey attribute ACCOUNT_ID` is not in `primaryK
 |---|---|---|
 | E02 | `#column #primaryKey` / `#primaryKey #column` | only the first keyword is applied; the reversed order gives the reverse result |
 | E02 | `#unique #indexed` | only `#unique` is applied, so the effect is not keyword-specific |
-| E02 | `#column attribute C { @PrimaryKey; }` | body-form second keyword **also** ignored (the prediction was refuted) |
-| E03 | `attribute F { @PrimaryKey; }` | single body-form keyword is applied |
-| E03 | `attribute G { @Unique; @Indexed; }` | only the first is applied |
+| E02 | `#column attribute C { @primaryKey; }` | body-form second keyword **also** ignored (the prediction was refuted) |
+| E03 | `attribute F { @primaryKey; }` | single body-form keyword is applied |
+| E03 | `attribute G { @unique; @indexed; }` | only the first is applied |
 
 **Conclusion.** CATIA Magic 2026x Refresh1 applies the implied specialization of only the **first** semantic metadata on an element. KerML 9.2.16 requires it for each. Labels and validation give no sign of the gap. The usage rule is to order keywords by query importance. `M15` in `tests/cameo/implied-specializations.json` records the observed behaviour (`kermlExpected: true`), so the suite will flag the change when Cameo is fixed. A possible library workaround, not adopted: combined keywords whose base subsets several sets (e.g. `#pkColumn` with a base `:> columns, primaryKeyFeatures`).
 
 ### `#navigable` on association ends (experiment E04)
 
-Predictions were committed first (`16401eb`), and all held. A semantic keyword on `end` features, in body form (`end [1] ref customer : Customer { @Navigable; }`) and in prefix form (`end [1] #navigable item customer : Customer;`):
+Predictions were committed first (`16401eb`), and all held. A semantic keyword on `end` features, in body form (`end [1] ref customer : Customer { @navigable; }`) and in prefix form (`end [1] #navigable item customer : Customer;`):
 * loads, and the validation engine reports 0 failures;
 * the ends join `navigableEnds`, and an unmarked end does not;
 * connection usages binding those ends stay typed by their connection def, and the def is still an `Association`;
 * both marked ends show `«#navigable»`.
 
-`UML3Core::Navigable` was therefore converted (`b0e277a`). The full run passes with 42/42 specializations, 19/19 labels and 0 validation failures. Every marker keyword in the library is now semantic. Only dependency/package keywords and valued configuration metadata remain plain.
+`UML3Core::navigable` was therefore converted (`b0e277a`). The full run passes with 42/42 specializations, 19/19 labels and 0 validation failures. Every marker keyword in the library is now semantic. Only dependency/package keywords and valued configuration metadata remain plain.
 
 ### Refining a UML3 keyword in an extension library (E15)
 
-The IDL `#union` is a data type, so it first specialized `#dataType` (`UnionMetadata :> DataTypeMetadata`) and bound its own base, `idlUnions`. CATIA Magic's validation engine rejected UML3IDL with `validateFeatureValueOverriding`: `DataTypeMetadata` already binds `baseType`, and KerML forbids a redefinition to override a bound value (KerML 8.3.4.10.2). A `default` base is no way out, because semantic metadata requires `baseType` to be bound.
+The IDL `#union` is a data type, so it first specialized `#dataType` (`union :> dataType`) and bound its own base, `idlUnions`. CATIA Magic's validation engine rejected UML3IDL with `validateFeatureValueOverriding`: `dataType` already binds `baseType`, and KerML forbids a redefinition to override a bound value (KerML 8.3.4.10.2). A `default` base is no way out, because semantic metadata requires `baseType` to be bound.
 
 UML3 uses **keyword categories** instead. `UML3Core::DataTypeKind` is an abstract metadata definition that specializes `SemanticMetadata` and leaves `baseType` unbound. `#dataType` and `#union` both specialize it and bind their own bases, and the class views filter on `@DataTypeKind`, so they select unions without importing UML3IDL. E15 recorded its predictions first, and all six held: the overriding form loads but is flagged, the category form validates clean, the implied specializations hold (Q06-Q09, with a negative control), and the IDL class views draw the union. `check_rules.py` R15 reports the overriding form locally; it fires on the old UML3IDL.
 
@@ -306,6 +323,26 @@ Local checks run without CATIA Magic against a stub of the vendor library's name
 visualization, categories, buttons and the keyword of every button's template through the DSL service, and
 `tools/check_palettes.py` compares that with `tests/cameo/palette-expectations.json` (7 negative controls).
 
+## Two spellings per keyword, and which slot a tool shows (E20, E21)
+
+Users asked for shorter keywords without giving up readable ones. A metadata definition has exactly two name
+slots, so both spellings fit in one definition, and E20 confirmed that the short name, the declared name and an
+alias all load and imply the same specialization (K1-K4). Aliases were rejected for this purpose: an alias exists
+to deconflict imported names, so it does not say "this is the same keyword, spelled shorter".
+
+Which slot holds which name is not cosmetic. E21: after the keyword was first put in the declared name
+(`metadata def <cls> classType`), 10 of the 19 keyword-label cases changed - CATIA Magic drew `«#cls»`, `«#stc»`,
+`«#pk»` - while the keywords with no short name were unaffected. The label therefore reads the **short** name and
+falls back to the declared name, which is also why the OMG standard library writes `metadata def <cause>
+CauseMetadata`. The slots were flipped to `metadata def <classType> cls`: diagrams keep UML-like keywords, the
+terse id is the second writable spelling, and view filters and the diagram-kind model keep naming keywords in
+full, because name resolution does not care which slot a name sits in.
+
+Cost and coverage: 74 declarations, 976 references across 78 files, `tools/idl/UML3IdlCore.groovy` and
+`verifyPalettes.groovy` (both now match a keyword by short name, as a shape label does), and the generated
+reference [UML3-Keywords.md](UML3-Keywords.md). `check_rules.py` R16 keeps the slots in this order, with
+`tests/rules/r16-keyword-naming.sysml` as the negative control.
+
 ## Detail views with a palette (E19, issue I-36)
 
 E17 concluded that a view carrying a UML3 palette cannot show full compartments, because such a view is always
@@ -332,7 +369,7 @@ knowledge once: one part per diagram kind with three lists.
 | `creates` | which keywords a tool should let the user create | the buttons of the tool palette |
 | `views` | which `UML3Views` definitions render the kind | both, and reports |
 
-The entries are metaobjects (`ClassMetadata meta KerML::Type`), not strings, so a rename cannot leave a stale entry
+The entries are metaobjects (`classType meta KerML::Type`), not strings, so a rename cannot leave a stale entry
 (the mistake criticized in I-23). Each palette declares its kind with `@PaletteForDiagramKind { kind = ... }`.
 `shows` and `creates` are separate because they answer different questions: a class diagram *shows* `#template` but
 cannot create it (it marks an existing definition), and *creates* `#operation` and `#query`, which appear inside a
@@ -373,6 +410,9 @@ In the kernel, `Item :> Object :> Occurrence`, `Performance :> Occurrence`, `Obj
 6. **Keyword categories (2026-09-17, E15).** An extension keyword that refines a UML3 semantic keyword specializes the keyword's abstract category, not the keyword. So far only `DataTypeKind` exists (I-32).
 7. **Tool customizations live outside the libraries (2026-09-17, E17).** `customization/<tool>/` holds what one tool needs (CATIA Magic palettes and Create View commands). The libraries stay tool neutral, and the customization specializes them.
 8. **The diagram kinds are a model, not a list in each tool (2026-09-17, E18).** `UML3DiagramKinds` records per kind what a view shows, what a palette creates and which views render it; filters and palettes are checked against it.
+9. **A keyword is written two ways (2026-09-17, E20/E21).** Every keyword definition carries the keyword in
+   its short name and a terse id in its declared name, so a modeler can write `#classType` or `#cls` and a
+   diagram still reads `«#classType»`. Terse ids are given only where they save at least three characters.
 
 ## Harness safety incident and guard (E07)
 
@@ -427,7 +467,7 @@ the maintainers; none is fixed yet.
 | Id | Where | Issue |
 |---|---|---|
 | I-01 | UML3Components | `Component :> ActiveClass` makes every component active; UML 2.5.1 components are not active by default |
-| I-02 | UML3Components, example 02 | `#layer package` without a body applies `Layer` without values; example 02 adds `@Layer { ... }` as well, giving two annotations |
+| I-02 | UML3Components, example 02 | `#layer package` without a body applies `layer` without values; example 02 adds `@layer { ... }` as well, giving two annotations |
 | I-03 | UML3Views | `ComponentDiagram` filters on `@SysML::ConnectionUsage`, which also matches interface and allocation usages (deployments appear on component diagrams) |
 | I-04 | UML3Views | No view selects the messaging flows (`#publishes`, `#subscribes`, `#sends`, `#handles`): flow usages are not connection usages |
 | I-05 | UML3Views | The `isLibraryElement` filter also hides user models declared as `library package` (per KerML; not tested in CATIA Magic) |
@@ -439,7 +479,7 @@ the maintainers; none is fixed yet.
 | I-11 | example 01 | `Places` has two navigable ends but only one mirrored feature; `PaymentDeclined` is never raised; the order-lines composition is modeled twice (feature and `#composition`) |
 | I-12 | examples 01, 03 | Orders are identified by `orderNumber : String` in 01 and `orderId : Uuid` in 03; `CapturePayment.amount` has no currency; `PaymentCaptured` is never carried |
 | I-13 | example 02 | `ClusterNetwork` ends `[1]..[1]` limit each node to one link; `nodeB` has nothing deployed; layer packages hold parts not tied to `StoreSystem` |
-| I-14 | example 04 | `OPEN_ORDERS_V.queryText` filters a column the table does not have; `#primaryKey` plus `@PrimaryKey { ... }` (and `#foreignKey` plus `@ForeignKey`) create two metadata usages whose values contradict; the physical schema is partial |
+| I-14 | example 04 | `OPEN_ORDERS_V.queryText` filters a column the table does not have; `#primaryKey` plus `@primaryKey { ... }` (and `#foreignKey` plus `@foreignKey`) create two metadata usages whose values contradict; the physical schema is partial |
 | I-15 | example 05 | `deploymentDiagram` shows none of the deploy/manifest allocations (they are nested in `productionCluster`) |
 | I-16 | example 06 | `RetryPayment` never uses `attempts` (unbounded loop); `OrderLifecycle` has no final state |
 | I-17 | check_rules | No rule reports a keyword applied twice to one element (prefix `#k` plus body `@K`), which I-14 shows is an easy mistake |
@@ -448,10 +488,10 @@ the maintainers; none is fixed yet.
 | I-20 | IDL export, generators | Unmappable elements are handled inconsistently: generators fail with NOMAP, model export skips them or writes `any` with a warning and an OK result |
 | I-21 | generators | `idl2code` deletes its output directory (no protection of hand-written code); generation from a live model covers only the IDL subset; deterministic regeneration is not tested |
 | I-22 | requirements | Traceability uses `#realizes` dependencies and textual "Verified by" evidence rather than native `satisfy` and verification cases (tension with UML3-CORE-004); UML3's own tools are not model elements |
-| I-23 | UML3Data, UML3Messaging | References held as strings (`@ForeignKey` columns, `@Index` columns, QoS dead-letter channel, partition key) break silently on rename; composite foreign keys cannot be expressed |
+| I-23 | UML3Data, UML3Messaging | References held as strings (`@foreignKey` columns, `@Index` columns, QoS dead-letter channel, partition key) break silently on rename; composite foreign keys cannot be expressed |
 | I-24 | rules, views | Rules and view filters select by UML3 keyword, not by semantics: a user keyword whose base specializes Association is not checked by R04; a keyword name visible from two libraries is not reported as ambiguous |
 | I-25 | UML3Core | `Association` does not specialize `Class` (association classes); `#final` and `#singleton` are not enforced; GeneralizationSet metadata duplicates KerML `disjoint`/`unions`; `MapEntry` duplicates `Collections::Map` without unique keys |
-| I-26 | UML3Data, UML3Components, UML3Messaging | R02 flags conceptual entities without identity; architecture style can only be set through `@Layer`; IDL structs (attribute defs) cannot be message item types without a wrapper; `SerializationFormat` lacks CDR and is not extensible |
+| I-26 | UML3Data, UML3Components, UML3Messaging | R02 flags conceptual entities without identity; architecture style can only be set through `@layer`; IDL structs (attribute defs) cannot be message item types without a wrapper; `SerializationFormat` lacks CDR and is not extensible |
 | I-27 | scope | No library concepts yet for tests, validation (concerns, acceptance criteria, reviews) or DevOps; no CI pipeline runs `run_tests.py`; a second semantic keyword on a definition is untested (R12 checks usages) |
 | I-28 | tooling tests | `check_requirements.py` and `check_traceability.py` have no negative fixtures; the validator's reversed prefix order and `def`-name lexer bug are not in `tests/validator-known-gaps.json` |
 | I-29 | actors | Roles used as stand-ins: ML engineer or data scientist, AI governance officer, hardware engineer, data steward, compliance officer or auditor, site reliability engineer, extension author |

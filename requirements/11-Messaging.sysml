@@ -286,26 +286,26 @@ package UML3MessagingRequirements {
 		Contents:
 		- #realizes dependencies from UML3Messaging and UML3Views elements to MSG requirements.
 		*/
-		#realizes dependency from UML3Messaging::MessageTypeMetadata to 'UML3-MSG-001';
+		#realizes dependency from UML3Messaging::messageType to 'UML3-MSG-001';
 		#realizes dependency from UML3Messaging::MessageHeader to 'UML3-MSG-001';
-		#realizes dependency from UML3Messaging::CommandMetadata to 'UML3-MSG-002';
-		#realizes dependency from UML3Messaging::DomainEventMetadata to 'UML3-MSG-002';
-		#realizes dependency from UML3Messaging::QueryMessageMetadata to 'UML3-MSG-002';
-		#realizes dependency from UML3Messaging::ReplyMetadata to 'UML3-MSG-002';
-		#realizes dependency from UML3Messaging::DocumentMessageMetadata to 'UML3-MSG-002';
-		#realizes dependency from UML3Messaging::ChannelMetadata to 'UML3-MSG-003';
-		#realizes dependency from UML3Messaging::TopicMetadata to 'UML3-MSG-003';
-		#realizes dependency from UML3Messaging::QueueMetadata to 'UML3-MSG-003';
-		#realizes dependency from UML3Messaging::MessageBrokerMetadata to 'UML3-MSG-003';
+		#realizes dependency from UML3Messaging::command to 'UML3-MSG-002';
+		#realizes dependency from UML3Messaging::domainEvent to 'UML3-MSG-002';
+		#realizes dependency from UML3Messaging::queryMessage to 'UML3-MSG-002';
+		#realizes dependency from UML3Messaging::reply to 'UML3-MSG-002';
+		#realizes dependency from UML3Messaging::documentMessage to 'UML3-MSG-002';
+		#realizes dependency from UML3Messaging::channel to 'UML3-MSG-003';
+		#realizes dependency from UML3Messaging::topic to 'UML3-MSG-003';
+		#realizes dependency from UML3Messaging::queue to 'UML3-MSG-003';
+		#realizes dependency from UML3Messaging::broker to 'UML3-MSG-003';
 		#realizes dependency from UML3Messaging::ProducerPort to 'UML3-MSG-004';
 		#realizes dependency from UML3Messaging::ConsumerPort to 'UML3-MSG-004';
 		#realizes dependency from UML3Messaging::RequestReplyPort to 'UML3-MSG-004';
-		#realizes dependency from UML3Messaging::Publishes to 'UML3-MSG-004';
-		#realizes dependency from UML3Messaging::Subscribes to 'UML3-MSG-004';
-		#realizes dependency from UML3Messaging::Sends to 'UML3-MSG-004';
-		#realizes dependency from UML3Messaging::Handles to 'UML3-MSG-004';
+		#realizes dependency from UML3Messaging::publishes to 'UML3-MSG-004';
+		#realizes dependency from UML3Messaging::subscribes to 'UML3-MSG-004';
+		#realizes dependency from UML3Messaging::sends to 'UML3-MSG-004';
+		#realizes dependency from UML3Messaging::handles to 'UML3-MSG-004';
 		#realizes dependency from UML3Messaging::QualityOfService to 'UML3-MSG-006';
-		#realizes dependency from UML3Messaging::Idempotent to 'UML3-MSG-007';
+		#realizes dependency from UML3Messaging::idempotent to 'UML3-MSG-007';
 		#realizes dependency from UML3Messaging::Serialization to 'UML3-MSG-008';
 		#realizes dependency from UML3Messaging::MessageType to 'UML3-MSG-010';
 		#realizes dependency from UML3Views::SequenceDiagram to 'UML3-MSG-010';

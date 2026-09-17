@@ -249,9 +249,9 @@ package UML3ExtensibilityRequirements {
 		- #realizes dependencies from library elements to EXT requirements.
 		*/
 		#realizes dependency from Metaobjects::SemanticMetadata to 'UML3-EXT-001';
-		#realizes dependency from UML3Core::ClassMetadata to 'UML3-EXT-001';
-		#realizes dependency from UML3Data::EntityMetadata to 'UML3-EXT-002';
-		#realizes dependency from UML3Messaging::DomainEventMetadata to 'UML3-EXT-002';
+		#realizes dependency from UML3Core::classType to 'UML3-EXT-001';
+		#realizes dependency from UML3Data::entity to 'UML3-EXT-002';
+		#realizes dependency from UML3Messaging::domainEvent to 'UML3-EXT-002';
 		#realizes dependency from UML3Types::Facets to 'UML3-EXT-003';
 		#realizes dependency from UML3Messaging::QualityOfService to 'UML3-EXT-003';
 		#realizes dependency from Metaobjects::SemanticMetadata to 'UML3-EXT-004';
@@ -259,6 +259,6 @@ package UML3ExtensibilityRequirements {
 		#realizes dependency from Metaobjects::SemanticMetadata to 'UML3-EXT-007';
 		#realizes dependency from UML3Core::DependencyKind to 'UML3-EXT-010';
 		#realizes dependency from UML3Core::DataTypeKind to 'UML3-EXT-005';
-		#realizes dependency from UML3Data::MapsTo to 'UML3-EXT-010';
+		#realizes dependency from UML3Data::mapsTo to 'UML3-EXT-010';
 	}
 }

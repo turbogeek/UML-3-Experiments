@@ -47,7 +47,7 @@ The imported file becomes a root package named after the file (`shop_order`), an
 | `attribute T a` / `readonly attribute` | `attribute a : T` / `constant attribute a : T` | |
 | operation | `abstract #operation action op { in/out/inout params; out result : T { @IdlReturn; } }` | `void` has no result |
 | `oneway` | `@IdlOneway` in the operation | |
-| `raises (E1, E2)` | `#raises dependency from I::op to E1;` (one per exception) | `RaisesDependency :> DependencyKind` |
+| `raises (E1, E2)` | `#raises dependency from I::op to E1;` (one per exception) | `raises :> DependencyKind` |
 | `const T N = v` | package-level `attribute N : T = v;` | **not** `constant` (see below) |
 | `@key` | `#id` | |
 | `@optional` | multiplicity `[0..1]` | |

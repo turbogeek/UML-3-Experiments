@@ -16,7 +16,7 @@ package UML3ProbeViewDefVariants {
 	}
 	/* V3: bsv only, own filter and an owned tree rendering. */
 	view def E17V3 :> bsv {
-		filter @UML3Core::ClassMetadata or @UML3Core::InterfaceTypeMetadata or @UML3Core::DataTypeKind or @SysML::EnumerationDefinition;
+		filter @UML3Core::classType or @UML3Core::interfaceType or @UML3Core::DataTypeKind or @SysML::EnumerationDefinition;
 		render Views::asTreeDiagram;
 		part p3 : UML3ClassPalette :>> baseViewPalette;
 	}
@@ -24,7 +24,7 @@ package UML3ProbeViewDefVariants {
 	view def E17V4 :> bsv, UML3Views::ClassDetailDiagram { part p4 : UML3ClassPalette :>> baseViewPalette; }
 	/* V5: bsv only, own filter, the inherited interconnection rendering redefined by a tree rendering. */
 	view def E17V5 :> bsv {
-		filter @UML3Core::ClassMetadata or @UML3Core::InterfaceTypeMetadata or @UML3Core::DataTypeKind or @SysML::EnumerationDefinition;
+		filter @UML3Core::classType or @UML3Core::interfaceType or @UML3Core::DataTypeKind or @SysML::EnumerationDefinition;
 		render rendering treeRendering :>> asInterconnectionDiagram :> Views::asTreeDiagram;
 		part p5 : UML3ClassPalette :>> baseViewPalette;
 	}

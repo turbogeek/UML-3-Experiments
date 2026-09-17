@@ -54,7 +54,7 @@ requirement <'UML3-CORE-001'> sysmlConformance {
 * **Priority**: `@Priority { level = PriorityKind::mandatory | optional; }`, like the mandatory and optional requirements of the SysML v2 request for proposals.
 * **Verification**: `@VerificationMethod { kind = VerificationMethodKind::inspect | analyze | demo | test; }` (VerificationCases).
 * **Evidence**: a `done` or `tbc` requirement has a final `Verified by:` line in its doc. It names `tools/run_tests.py suite <name>` entries, repository files or experiments (`E04`). The checker verifies that each one exists.
-* **Realization**: a `done` requirement is realized by at least one model element. Declare that in the area file's `Realization` package: `#realizes dependency from UML3Core::ClassMetadata to 'UML3-STR-001';`.
+* **Realization**: a `done` requirement is realized by at least one model element. Declare that in the area file's `Realization` package: `#realizes dependency from UML3Core::classType to 'UML3-STR-001';`.
 
 ## Use cases
 

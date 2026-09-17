@@ -241,7 +241,7 @@ package UML3ValidationRequirements {
 		*/
 		#realizes dependency from SysML::UseCaseDefinition to 'UML3-VAL-001';
 		#realizes dependency from SysML::UseCaseUsage to 'UML3-VAL-001';
-		#realizes dependency from UML3Core::TracesDependency to 'UML3-VAL-002';
+		#realizes dependency from UML3Core::traces to 'UML3-VAL-002';
 		#realizes dependency from SysML::IncludeUseCaseUsage to 'UML3-VAL-003';
 		#realizes dependency from SysML::OccurrenceDefinition to 'UML3-VAL-007';
 		#realizes dependency from SysML::EventOccurrenceUsage to 'UML3-VAL-007';

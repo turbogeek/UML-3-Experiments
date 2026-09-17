@@ -73,7 +73,7 @@
     },
     {
       "id": "S-C2",
-      "why": "C: body-form @PrimaryKey applied (medium)",
+      "why": "C: body-form @primaryKey applied (medium)",
       "subject": [
         "UML3ExperimentStackedKeywords",
         "STACKED",

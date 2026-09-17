@@ -9,7 +9,7 @@ library package UML3Views {
 	say what part of the model to show:
 	  view domainClassDiagram : ClassDiagram { expose OnlineStoreDomain::*; }
 	'@M' in a filter is true when an exposed element carries metadata of type M (or a specialization of
-	M). Semantic keywords are metadata, so '@ClassMetadata' selects every '#classType' element, and the
+	M). Semantic keywords are metadata, so '@classType' selects every '#classType' element, and the
 	metaclass of an element counts as metadata too, so '@SysML::PortUsage' selects port usages.
 	Every definition also filters out library elements, which 'expose' would otherwise show (E06).
 	Activity and state machine diagrams need no UML3 definition: use the standard ActionFlowView and
@@ -112,9 +112,9 @@ library package UML3Views {
 		References: UML 2.5.1 Class diagram; SysML 7.26.2; SysML 9.2.20; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeKind
-			or @SignalMetadata or @ExceptionTypeMetadata or @Template or @SysML::EnumerationDefinition
-			or @AssociationMetadata or @AggregationMetadata or @CompositionMetadata or @DependencyKind;
+		filter @classType or @activeClass or @interfaceType or @DataTypeKind
+			or @signal or @exceptionType or @template or @SysML::EnumerationDefinition
+			or @association or @aggregation or @composition or @DependencyKind;
 		render asTreeDiagram;
 	}
 
@@ -130,9 +130,9 @@ library package UML3Views {
 		References: UML 2.5.1 Class diagram; SysML 7.26.2; SysML 7.26.5; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeKind
-			or @SignalMetadata or @ExceptionTypeMetadata or @Template or @SysML::EnumerationDefinition
-			or @AssociationMetadata or @AggregationMetadata or @CompositionMetadata or @DependencyKind;
+		filter @classType or @activeClass or @interfaceType or @DataTypeKind
+			or @signal or @exceptionType or @template or @SysML::EnumerationDefinition
+			or @association or @aggregation or @composition or @DependencyKind;
 	}
 
 	view def ComponentDiagram :> InterconnectionView {
@@ -153,8 +153,8 @@ library package UML3Views {
 		References: UML 2.5.1 Component diagram; SysML 7.26.2; SysML 9.2.19; SysML 9.2.20.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ComponentMetadata or @ServiceMetadata or @SubsystemMetadata or @InterfaceTypeMetadata
-			or @SysML::PortDefinition or @SysML::PortUsage or @AssemblyMetadata or @DelegationMetadata
+		filter @component or @service or @subsystem or @interfaceType
+			or @SysML::PortDefinition or @SysML::PortUsage or @assembly or @delegation
 			or @SysML::ConnectionUsage or @DependencyKind;
 		render asInterconnectionDiagram;
 	}
@@ -174,8 +174,8 @@ library package UML3Views {
 		References: UML 2.5.1 Deployment diagram; SysML 7.26.2; SysML 9.2.20; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ArtifactMetadata or @NodeMetadata or @DeviceMetadata or @ExecutionEnvironmentMetadata
-			or @CommunicationPathMetadata or @DeploymentMetadata or @ManifestationMetadata;
+		filter @artifact or @node or @device or @executionEnvironment
+			or @communicationPath or @deploy or @manifest;
 		render asTreeDiagram;
 	}
 
@@ -190,8 +190,8 @@ library package UML3Views {
 		References: UML 2.5.1 Deployment diagram; SysML 7.26.2; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ArtifactMetadata or @NodeMetadata or @DeviceMetadata or @ExecutionEnvironmentMetadata
-			or @CommunicationPathMetadata or @DeploymentMetadata or @ManifestationMetadata;
+		filter @artifact or @node or @device or @executionEnvironment
+			or @communicationPath or @deploy or @manifest;
 	}
 
 	view def EntityRelationshipDiagram :> GeneralView {
@@ -210,8 +210,8 @@ library package UML3Views {
 		References: UML3Data::Entity; UML3Data::Table; UML 2.5.1 Class diagram; SysML 7.26.2; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @EntityMetadata or @AggregateRootMetadata or @ValueObjectMetadata or @RelationshipMetadata
-			or @TableMetadata or @DatabaseViewMetadata or @DatabaseMetadata or @MapsTo;
+		filter @entity or @aggregateRoot or @valueObject or @relationship
+			or @table or @dbView or @database or @mapsTo;
 		render asTreeDiagram;
 	}
 
@@ -227,8 +227,8 @@ library package UML3Views {
 		References: UML3Data::Entity; UML3Data::Table; SysML 7.26.2; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @EntityMetadata or @AggregateRootMetadata or @ValueObjectMetadata or @RelationshipMetadata
-			or @TableMetadata or @DatabaseViewMetadata or @DatabaseMetadata or @MapsTo;
+		filter @entity or @aggregateRoot or @valueObject or @relationship
+			or @table or @dbView or @database or @mapsTo;
 	}
 
 	view def MessageSchemaView :> GeneralView {
@@ -249,9 +249,9 @@ library package UML3Views {
 		References: UML3Messaging::MessageType; UML3Messaging::Channel; UML 2.5.1 Signal; SysML 7.26.2; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @MessageTypeMetadata or @CommandMetadata or @DomainEventMetadata or @QueryMessageMetadata
-			or @ReplyMetadata or @DocumentMessageMetadata or @ChannelMetadata or @TopicMetadata
-			or @QueueMetadata or @MessageBrokerMetadata or @Publishes or @Subscribes or @Sends or @Handles;
+		filter @messageType or @command or @domainEvent or @queryMessage
+			or @reply or @documentMessage or @channel or @topic
+			or @queue or @broker or @publishes or @subscribes or @sends or @handles;
 		render asTreeDiagram;
 	}
 
@@ -266,9 +266,9 @@ library package UML3Views {
 		References: UML3Messaging::MessageType; SysML 7.26.2; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @MessageTypeMetadata or @CommandMetadata or @DomainEventMetadata or @QueryMessageMetadata
-			or @ReplyMetadata or @DocumentMessageMetadata or @ChannelMetadata or @TopicMetadata
-			or @QueueMetadata or @MessageBrokerMetadata or @Publishes or @Subscribes or @Sends or @Handles;
+		filter @messageType or @command or @domainEvent or @queryMessage
+			or @reply or @documentMessage or @channel or @topic
+			or @queue or @broker or @publishes or @subscribes or @sends or @handles;
 	}
 
 	view def SequenceDiagram :> SequenceView {
@@ -301,7 +301,7 @@ library package UML3Views {
 		References: UML 2.5.1 Class diagram; SysML 9.2.19; SysML 9.2.20.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ClassMetadata or @InterfaceTypeMetadata or @DataTypeKind or @SysML::EnumerationDefinition;
+		filter @classType or @interfaceType or @DataTypeKind or @SysML::EnumerationDefinition;
 		render asElementTable;
 	}
 }

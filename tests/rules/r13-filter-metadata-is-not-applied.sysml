@@ -4,6 +4,6 @@ package RulesR13 {
 	private import UML3Data::*;
 	private import UML3Messaging::*;
 	view def TablesOnly :> GeneralView {
-		filter @TableMetadata or @EntityMetadata or @TopicMetadata or @DomainEventMetadata;
+		filter @table or @entity or @topic or @domainEvent;
 	}
 }

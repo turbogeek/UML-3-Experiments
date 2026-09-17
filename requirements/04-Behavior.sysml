@@ -300,7 +300,7 @@ package UML3BehaviorRequirements {
 		#realizes dependency from States::StateAction to 'UML3-BHV-001';
 		#realizes dependency from Calculations::Calculation to 'UML3-BHV-001';
 		#realizes dependency from UML3Core::Operation to 'UML3-BHV-002';
-		#realizes dependency from UML3Core::OperationMetadata to 'UML3-BHV-002';
+		#realizes dependency from UML3Core::operation to 'UML3-BHV-002';
 		#realizes dependency from Actions::Action to 'UML3-BHV-003';
 		#realizes dependency from Actions::DecisionAction to 'UML3-BHV-003';
 		#realizes dependency from Actions::MergeAction to 'UML3-BHV-003';
@@ -310,7 +310,7 @@ package UML3BehaviorRequirements {
 		#realizes dependency from States::StateAction to 'UML3-BHV-004';
 		#realizes dependency from States::StateTransitionAction to 'UML3-BHV-004';
 		#realizes dependency from UML3Core::Signal to 'UML3-BHV-005';
-		#realizes dependency from UML3Core::SignalMetadata to 'UML3-BHV-005';
+		#realizes dependency from UML3Core::signal to 'UML3-BHV-005';
 		#realizes dependency from Actions::SendAction to 'UML3-BHV-005';
 		#realizes dependency from Actions::AcceptAction to 'UML3-BHV-005';
 		#realizes dependency from Triggers::TriggerAfter to 'UML3-BHV-006';
@@ -318,8 +318,8 @@ package UML3BehaviorRequirements {
 		#realizes dependency from Triggers::TriggerWhen to 'UML3-BHV-006';
 		#realizes dependency from Time::DurationOf to 'UML3-BHV-006';
 		#realizes dependency from UML3Core::ExceptionType to 'UML3-BHV-007';
-		#realizes dependency from UML3Core::ExceptionTypeMetadata to 'UML3-BHV-007';
-		#realizes dependency from UML3IDL::RaisesDependency to 'UML3-BHV-007';
+		#realizes dependency from UML3Core::exceptionType to 'UML3-BHV-007';
+		#realizes dependency from UML3IDL::raises to 'UML3-BHV-007';
 		#realizes dependency from UML3Core::ActiveClass to 'UML3-BHV-009';
 		#realizes dependency from SysML::PerformActionUsage to 'UML3-BHV-009';
 		#realizes dependency from SysML::ExhibitStateUsage to 'UML3-BHV-009';

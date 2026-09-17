@@ -287,11 +287,11 @@ package UML3GenerationRequirements {
 		  (tools/idl) implement the mapping over the UML3Core keywords and the UML3IDL metadata named here.
 		*/
 		#realizes dependency from UML3IDL to 'UML3-GEN-002';
-		#realizes dependency from UML3Core::DataTypeMetadata to 'UML3-GEN-003';
-		#realizes dependency from UML3Core::InterfaceTypeMetadata to 'UML3-GEN-003';
-		#realizes dependency from UML3Core::ExceptionTypeMetadata to 'UML3-GEN-003';
-		#realizes dependency from UML3Core::OperationMetadata to 'UML3-GEN-003';
-		#realizes dependency from UML3IDL::UnionMetadata to 'UML3-GEN-003';
+		#realizes dependency from UML3Core::dataType to 'UML3-GEN-003';
+		#realizes dependency from UML3Core::interfaceType to 'UML3-GEN-003';
+		#realizes dependency from UML3Core::exceptionType to 'UML3-GEN-003';
+		#realizes dependency from UML3Core::operation to 'UML3-GEN-003';
+		#realizes dependency from UML3IDL::union to 'UML3-GEN-003';
 		#realizes dependency from UML3IDL::IdlSequence to 'UML3-GEN-003';
 		#realizes dependency from UML3IDL::IdlArray to 'UML3-GEN-003';
 		#realizes dependency from UML3IDL to 'UML3-GEN-006';

@@ -518,7 +518,7 @@
     },
     {
       "id": "M16",
-      "why": "@Navigable (now semantic) on Places::customer end joins navigableEnds",
+      "why": "@navigable (now semantic) on Places::customer end joins navigableEnds",
       "subject": [
         "OnlineStoreDomain",
         "Places",
@@ -532,7 +532,7 @@
     },
     {
       "id": "M17",
-      "why": "@Navigable on Review::reviewed end joins navigableEnds",
+      "why": "@navigable on Review::reviewed end joins navigableEnds",
       "subject": [
         "OnlineStoreDomain",
         "Review",

@@ -1,7 +1,7 @@
 {
   "experiment": "E18 the diagram-kind model in CATIA Magic: keywords held as metaobjects, read back by a tool (issue I-35)",
   "recorded": "2026-09-17, before the run",
-  "setup": "library/UML3DiagramKinds.sysml holds, per diagram kind, the keywords a view shows, the keywords a palette creates and the view definitions that render it, each as a metaobject ('ClassMetadata meta KerML::Type') in a 'KerML::Type[0..*]' attribute. customization/catia-magic annotates every palette with '@PaletteForDiagramKind { kind = UML3DiagramKinds::classDiagram meta KerML::Type; }'. Checks: load of the new library and of the annotated customization, the validation engine on both, and tools/cameo-scripts/probeDiagramKinds.groovy, which evaluates the three lists of every kind and prints the elements it gets back.",
+  "setup": "library/UML3DiagramKinds.sysml holds, per diagram kind, the keywords a view shows, the keywords a palette creates and the view definitions that render it, each as a metaobject ('classType meta KerML::Type') in a 'KerML::Type[0..*]' attribute. customization/catia-magic annotates every palette with '@PaletteForDiagramKind { kind = UML3DiagramKinds::classDiagram meta KerML::Type; }'. Checks: load of the new library and of the annotated customization, the validation engine on both, and tools/cameo-scripts/probeDiagramKinds.groovy, which evaluates the three lists of every kind and prints the elements it gets back.",
   "predictions": [
     {
       "id": "P1",

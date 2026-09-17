@@ -10,7 +10,7 @@ package RulesR03 {
 	}
 	#table item def ORDERS {
 		#column #primaryKey attribute ORDER_ID : Uuid;
-		#column #foreignKey attribute CUSTOMER_ID : Uuid { @ForeignKey { referencedTable = "NO_SUCH_TABLE"; } }
+		#column #foreignKey attribute CUSTOMER_ID : Uuid { @foreignKey { referencedTable = "NO_SUCH_TABLE"; } }
 		#column #foreignKey attribute OTHER_ID : Uuid;
 	}
 }

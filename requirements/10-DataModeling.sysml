@@ -287,23 +287,23 @@ package UML3DataModelingRequirements {
 		Contents:
 		- #realizes dependencies from UML3Data elements to DATA requirements.
 		*/
-		#realizes dependency from UML3Data::EntityMetadata to 'UML3-DATA-001';
-		#realizes dependency from UML3Data::AggregateRootMetadata to 'UML3-DATA-001';
-		#realizes dependency from UML3Data::ValueObjectMetadata to 'UML3-DATA-001';
-		#realizes dependency from UML3Data::Transient to 'UML3-DATA-001';
-		#realizes dependency from UML3Data::RelationshipMetadata to 'UML3-DATA-003';
-		#realizes dependency from UML3Data::PrimaryKey to 'UML3-DATA-004';
+		#realizes dependency from UML3Data::entity to 'UML3-DATA-001';
+		#realizes dependency from UML3Data::aggregateRoot to 'UML3-DATA-001';
+		#realizes dependency from UML3Data::valueObject to 'UML3-DATA-001';
+		#realizes dependency from UML3Data::transient to 'UML3-DATA-001';
+		#realizes dependency from UML3Data::relationship to 'UML3-DATA-003';
+		#realizes dependency from UML3Data::primaryKey to 'UML3-DATA-004';
 		#realizes dependency from UML3Data::KeyGeneration to 'UML3-DATA-004';
-		#realizes dependency from UML3Data::Unique to 'UML3-DATA-004';
-		#realizes dependency from UML3Data::Indexed to 'UML3-DATA-004';
+		#realizes dependency from UML3Data::unique to 'UML3-DATA-004';
+		#realizes dependency from UML3Data::indexed to 'UML3-DATA-004';
 		#realizes dependency from UML3Data::Index to 'UML3-DATA-004';
-		#realizes dependency from UML3Data::ForeignKey to 'UML3-DATA-005';
+		#realizes dependency from UML3Data::foreignKey to 'UML3-DATA-005';
 		#realizes dependency from UML3Data::ReferentialAction to 'UML3-DATA-005';
-		#realizes dependency from UML3Data::DatabaseMetadata to 'UML3-DATA-006';
-		#realizes dependency from UML3Data::TableMetadata to 'UML3-DATA-006';
-		#realizes dependency from UML3Data::ColumnMetadata to 'UML3-DATA-006';
+		#realizes dependency from UML3Data::database to 'UML3-DATA-006';
+		#realizes dependency from UML3Data::table to 'UML3-DATA-006';
+		#realizes dependency from UML3Data::column to 'UML3-DATA-006';
 		#realizes dependency from UML3Data::Column to 'UML3-DATA-006';
-		#realizes dependency from UML3Data::DatabaseViewMetadata to 'UML3-DATA-006';
-		#realizes dependency from UML3Data::MapsTo to 'UML3-DATA-008';
+		#realizes dependency from UML3Data::dbView to 'UML3-DATA-006';
+		#realizes dependency from UML3Data::mapsTo to 'UML3-DATA-008';
 	}
 }

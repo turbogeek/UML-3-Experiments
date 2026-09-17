@@ -132,7 +132,7 @@ library package UML3Data {
 		links a table to the entity that it implements. DatabaseView specializes Table: a view has
 		columns like a table, plus the query that defines it. check_rules.py R01 requires a #primaryKey
 		column in every #table, and R11 warns when a #dbView does not set queryText.
-		References: SysML 7.7; SysML 7.10; SysML 7.11; UML3Data::MapsTo.
+		References: SysML 7.7; SysML 7.10; SysML 7.11; UML3Data::mapsTo.
 		*/
 
 	abstract item def Table {
@@ -146,7 +146,7 @@ library package UML3Data {
 		    #column #primaryKey attribute ACCOUNT_ID : Uuid { @Column { sqlType = "UUID"; } }
 		    #column attribute EMAIL : EmailAddress { @Column { sqlType = "VARCHAR(254)"; } }
 		  }
-		References: SysML 7.10; UML3Data::MapsTo.
+		References: SysML 7.10; UML3Data::mapsTo.
 		*/
 	}
 	abstract item tables : Table[0..*] nonunique {
@@ -228,7 +228,7 @@ library package UML3Data {
 		doc
 		/*
 		What the database does with referencing rows when the referenced row is deleted or its key is
-		updated: the SQL referential actions, used by @ForeignKey onDelete and onUpdate.
+		updated: the SQL referential actions, used by @foreignKey onDelete and onUpdate.
 		*/
 		enum noAction {
 			doc
@@ -268,7 +268,7 @@ library package UML3Data {
 	}
 
 	enum def KeyGeneration {
-		doc /* How the values of a primary key are produced; the value of @PrimaryKey generation. */
+		doc /* How the values of a primary key are produced; the value of @primaryKey generation. */
 		enum assigned {
 			doc
 			/*
@@ -287,8 +287,8 @@ library package UML3Data {
 		}
 	}
 
-	comment DataKeywordDesign about EntityMetadata, AggregateRootMetadata, ValueObjectMetadata,
-		RelationshipMetadata, TableMetadata, DatabaseViewMetadata, ColumnMetadata, DatabaseMetadata
+	comment DataKeywordDesign about entity, aggregateRoot, valueObject,
+		relationship, table, dbView, column, database
 		/*
 		Semantic keywords for data models, built like those of UML3Core: a keyworded definition
 		specializes the library definition and a keyworded usage subsets its collection. Verified in
@@ -298,7 +298,7 @@ library package UML3Data {
 		References: KerML 7.4.13; KerML 9.2.16; SysML 7.27.3.
 		*/
 
-	metadata def <entity> EntityMetadata :> SemanticMetadata {
+	metadata def <entity> ent :> SemanticMetadata {
 		doc
 		/*
 		Keyword #entity: the item is a UML3 Entity (a definition specializes Entity, a usage subsets
@@ -306,15 +306,15 @@ library package UML3Data {
 		*/
 		:>> baseType = entities meta SysML::Usage;
 	}
-	metadata def <aggregateRoot> AggregateRootMetadata :> SemanticMetadata {
+	metadata def <aggregateRoot> aggRoot :> SemanticMetadata {
 		doc /* Keyword #aggregateRoot: the item is the AggregateRoot of a domain-driven design aggregate. */
 		:>> baseType = aggregateRoots meta SysML::Usage;
 	}
-	metadata def <valueObject> ValueObjectMetadata :> SemanticMetadata {
+	metadata def <valueObject> valObj :> SemanticMetadata {
 		doc /* Keyword #valueObject: the attribute def or attribute is a ValueObject; not valid on items. */
 		:>> baseType = valueObjects meta SysML::Usage;
 	}
-	metadata def <relationship> RelationshipMetadata :> SemanticMetadata {
+	metadata def <relationship> rel :> SemanticMetadata {
 		doc
 		/*
 		Keyword #relationship: the connection is an entity Relationship whose end multiplicities give
@@ -330,11 +330,11 @@ library package UML3Data {
 		*/
 		:>> baseType = tables meta SysML::Usage;
 	}
-	metadata def <dbView> DatabaseViewMetadata :> SemanticMetadata {
+	metadata def <dbView> dbv :> SemanticMetadata {
 		doc /* Keyword #dbView: the item is a DatabaseView and should set queryText (check_rules.py R11). */
 		:>> baseType = databaseViews meta SysML::Usage;
 	}
-	metadata def <column> ColumnMetadata :> SemanticMetadata {
+	metadata def <column> col :> SemanticMetadata {
 		doc
 		/*
 		Keyword #column: the attribute is a column of its table and subsets columns. It is valid on
@@ -342,22 +342,22 @@ library package UML3Data {
 		*/
 		:>> baseType = columns meta SysML::Usage;
 	}
-	metadata def <database> DatabaseMetadata :> SemanticMetadata {
+	metadata def <database> db :> SemanticMetadata {
 		doc /* Keyword #database: the part is a deployed Database that contains tables. */
 		:>> baseType = databases meta SysML::Usage;
 	}
 
 	comment DataMarkerKeywordDesign about primaryKeyFeatures, foreignKeyFeatures, uniqueFeatures,
-		indexedFeatures, transientFeatures, auditedElements, PrimaryKey, ForeignKey, Unique, Indexed,
-		Transient, Audited, KeyGeneration, ReferentialAction
+		indexedFeatures, transientFeatures, auditedElements, primaryKey, foreignKey, unique, indexed,
+		transient, audited, KeyGeneration, ReferentialAction
 		/*
 		Marker keywords for keys, constraints and governance. They are semantic keywords, so CATIA Magic
 		shows them as labels («#primaryKey») and the marked features form queryable sets. As for the
 		UML3Core markers, the baseType is a reference usage typed by Base::Anything, so a marker is
-		valid on attributes and on ref items alike (E01). Options such as @PrimaryKey generation (a
-		KeyGeneration) or @ForeignKey onDelete (a ReferentialAction) are set in body form, because the
+		valid on attributes and on ref items alike (E01). Options such as @primaryKey generation (a
+		KeyGeneration) or @foreignKey onDelete (a ReferentialAction) are set in body form, because the
 		'#' prefix form cannot set values:
-		  attribute tagId : Int32 { @PrimaryKey { generation = KeyGeneration::identity; } }
+		  attribute tagId : Int32 { @primaryKey { generation = KeyGeneration::identity; } }
 		CATIA Magic applies only the first semantic keyword of an element (E02, E03): with
 		'#column #primaryKey attribute ACCOUNT_ID' the attribute subsets columns but not
 		primaryKeyFeatures, and the reverse order gives the reverse result. Put first the keyword that
@@ -381,10 +381,10 @@ library package UML3Data {
 		doc /* All features marked #transient. */
 	}
 	abstract ref auditedElements : Anything[0..*] nonunique {
-		doc /* All usages marked #audited; on a definition the keyword is a label only (see Audited). */
+		doc /* All usages marked #audited; on a definition the keyword is a label only (see audited). */
 	}
 
-	metadata def <primaryKey> PrimaryKey :> SemanticMetadata {
+	metadata def <primaryKey> pk :> SemanticMetadata {
 		doc
 		/*
 		Keyword #primaryKey: the attribute or ref item is the primary key of its entity or table, or
@@ -398,7 +398,7 @@ library package UML3Data {
 		check_rules.py R01 requires a #primaryKey column in every #table, and R02 warns when an entity
 		has neither #primaryKey nor #id.
 
-		Rationale: stronger than #id (UML3Core::Identifier, UML isID): it marks a database key and
+		Rationale: stronger than #id (UML3Core::id, UML isID): it marks a database key and
 		states how its values are generated.
 		References: UML 2.5.1 Property.isID; E02; E03.
 		*/
@@ -407,12 +407,12 @@ library package UML3Data {
 			doc
 			/*
 			How the key values are produced; default assigned. Set it in body form:
-			  @PrimaryKey { generation = KeyGeneration::identity; }
+			  @primaryKey { generation = KeyGeneration::identity; }
 			*/
 		}
 	}
 
-	metadata def <foreignKey> ForeignKey :> SemanticMetadata {
+	metadata def <foreignKey> fk :> SemanticMetadata {
 		doc
 		/*
 		Keyword #foreignKey: the feature refers to another entity or table. In a logical model mark the
@@ -421,11 +421,11 @@ library package UML3Data {
 
 		Usage, logical ('ref' comes before the keyword):
 		  ref #foreignKey item account : CustomerAccount[1] {
-		    @ForeignKey { onDelete = ReferentialAction::restrict; }
+		    @foreignKey { onDelete = ReferentialAction::restrict; }
 		  }
 		Usage, physical:
 		  #column #foreignKey attribute ACCOUNT_ID : Uuid {
-		    @ForeignKey { referencedTable = "CUSTOMER_ACCOUNT"; referencedColumn = "ACCOUNT_ID"; }
+		    @foreignKey { referencedTable = "CUSTOMER_ACCOUNT"; referencedColumn = "ACCOUNT_ID"; }
 		  }
 		check_rules.py R03 checks that a #foreignKey ref refers to an #entity, #aggregateRoot or
 		#table, and that the referencedTable of a #foreignKey column names a #table.
@@ -455,7 +455,7 @@ library package UML3Data {
 		}
 	}
 
-	metadata def <unique> Unique :> SemanticMetadata {
+	metadata def <unique> unq :> SemanticMetadata {
 		doc
 		/*
 		Keyword #unique: no two instances of the owner have the same value of the feature (a UNIQUE
@@ -470,7 +470,7 @@ library package UML3Data {
 		:>> baseType = uniqueFeatures meta SysML::Usage;
 	}
 
-	metadata def <indexed> Indexed :> SemanticMetadata {
+	metadata def <indexed> idx :> SemanticMetadata {
 		doc
 		/*
 		Keyword #indexed: the database keeps a single-column index on the feature.
@@ -481,9 +481,9 @@ library package UML3Data {
 		:>> baseType = indexedFeatures meta SysML::Usage;
 	}
 
-	comment DataPlainMetadataDesign about Index, Column, Sensitivity, MapsTo
+	comment DataPlainMetadataDesign about Index, Column, Sensitivity, mapsTo
 		/*
-		Plain metadata. Index, Column and Sensitivity carry configuration values, and MapsTo classifies
+		Plain metadata. Index, Column and Sensitivity carry configuration values, and mapsTo classifies
 		dependencies, which are not types and so cannot carry semantic metadata. Plain metadata implies
 		no specialization and does not appear in the keyword labels of CATIA Magic diagrams.
 		References: KerML 7.4.13; SysML 7.3; SysML 7.27.
@@ -550,7 +550,7 @@ library package UML3Data {
 		}
 	}
 
-	metadata def <transient> Transient :> SemanticMetadata {
+	metadata def <transient> trns :> SemanticMetadata {
 		doc
 		/*
 		Keyword #transient: the attribute is not persisted; its value is derived, computed or held only
@@ -563,12 +563,12 @@ library package UML3Data {
 		:>> baseType = transientFeatures meta SysML::Usage;
 	}
 
-	metadata def <audited> Audited :> SemanticMetadata {
+	metadata def <audited> aud :> SemanticMetadata {
 		doc
 		/*
 		Keyword #audited: changes to the element are recorded in an audit trail.
 
-		Usage: '@Audited;' in the body of an entity, or #audited on a single attribute. On a definition
+		Usage: '@audited;' in the body of an entity, or #audited on a single attribute. On a definition
 		the implied specialization is to Base::Anything, which adds nothing, so only marked usages join
 		auditedElements.
 		*/

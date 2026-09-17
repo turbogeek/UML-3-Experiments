@@ -49,7 +49,7 @@ A `comment … about` explains how several elements work together. Examples are 
 or why a state machine or activity is built the way it is:
 
 ```sysml
-comment MarkerKeywordDesign about staticFeatures, finalElements, Static, Final
+comment MarkerKeywordDesign about staticFeatures, finalElements, static, final
 	/*
 	Marker keywords: UML properties with no SysML v2 equivalent. ...
 	*/

@@ -225,7 +225,7 @@ package UML3ReportRequirements {
 		*/
 		#realizes dependency from UML3Requirements to 'UML3-RPT-004';
 		#realizes dependency from UML3Requirements::Priority to 'UML3-RPT-004';
-		#realizes dependency from UML3Core::TracesDependency to 'UML3-RPT-005';
-		#realizes dependency from UML3Core::RealizesDependency to 'UML3-RPT-005';
+		#realizes dependency from UML3Core::traces to 'UML3-RPT-005';
+		#realizes dependency from UML3Core::realizes to 'UML3-RPT-005';
 	}
 }
