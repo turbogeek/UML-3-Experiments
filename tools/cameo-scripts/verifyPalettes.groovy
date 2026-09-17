@@ -21,6 +21,7 @@ def project = Application.getInstance().getProject()
 if (project == null) return "RESULT|FAIL|no open project (run inside CATIA Magic through the SysMLv2 test harness)"
 def out = new StringBuilder()
 def clean = { Object t -> t == null ? "null" : t.toString().replace("|", "/").replace("\r", "").replace("\n", " ") }
+def trace = { Throwable t -> clean(t) + " at " + (t.getStackTrace().take(6).collect { it.toString() }.join(" < ")) }
 def call0 = { Object o, String m -> try { (o != null && o.respondsTo(m)) ? o."$m"() : null } catch (Throwable t) { null } }
 def nameOf = { e -> call0(e, "getDeclaredName") ?: call0(e, "getName") }
 
@@ -30,10 +31,12 @@ if (!reqFile.exists()) return "RESULT|FAIL|missing " + reqFile
 List<String> views = []
 boolean resetCache = false
 boolean dialogs = false
+String printFile = null   // printDsl=<file>: write DSLService.print() (the DSL model CATIA Magic built) to this file
 reqFile.readLines("UTF-8").each { l ->
     if (l.startsWith("view=")) views << l.substring(5).trim()
     else if (l.trim() == "resetCache=true") resetCache = true
     else if (l.trim() == "dialogs=true") dialogs = true
+    else if (l.startsWith("printDsl=")) printFile = l.substring(9).trim()
 }
 if (views.isEmpty() && !dialogs) return "RESULT|FAIL|request needs at least one view= or dialogs=true"
 
@@ -61,7 +64,12 @@ def findPath = { List path ->
 def keywordsOf = { e ->
     def seen = new IdentityHashMap()
     List<String> names = []
-    ((call0(e, "getOwnedElement") ?: []) + (call0(e, "getOwnedMember") ?: [])).each { m ->
+    // plain ArrayList: Groovy's '+' on these collections built a sorted collection of KerML elements and threw
+    // UnsupportedOperationException (compareTo) in E17 run 1
+    List owned = new ArrayList()
+    owned.addAll(call0(e, "getOwnedElement") ?: [])
+    owned.addAll(call0(e, "getOwnedMember") ?: [])
+    owned.each { m ->
         if (m == null || seen.containsKey(m)) return
         seen.put(m, Boolean.TRUE)
         String cls = m.getClass().getSimpleName()
@@ -97,8 +105,21 @@ try {
     svc = dslClass.getMethod("getInstance", baseElementClass).invoke(null, anyElement)
     if (resetCache) { svc.resetCache(); out.append("RESET|DSLService\n") }
     out.append("DSL|valid|" + call0(svc, "isDSLValid") + "\n")
+    // every visualization the DSL model knows: name, type, class, the view definition it came from, palette size
+    (call0(svc, "getVisualizations") ?: []).each { v ->
+        def pal = call0(v, "getPalette")
+        out.append("VISLIST|" + clean(call0(v, "getName")) + "|" + clean(call0(v, "getType")) + "|" + v.getClass().getSimpleName() + "|" +
+            clean(nameOf(call0(v, "getViewDefinition"))) + "|" + clean(call0(call0(v, "getParent"), "getName")) + "|" +
+            (pal == null ? "-" : (call0(pal, "getCategories") ?: []).size()) + "\n")
+    }
+    if (printFile != null) {
+        def sb = new StringBuilder()
+        svc.print({ String s -> sb.append(s).append("\n") } as java.util.function.Consumer)
+        new File(printFile).write(sb.toString(), "UTF-8")
+        out.append("PRINT|" + printFile + "|" + sb.length() + "\n")
+    }
 } catch (Throwable t) {
-    return out.append("RESULT|FAIL|DSLService: " + clean(t) + "\n").toString()
+    return out.append("RESULT|FAIL|DSLService: " + trace(t) + "\n").toString()
 }
 
 int read = 0
@@ -111,7 +132,15 @@ views.each { String path ->
     try {
         def vis = svc.getVisualization(view)
         if (vis == null) { out.append("ERROR|" + path + "|visualization|null\n"); return }
-        out.append("VIS|" + path + "|" + vis.getClass().getSimpleName() + "|" + call0(vis, "getType") + "|" + call0(vis, "getName") + "\n")
+        out.append("VIS|" + path + "|" + vis.getClass().getSimpleName() + "|" + call0(vis, "getType") + "|" + call0(vis, "getName") +
+            "|definition=" + clean(nameOf(call0(vis, "getViewDefinition"))) + "\n")
+        try { out.append("VISTYPE|" + path + "|" + clean(svc.getVisualizationType(view)) + "\n") } catch (Throwable t) { out.append("ERROR|" + path + "|type|" + trace(t) + "\n") }
+        // the visualization of the view's own definition, asked directly (does the DSL know 'UML3 Class Diagram'?)
+        try {
+            def vdef = dslClass.getMethods().find { it.getName() == "getViewDefinition" && it.getParameterCount() == 1 }.invoke(null, view)
+            def byDef = vdef == null ? null : svc.getVisualization(vdef)
+            out.append("VISDEF|" + path + "|" + clean(nameOf(vdef)) + "|" + (byDef == null ? "null" : byDef.getClass().getSimpleName() + ":" + clean(call0(byDef, "getName"))) + "\n")
+        } catch (Throwable t) { out.append("ERROR|" + path + "|visdef|" + trace(t) + "\n") }
         def palette = call0(vis, "getPalette")
         if (palette == null) { out.append("ERROR|" + path + "|palette|null\n"); return }
         (call0(palette, "getCategories") ?: []).each { cat ->
@@ -134,7 +163,7 @@ views.each { String path ->
         }
         read++
     } catch (Throwable t) {
-        out.append("ERROR|" + path + "|palette|" + clean(t) + "\n")
+        out.append("ERROR|" + path + "|palette|" + trace(t) + "\n")
     }
 }
 
