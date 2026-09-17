@@ -122,6 +122,12 @@ NOT_A_NAME = {
     "crosses", "start", "done", "this", "self", "that",
 } | DECL_KEYWORDS - {"def"}
 
+# Not reserved in SysML (8.2.2.6 / SysML reserved-keyword list) but used like keywords in successions
+# ('first start then done'); they are legal element names, e.g. ModelingMetadata::StatusKind::done.
+SOFT_NAMES = {"start", "done", "this", "self", "that"}
+# Named comments are owned members of their namespace (KerML 7.2.4.2): 'comment Name about ...' or 'comment Name /* */'.
+NAMED_COMMENT_RE = re.compile(r"\bcomment\s+([A-Za-z_][A-Za-z0-9_]*|'[^']*')\s+(?=about\b|locale\b|/\*)")
+
 # Construct keywords that determine an element's kind (for keyword applicability).
 CONSTRUCT_KINDS = {
     "item", "part", "attribute", "action", "calc", "connection", "allocation", "port", "occurrence",
@@ -258,6 +264,10 @@ def declaration_span(toks: list[Tok], k: int) -> list[Tok]:
 def index_file(path: Path) -> FileModel:
     text = path.read_text(encoding="utf-8", errors="replace")
     toks = tokenize(text)
+    named_comments = set()
+    for m in NAMED_COMMENT_RE.finditer(text):
+        name = m.group(1)[1:-1] if m.group(1).startswith("'") else m.group(1)
+        named_comments.add((text.count("\n", 0, m.start(1)) + 1, name))
     root = Scope("", "")
     fm = FileModel(path, toks, root)
     stack: list[Scope] = [root]
@@ -293,7 +303,15 @@ def index_file(path: Path) -> FileModel:
                     stack[-1].reexports.append((target, mode))
                 i = k
                 continue
-        elif (t.kind == "ident" and t.text not in NOT_A_NAME and _at_statement_start(toks, i)
+        elif (t.kind == "ident" and t.text == "comment" and i + 1 < len(toks)
+              and (toks[i + 1].line, toks[i + 1].text) in named_comments):
+            stack[-1].members.add(toks[i + 1].text)
+            fm.declared.add(toks[i + 1].text)
+            i += 2
+            continue
+        elif (t.kind == "ident" and (t.text not in NOT_A_NAME or (t.text in SOFT_NAMES and i + 1 < len(toks)
+                                                                   and toks[i + 1].text in ("{", ";")))
+              and _at_statement_start(toks, i)
               and i + 1 < len(toks) and toks[i + 1].text in (":", ":>", "{", ";", "[", "=")):
             # Keyword-less declaration: 'distancePerVolume :> scalarQuantities = ...;'
             # or an extended usage '#system service_registry { ... }'.

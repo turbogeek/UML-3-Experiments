@@ -105,7 +105,8 @@ def main() -> int:
     report["suites"]["validator-gaps"] = {"passed": all(c["stillFails"] for c in gap_cases), "cases": gap_cases}
 
     # 2. names, positive
-    rc, rep = name_check(library + examples, [], LOGS / "names-positive.json")
+    name_fixtures = sorted((ROOT / "tests" / "names").glob("*.sysml"))   # checker regressions that must resolve cleanly
+    rc, rep = name_check(library + examples + name_fixtures, [], LOGS / "names-positive.json")
     report["suites"]["names-positive"] = {"passed": rc == 0, "files": len(rep["files"]),
                                           "findings": [f | {"file": x["file"]} for x in rep["files"] for f in x["findings"]]}
 
