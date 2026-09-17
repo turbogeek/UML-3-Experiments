@@ -28,9 +28,11 @@ def reqFile = new File(dir, "uml3-svg-request.txt")
 if (!reqFile.exists()) return "RESULT|FAIL|missing " + reqFile
 String outDir = null
 List<String> views = []
+boolean inspectOnly = false
 reqFile.readLines("UTF-8").each { l ->
     if (l.startsWith("outDir=")) outDir = l.substring(7).trim()
     else if (l.startsWith("view=")) views << l.substring(5).trim()
+    else if (l.trim() == "inspectOnly=true") inspectOnly = true   // report diagram presence only; no model change
 }
 if (!outDir || views.isEmpty()) return "RESULT|FAIL|request needs outDir= and at least one view="
 new File(outDir).mkdirs()
@@ -64,6 +66,15 @@ collect = { Object pe, List acc ->
     return acc
 }
 
+if (inspectOnly) {
+    views.each { path ->
+        def view = findPath(path.split("::") as List)
+        def existing = view == null ? null : diagramsClass.getDiagram(view)
+        out.append("VIEW|" + path + "|" + (view != null) + "|" + (existing != null) + "|-\n")
+    }
+    return out.append("RESULT|OK|inspected " + views.size() + "\n").toString()
+}
+
 Map<String, Object> diagrams = [:]
 SwingUtilities.invokeAndWait({
     def sm = SessionManager.getInstance()
@@ -83,8 +94,17 @@ SwingUtilities.invokeAndWait({
                         clean(call0(diagram, "getDiagramTypeAsString")) + "\n")
                 }
                 if (diagram == null) { out.append("ERROR|" + path + "|create|createDiagram returned null\n"); return }
+                // the view's rendering decides the display mode (render asTreeDiagram -> TREE,
+                // asInterconnectionDiagram -> NESTED, none -> UNDEFINED); E14
+                try {
+                    def modeClass = Class.forName("com.dassault_systemes.modeler.sysml.dsl.rendering.DisplayMode", true, cl)
+                    out.append("MODE|" + path + "|" + modeClass.toDisplayMode(view) + "\n")
+                } catch (Throwable t) { out.append("ERROR|" + path + "|mode|" + clean(t) + "\n") }
                 def display = displayClass.getConstructor(adpeClass).newInstance(diagram)
-                display.display(java.util.stream.Stream.of(diagram))
+                def result = display.display(java.util.stream.Stream.of(diagram))
+                out.append("RESULTMODE|" + path + "|" + clean(call0(result, "getDisplayMode")) + "|" + (call0(result, "getDisplayed")?.size()) + "\n")
+                try { display.layout(result); out.append("LAYOUT|" + path + "|done\n") }
+                catch (Throwable t) { out.append("ERROR|" + path + "|layout|" + clean(t) + "\n") }
                 diagrams[path] = diagram
             } catch (Throwable t) {
                 out.append("ERROR|" + path + "|create/display|" + clean(t) + "\n")
@@ -102,21 +122,68 @@ int exported = 0
 diagrams.each { path, diagram ->
     def shown = collect(diagram, [])
     out.append("DISPLAY|" + path + "|" + shown.size() + "\n")
+    // overlap check: sibling shapes (same parent, not paths) whose bounds intersect; nested shapes are not siblings
+    int overlaps = 0
+    List<String> examples = []
+    def checkSiblings
+    checkSiblings = { Object parent ->
+        def kids = (call0(parent, "getPresentationElements") ?: []).findAll { k ->
+            !k.getClass().getSimpleName().toLowerCase().contains("path") && call0(k, "getBounds") != null
+        }
+        for (int i = 0; i < kids.size(); i++) {
+            for (int j = i + 1; j < kids.size(); j++) {
+                def a = call0(kids[i], "getBounds"), b = call0(kids[j], "getBounds")
+                if (a != null && b != null && a.width > 0 && b.width > 0 && a.intersects(b)) {
+                    overlaps++
+                    if (examples.size() < 5) {
+                        def ea = call0(kids[i], "getKerMLElement") ?: call0(kids[i], "getElement")
+                        def eb = call0(kids[j], "getKerMLElement") ?: call0(kids[j], "getElement")
+                        examples << (clean(nameOf(ea) ?: kids[i].getClass().getSimpleName()) + "~" + clean(nameOf(eb) ?: kids[j].getClass().getSimpleName()))
+                    }
+                }
+            }
+        }
+        (call0(parent, "getPresentationElements") ?: []).each { checkSiblings(it) }
+    }
+    checkSiblings(diagram)
+    out.append("OVERLAP|" + path + "|" + overlaps + "|" + examples.join(", ") + "\n")
     shown.each { pair ->
         def el = pair[1]
         if (el != null) out.append("ELEM|" + path + "|" + clean(nameOf(el)) + "|" + el.getClass().getSimpleName() + "\n")
     }
     def file = new File(outDir, path.replace("::", ".") + ".svg")
+    if (file.exists()) file.delete()
+    call0(diagram, "ensureLoaded")
+    // Preferred: SVG with <text> elements (ExportParams.useSVGTextTag), so names can be verified in the file.
+    // Fallback: ImageExporter.SVG, which draws text as outlines (E13 first run). EXPORT line says which one was used.
+    String mode = null
     try {
-        call0(diagram, "ensureLoaded")
-        SwingUtilities.invokeAndWait({ exporterClass.export(diagram, exporterClass.getField("SVG").getInt(null), file) } as Runnable)
-        out.append("SVG|" + path + "|" + file.path + "|" + (file.exists() ? file.length() : -1) + "\n")
-        if (file.exists() && file.length() > 0) exported++
+        def foundationExporter = Class.forName("com.dassault_systemes.modeler.foundation.diagram.image.InternalImageExporter", true, cl)
+        def factory = Class.forName("com.dassault_systemes.modeler.foundation.diagram.image.ExportParamsBuilderFactory", true, cl).getInstance()
+        def builder = factory.create()
+        builder.setImageType(foundationExporter.getField("SVG").getInt(null))
+        builder.setPath(file.path)
+        builder.setUseSVGTextTag(true)
+        def params = builder.build()
+        SwingUtilities.invokeAndWait({ foundationExporter.exportPaintableComponent(diagram, params) } as Runnable)
+        if (file.exists() && file.length() > 0) mode = "svgTextTags"
     } catch (Throwable t) {
         def cause = t
         while (cause.getCause() != null && cause.getCause() != cause) cause = cause.getCause()
-        out.append("ERROR|" + path + "|export|" + clean(cause) + "\n")
+        out.append("ERROR|" + path + "|export-text|" + clean(cause) + "\n")
     }
+    if (mode == null) {
+        try {
+            SwingUtilities.invokeAndWait({ exporterClass.export(diagram, exporterClass.getField("SVG").getInt(null), file) } as Runnable)
+            if (file.exists() && file.length() > 0) mode = "svgOutlines"
+        } catch (Throwable t) {
+            def cause = t
+            while (cause.getCause() != null && cause.getCause() != cause) cause = cause.getCause()
+            out.append("ERROR|" + path + "|export|" + clean(cause) + "\n")
+        }
+    }
+    out.append("SVG|" + path + "|" + file.path + "|" + (file.exists() ? file.length() : -1) + "|" + mode + "\n")
+    if (mode != null) exported++
 }
 out.append(exported == views.size() ? "RESULT|OK|" + exported + "\n" : "RESULT|FAIL|exported " + exported + " of " + views.size() + "\n")
 return out.toString()

@@ -1,0 +1,11 @@
+{
+  "experiment": "E14: layout of rendered UML3 views in CATIA Magic (user observation 2026-09-17: diagram elements overlap)",
+  "recorded": "2026-09-17, before the run",
+  "setup": "Same 9 example views as E13. Run A: views as they are (no render). Run B: view usages with 'render asTreeDiagram' (asInterconnectionDiagram for the component view, asElementTable for the class table). Both runs call DisplayExposedElements.layout(result) and count intersecting sibling shape bounds.",
+  "predictions": [
+    {"id": "P1", "claim": "Run A: DisplayMode.toDisplayMode(view) is UNDEFINED for every view, because no view declares a rendering", "confidence": "medium"},
+    {"id": "P2", "claim": "Run A: at least one view has overlapping sibling shapes after display and layout", "confidence": "medium"},
+    {"id": "P3", "claim": "Run B: the display mode is TREE for asTreeDiagram views and NESTED for asInterconnectionDiagram", "confidence": "medium"},
+    {"id": "P4", "claim": "Run B: no view has overlapping sibling shapes after layout", "confidence": "low"}
+  ]
+}
