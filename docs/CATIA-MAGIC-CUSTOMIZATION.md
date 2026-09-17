@@ -7,6 +7,11 @@ plain item definition that someone has to annotate afterwards.
 
 ![The UML3 palette in CATIA Magic](images/uml3-catia-magic-palette.png)
 
+A detail view shows the same model with its compartments and keeps the palette, here the message schemas with
+the UML3 Message Flows buttons:
+
+![A UML3 detail view with its palette](images/uml3-catia-magic-detail-palette.png)
+
 Files (`customization/catia-magic/`):
 
 | File | Contents |
