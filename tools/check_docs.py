@@ -209,7 +209,7 @@ def main() -> int:
                 seen.add(id(child))
                 if child.decl and child.name:
                     words = {t.text for t in child.decl if t.kind == "ident"}
-                    is_param = bool(words & {"in", "out", "inout", "subject", "actor", "stakeholder"}) and not child.is_def
+                    is_param = bool(words & {"in", "out", "inout", "return", "subject", "actor", "stakeholder"}) and not child.is_def
                     is_literal = child.decl_kind == "enum" and not child.is_def
                     exempt = args.profile == "example" and (is_param or is_literal)
                     depth, has_doc = 0, False
