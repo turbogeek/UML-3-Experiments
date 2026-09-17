@@ -74,7 +74,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 16/16 files load (7 libraries, 6 examples, 3 customization); validation engine reports 0 failures on 21 packages, including the IDL imports; 8 probes flagged exactly as predicted (2026-09-17) |
 | View contents (expose + filter) | CATIA Magic `exposedElement` | 12/12 views match predicted includes and excludes |
 | Views as diagrams | CATIA Magic diagrams exported to SVG (`exportViewDiagrams.groovy`, `tools/check_view_svg.py`) | 15/15 views (12 example views, 3 generated per IDL file): expected display mode, laid out with 0 overlapping shapes, every expected element drawn and labeled in the SVG, no excluded element |
-| UML3 palettes (CATIA Magic customization) | `verifyPalettes.groovy`, `tools/check_palettes.py`, suite `catia-customization` | 6/6 views get their UML3 palette; 45 templated buttons copy the expected element kind and keyword; UML3 Create View dialog active; 7 negative controls |
+| UML3 palettes (CATIA Magic customization) | `verifyPalettes.groovy`, `tools/check_palettes.py`, suite `catia-customization` | 10/10 views (six compact, four detail) get their UML3 palette; 45 templated buttons copy the expected element kind and keyword; UML3 Create View dialog active; 7 negative controls |
 | Diagram kinds (model vs filters vs palettes) | `tools/check_diagram_kinds.py`, `probeDiagramKinds.groovy` | 8 kinds, 62 keyword entries, 12 filters and 6 palettes agree; 7 drift fixtures fail the check; CATIA Magic evaluates the same model |
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
 | Keyword labels | CATIA Magic label functions | 19/19 render `«#keyword»` |
@@ -93,7 +93,7 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 * **Views as diagrams:** the test run creates, lays out and exports each view's diagram, then undoes it. CATIA Magic does not draw exposed dependencies (I-33), and diagrams created without the layouter stack all shapes at one spot (E14).
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * **IDL v1 scope:** valuetypes, maps, anonymous nested sequences, shift operators in constants, types nested in interfaces, and IDL CCM constructs are rejected on import. Export writes canonical IDL (qualified names, resolved constants), not the original text.
-* **Open design issues** found while documenting and writing the requirements are listed as I-01 to I-36 in (I-35 and I-36 addressed on 2026-09-17) [`docs/DESIGN.md`](docs/DESIGN.md); they are maintainer decisions and none is fixed yet.
+* **Open design issues** found while documenting and writing the requirements are listed as I-01 to I-36 in (I-35 addressed and I-36 closed on 2026-09-17) [`docs/DESIGN.md`](docs/DESIGN.md); they are maintainer decisions and none is fixed yet.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 
 ## Layout

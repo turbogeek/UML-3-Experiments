@@ -12,6 +12,8 @@ package OnlineStoreCatiaMagicViews {
 	- deployment: the deployment diagram of the production cluster.
 	- logicalDataModel: the entity relationship diagram of the logical data model.
 	- messageSchemas: the message schema view of OnlineStoreMessaging.
+	- domainClassDetails, deploymentDetails, logicalDataModelDetails, messageSchemaDetails: the same content
+	  with compartments, which the UML3 detail style sheet makes visible on a view that has a palette (E19).
 	References: examples/05-OnlineStoreViews.sysml; UML3CatiaMagic; E17.
 	*/
 
@@ -44,6 +46,26 @@ package OnlineStoreCatiaMagicViews {
 
 	view messageSchemas : 'UML3 Message Schema View' {
 		doc /* The store's message schemas, drawn with the UML3 messaging palette. */
+		expose OnlineStoreMessaging::*;
+	}
+
+	view domainClassDetails : 'UML3 Class Detail Diagram' {
+		doc /* The class diagram of the store's domain with compartments, drawn with the UML3 class palette. */
+		expose OnlineStoreDomain::*;
+	}
+
+	view deploymentDetails : 'UML3 Deployment Detail Diagram' {
+		doc /* The store's deployment with compartments, drawn with the UML3 deployment palette. */
+		expose OnlineStoreArchitecture::*;
+	}
+
+	view logicalDataModelDetails : 'UML3 Entity Relationship Detail Diagram' {
+		doc /* The logical data model with columns and keys, drawn with the UML3 data palette. */
+		expose OnlineStoreDatabase::Logical::*;
+	}
+
+	view messageSchemaDetails : 'UML3 Message Schema Detail View' {
+		doc /* The message schemas with payload attributes, drawn with the UML3 messaging palette. */
 		expose OnlineStoreMessaging::*;
 	}
 }

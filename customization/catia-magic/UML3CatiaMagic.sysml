@@ -20,6 +20,8 @@ library package UML3CatiaMagic {
 	  UML3MessagingPalette: the CATIA Magic General View palette with the UML3 categories of one diagram kind.
 	- 'UML3 Package Diagram', 'UML3 Class Diagram', 'UML3 Component Diagram', 'UML3 Deployment Diagram',
 	  'UML3 Entity Relationship Diagram', 'UML3 Message Schema View': the UML3Views definitions with those palettes.
+	- UML3DetailStyleSheet and the four detail views ('UML3 Class Detail Diagram' and friends): the same
+	  palettes on views that show their compartments (E19).
 	- UML3ViewTemplates and UML3ViewCreationDialog: the Create View commands for those view definitions.
 	- PaletteForDiagramKind: links each palette to its UML3DiagramKinds kind, which is what keeps the
 	  buttons and the view filters in step (checked by tools/check_diagram_kinds.py).
@@ -33,6 +35,9 @@ library package UML3CatiaMagic {
 	private import DS_Views::CoreViews::*;
 	private import DS_Views::ViewPalettes::*;
 	private import DS_Views::ViewPalettes::CodeActionIdentifiers::*;
+	private import DS_Styles::CoreStylesComponents::Predicates::*;
+	private import DS_Styles::StyleSheets::*;
+	private import DS_Styles::StyleSheets::CompartmentVisibilityDefinitions::*;
 	private import UML3Core::*;
 	private import UML3Components::*;
 	private import UML3Data::*;
@@ -991,6 +996,58 @@ library package UML3CatiaMagic {
 		part :>> requirementsConstraintsCategory [0];
 	}
 
+	part def UML3DetailStyleSheet :> DefaultStyleSheet {
+		doc
+		/*
+		Style sheet of the UML3 detail views: it shows the compartments that a rendered view hides, so a view
+		with a palette can still show documentation, attributes, features, ports and ends.
+
+		Usage: 'part uml3DetailStyle : UML3DetailStyleSheet :>> explicitlyAppliedStyleSheets;' in a view
+		definition. It only applies to views that name it, not to the project.
+		Rationale: CATIA Magic suppresses most compartments on a rendered diagram
+		(CompartmentVisibilityDefinitions::UsagesAndDefCompartments), and a view that carries a palette is
+		always rendered (E17). Turning the compartments back on with a style sheet is what makes a detail
+		view with a palette possible (E19, issue I-36).
+		References: DS_Styles::StyleSheets::DefaultStyleSheet; E19.
+		*/
+		part uml3DetailDefinitionRule :> rule {
+			doc /* Compartments of the definitions a detail view shows. */
+			part :>> condition : ByElementMetaclassCondition {
+				doc /* Applies to every definition. */
+				ref item :>> elementMetaclass = SysML::Definition meta KerML::Metaclass;
+			}
+			view :>> style : UsagesAndDefCompartments {
+				doc /* The compartments of a UML3 detail view. */
+				part :>> documentationCompartment { attribute :>> showCompartment default true; }
+				part :>> attributesCompartment { attribute :>> showCompartment default true; }
+				part :>> itemsCompartment { attribute :>> showCompartment default true; }
+				part :>> actionsCompartment { attribute :>> showCompartment default true; }
+				part :>> partsCompartment { attribute :>> showCompartment default true; }
+				part :>> portsCompartment { attribute :>> showCompartment default true; }
+				part :>> endsCompartment { attribute :>> showCompartment default true; }
+				part :>> parametersCompartment { attribute :>> showCompartment default true; }
+			}
+		}
+		part uml3DetailUsageRule :> rule {
+			doc /* The same compartments for the usages a detail view shows. */
+			part :>> condition : ByElementMetaclassCondition {
+				doc /* Applies to every usage. */
+				ref item :>> elementMetaclass = SysML::Usage meta KerML::Metaclass;
+			}
+			view :>> style : UsagesAndDefCompartments {
+				doc /* The compartments of a UML3 detail view. */
+				part :>> documentationCompartment { attribute :>> showCompartment default true; }
+				part :>> attributesCompartment { attribute :>> showCompartment default true; }
+				part :>> itemsCompartment { attribute :>> showCompartment default true; }
+				part :>> actionsCompartment { attribute :>> showCompartment default true; }
+				part :>> partsCompartment { attribute :>> showCompartment default true; }
+				part :>> portsCompartment { attribute :>> showCompartment default true; }
+				part :>> endsCompartment { attribute :>> showCompartment default true; }
+				part :>> parametersCompartment { attribute :>> showCompartment default true; }
+			}
+		}
+	}
+
 	view def <UML3PackageDiagram> 'UML3 Package Diagram' :> bsv, UML3Views::PackageDiagram {
 		doc
 		/*
@@ -1095,6 +1152,82 @@ library package UML3CatiaMagic {
 		}
 	}
 
+	view def <UML3ClassDetailDiagram> 'UML3 Class Detail Diagram' :> bsv, UML3Views::ClassDetailDiagram {
+		doc
+		/*
+		UML3Views::ClassDetailDiagram as a CATIA Magic symbolic view: the classifiers of a class diagram, each drawn with its
+		compartments, and the UML3 class palette.
+
+		Usage: view domainClassDetails : UML3CatiaMagic::'UML3 Class Detail Diagram' { expose OnlineStoreDomain::*; }
+		It inherits only the rendering of 'Symbolic View', so it is drawn as a nested diagram, and
+		UML3DetailStyleSheet turns the compartments back on (E19).
+		References: UML3Views::ClassDetailDiagram; UML3DetailStyleSheet; E19.
+		*/
+		part uml3DetailStyle : UML3DetailStyleSheet :>> explicitlyAppliedStyleSheets {
+			doc /* The style sheet that shows the compartments of this detail view. */
+		}
+		part uml3ClassPalette : UML3ClassPalette :>> baseViewPalette {
+			doc /* The palette of this view: the UML3 class palette in place of the Base Symbolic View palette. */
+		}
+	}
+
+	view def <UML3DeploymentDetailDiagram> 'UML3 Deployment Detail Diagram' :> bsv, UML3Views::DeploymentDetailDiagram {
+		doc
+		/*
+		UML3Views::DeploymentDetailDiagram as a CATIA Magic symbolic view: the deployment elements, each drawn with its
+		compartments, and the UML3 deployment palette.
+
+		Usage: view deploymentDetails : UML3CatiaMagic::'UML3 Deployment Detail Diagram' { expose OnlineStoreArchitecture::*; }
+		It inherits only the rendering of 'Symbolic View', so it is drawn as a nested diagram, and
+		UML3DetailStyleSheet turns the compartments back on (E19).
+		References: UML3Views::DeploymentDetailDiagram; UML3DetailStyleSheet; E19.
+		*/
+		part uml3DetailStyle : UML3DetailStyleSheet :>> explicitlyAppliedStyleSheets {
+			doc /* The style sheet that shows the compartments of this detail view. */
+		}
+		part uml3DeploymentPalette : UML3DeploymentPalette :>> baseViewPalette {
+			doc /* The palette of this view: the UML3 deployment palette in place of the Base Symbolic View palette. */
+		}
+	}
+
+	view def <UML3EntityRelationshipDetailDiagram> 'UML3 Entity Relationship Detail Diagram' :> bsv, UML3Views::EntityRelationshipDetailDiagram {
+		doc
+		/*
+		UML3Views::EntityRelationshipDetailDiagram as a CATIA Magic symbolic view: the entities, tables and their columns, each drawn with its
+		compartments, and the UML3 data palette.
+
+		Usage: view logicalDataModelDetails : UML3CatiaMagic::'UML3 Entity Relationship Detail Diagram' { expose OnlineStoreDatabase::Logical::*; }
+		It inherits only the rendering of 'Symbolic View', so it is drawn as a nested diagram, and
+		UML3DetailStyleSheet turns the compartments back on (E19).
+		References: UML3Views::EntityRelationshipDetailDiagram; UML3DetailStyleSheet; E19.
+		*/
+		part uml3DetailStyle : UML3DetailStyleSheet :>> explicitlyAppliedStyleSheets {
+			doc /* The style sheet that shows the compartments of this detail view. */
+		}
+		part uml3DataPalette : UML3DataPalette :>> baseViewPalette {
+			doc /* The palette of this view: the UML3 data palette in place of the Base Symbolic View palette. */
+		}
+	}
+
+	view def <UML3MessageSchemaDetailView> 'UML3 Message Schema Detail View' :> bsv, UML3Views::MessageSchemaDetailView {
+		doc
+		/*
+		UML3Views::MessageSchemaDetailView as a CATIA Magic symbolic view: the message types and channels, each drawn with its
+		compartments, and the UML3 messaging palette.
+
+		Usage: view messageSchemaDetails : UML3CatiaMagic::'UML3 Message Schema Detail View' { expose OnlineStoreMessaging::*; }
+		It inherits only the rendering of 'Symbolic View', so it is drawn as a nested diagram, and
+		UML3DetailStyleSheet turns the compartments back on (E19).
+		References: UML3Views::MessageSchemaDetailView; UML3DetailStyleSheet; E19.
+		*/
+		part uml3DetailStyle : UML3DetailStyleSheet :>> explicitlyAppliedStyleSheets {
+			doc /* The style sheet that shows the compartments of this detail view. */
+		}
+		part uml3MessagingPalette : UML3MessagingPalette :>> baseViewPalette {
+			doc /* The palette of this view: the UML3 messaging palette in place of the Base Symbolic View palette. */
+		}
+	}
+
 	package UML3ViewTemplates {
 		doc
 		/*
@@ -1110,6 +1243,10 @@ library package UML3CatiaMagic {
 		package deploymentDiagramTemplate { view : 'UML3 Deployment Diagram'; }
 		package entityRelationshipDiagramTemplate { view : 'UML3 Entity Relationship Diagram'; }
 		package messageSchemaViewTemplate { view : 'UML3 Message Schema View'; }
+		package classDetailDiagramTemplate { view : 'UML3 Class Detail Diagram'; }
+		package deploymentDetailDiagramTemplate { view : 'UML3 Deployment Detail Diagram'; }
+		package entityRelationshipDetailDiagramTemplate { view : 'UML3 Entity Relationship Detail Diagram'; }
+		package messageSchemaDetailViewTemplate { view : 'UML3 Message Schema Detail View'; }
 	}
 
 	part def UML3ViewCreationDialog :> DS_UIComponents::UIComponents::SysMLViewCreationDialog {
@@ -1166,6 +1303,34 @@ library package UML3CatiaMagic {
 				attribute :>> label default "UML3 Message Schema View";
 				perform action : OperationFromTemplate :>> operation {
 					in ref = (UML3ViewTemplates::messageSchemaViewTemplate meta KerML::Package).ownedElement;
+				}
+			}
+			part classDetailDiagramItem : DialogItem :> abstractItems {
+				doc /* Creates a UML3 class detail diagram view. */
+				attribute :>> label default "UML3 Class Detail Diagram";
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ViewTemplates::classDetailDiagramTemplate meta KerML::Package).ownedElement;
+				}
+			}
+			part deploymentDetailDiagramItem : DialogItem :> abstractItems {
+				doc /* Creates a UML3 deployment detail diagram view. */
+				attribute :>> label default "UML3 Deployment Detail Diagram";
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ViewTemplates::deploymentDetailDiagramTemplate meta KerML::Package).ownedElement;
+				}
+			}
+			part entityRelationshipDetailDiagramItem : DialogItem :> abstractItems {
+				doc /* Creates a UML3 entity relationship detail diagram view. */
+				attribute :>> label default "UML3 Entity Relationship Detail Diagram";
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ViewTemplates::entityRelationshipDetailDiagramTemplate meta KerML::Package).ownedElement;
+				}
+			}
+			part messageSchemaDetailViewItem : DialogItem :> abstractItems {
+				doc /* Creates a UML3 message schema detail view view. */
+				attribute :>> label default "UML3 Message Schema Detail View";
+				perform action : OperationFromTemplate :>> operation {
+					in ref = (UML3ViewTemplates::messageSchemaDetailViewTemplate meta KerML::Package).ownedElement;
 				}
 			}
 		}

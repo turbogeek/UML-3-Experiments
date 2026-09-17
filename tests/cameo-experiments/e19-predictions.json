@@ -1,0 +1,43 @@
+{
+  "experiment": "E19 detail views with a palette: can a style sheet restore the compartments a rendered view suppresses? (issue I-36)",
+  "recorded": "2026-09-17, before the run",
+  "setup": "E17 rule 3 says a view that carries a UML3 palette is always rendered as a tree or nested diagram and therefore draws compact boxes, so the UML3 detail views stay tool neutral. CATIA Magic controls compartments separately, through symbol styles: DS_Styles::CoreStylesComponents::KerMLStyles::CompartmentStyle has 'showCompartment', and the vendor's DefaultStyleSheet applies the bundle CompartmentVisibilityDefinitions::UsagesAndDefCompartments to every definition and usage, with documentationCompartment off. 'Symbolic View' owns 'part explicitlyAppliedStyleSheets : StyleSheet[*]', so a view definition can apply its own style sheet. The probe tests/cameo-experiments/e19-detail-style.sysml defines UML3ProbeDetailStyleSheet :> DefaultStyleSheet with a rule that turns the documentation and attributes compartments on, and a view definition ':> bsv, UML3Views::ClassDetailDiagram' that applies it and carries the UML3 class palette.",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "The probe loads with 0 builder errors: a style sheet may specialize DefaultStyleSheet, a rule's style may specialize the compartment bundle and redefine one compartment, and a view definition may redefine explicitlyAppliedStyleSheets",
+      "confidence": "low",
+      "observed": "confirmed after two corrections",
+      "observation": "CompartmentVisibilityDefinitions is in DS_Styles::StyleSheets, not in CoreStylesComponents, and the condition value has to be written 'SysML::Definition meta KerML::Metaclass' (the vendor's '.metadata' form is rejected by the ANTLR validator). With those, the style sheet, the rule whose style specializes the compartment bundle and the view definition that redefines explicitlyAppliedStyleSheets all load with 0 builder errors"
+    },
+    {
+      "id": "P2",
+      "claim": "The validation engine reports no ERROR for the probe package",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "The validation engine reports 0 failures for the probe package and, after the style sheet moved into the product, for all 17 packages"
+    },
+    {
+      "id": "P3",
+      "claim": "The view definition is registered with the UML3 class palette (same shape as E17V4) and its view is NESTED",
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "The view definition is registered with the UML3 class palette and its view is NESTED"
+    },
+    {
+      "id": "P4",
+      "claim": "The diagram of that view shows the documentation and attribute compartments: its SVG is clearly larger than the compact class diagram (17.8 KB) and closer to example 05's domainClassDetails (83 KB), which would mean a palette and full compartments are possible after all",
+      "confidence": "low",
+      "observed": "confirmed",
+      "observation": "The probe's SVG is 75,150 bytes against 17,824 for the compact class diagram, and the PNG shows the documentation, attribute and metadata compartments. In the product the four detail views with palettes render at 83,011 / 15,496 / 37,260 / 26,922 bytes, the same as the tool-neutral detail views (83,049 / - / 37,232 / 26,924), so a palette and full compartments are possible together"
+    },
+    {
+      "id": "P5",
+      "claim": "DSLService.isDSLValid() stays true with the custom style sheet loaded",
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "DSLService.isDSLValid() stays true with the custom style sheet loaded"
+    }
+  ],
+  "conclusion": "E17 rule 3 is superseded: a view that carries a UML3 palette is always rendered, but compartments are a symbol style, not a rendering, so a style sheet applied through explicitlyAppliedStyleSheets restores them. UML3CatiaMagic now has UML3DetailStyleSheet and four detail views with palettes, and issue I-36 is closed."
+}

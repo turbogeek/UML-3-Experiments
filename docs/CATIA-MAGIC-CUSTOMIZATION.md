@@ -11,9 +11,9 @@ Files (`customization/catia-magic/`):
 
 | File | Contents |
 |---|---|
-| `UML3CatiaMagic.sysml` | element templates, six palettes, six view definitions, the UML3 Create View dialog |
+| `UML3CatiaMagic.sysml` | element templates, six palettes, ten view definitions (six compact, four detail), the UML3 detail style sheet, the UML3 Create View dialog |
 | `UML3CatiaMagicActivation.sysml` | `ProjectViewCreationConfig`, which makes the UML3 Create View dialog the active one |
-| `examples/OnlineStoreCatiaMagicViews.sysml` | the online store's six views, typed by the UML3 view definitions |
+| `examples/OnlineStoreCatiaMagicViews.sysml` | the online store's ten views, typed by the UML3 view definitions |
 
 It builds on the **3DS SysML Customization** library (`DS_Views`, `DS_UIComponents`), which CATIA Magic attaches to
 every SysML v2 project, so nothing has to be installed for it.
@@ -46,6 +46,7 @@ collide, so a second copy silently disables every palette (E18).
 | `UML3 Deployment Diagram` | UML3 Deployment: node, device, execution environment, artifact. UML3 Deployment Links: communication path, deploy, manifest |
 | `UML3 Entity Relationship Diagram` | UML3 Logical Data: entity, aggregate root, value object, relationship. UML3 Physical Data: table, database view, database, column, primary key, foreign key, maps to |
 | `UML3 Message Schema View` | UML3 Messages: command, domain event, query message, reply, document message, message type. UML3 Channels: topic, queue, channel, broker. UML3 Message Flows: publishes, subscribes, sends, handles |
+| `UML3 Class Detail Diagram`, `UML3 Deployment Detail Diagram`, `UML3 Entity Relationship Detail Diagram`, `UML3 Message Schema Detail View` | the palette of the matching compact view, on a view that shows its compartments (`UML3DetailStyleSheet`) |
 
 Each palette keeps the vendor's Selections, Tools, Common, Items/Ports/Attributes, Connectors, Specializations and
 Other Relationships categories and removes Actions, Other Actions, States, Cases and Requirements/Constraints,
@@ -96,10 +97,22 @@ This is the mechanism CATIA Magic uses for its own derivation buttons. Consequen
    For the component view both inherited renderings are named `asInterconnectionDiagram`, so the redefinition names
    them by qualified name. (CATIA Magic also accepts an owned rendering next to the inherited ones, but the SysML
    OCL counts inherited memberships, so the redefinition is the portable form.)
-3. **No detail views.** A palette requires a `Base Symbolic View` descendant, and such a view is always rendered as
-   a tree or nested diagram, never with the full compartments of an unrendered view; removing the rendering does not
-   change that. The detail views (`UML3Views::ClassDetailDiagram` and friends) therefore stay tool neutral and use
-   the General View palette.
+3. **Detail views need a style sheet.** A palette requires a `Base Symbolic View` descendant, and such a view is
+   always rendered, so it draws compact boxes; removing the rendering does not change that (E17). Compartments,
+   however, are a *symbol style*, not a rendering: `UML3DetailStyleSheet` turns the documentation, attribute, item,
+   action, part, port, end and parameter compartments back on, and a view definition applies it through the
+   `explicitlyAppliedStyleSheets` feature of `Symbolic View`:
+
+   ```sysml
+   view def 'UML3 Class Detail Diagram' :> bsv, UML3Views::ClassDetailDiagram {
+       part uml3DetailStyle : UML3DetailStyleSheet :>> explicitlyAppliedStyleSheets;
+       part uml3ClassPalette : UML3ClassPalette :>> baseViewPalette;
+   }
+   ```
+
+   The result is a detail view with a palette: E19 measured the same diagram content as the tool-neutral detail views
+   (83,011 against 83,049 bytes of SVG for the store's class model). A detail view inherits only the rendering of
+   `Symbolic View`, so it needs no rendering redefinition.
 
 ## Which keywords belong on which palette
 
@@ -122,7 +135,7 @@ has no button, so a keyword added to UML3 cannot be forgotten in the palette (is
 
 * Suite `catia-customization` (local): syntax, name resolution against `tests/catia-magic/ds-customization-stub.sysml`
   (a stub of the vendor library's names, so the checks run without CATIA Magic), documentation rules and design rules.
-* Suite `cameo` with `--palettes`: `tools/cameo-scripts/verifyPalettes.groovy` asks CATIA Magic's DSL service for
+* Suite `cameo` with `--palettes`: 10 views (six compact, four detail) are checked; `tools/cameo-scripts/verifyPalettes.groovy` asks CATIA Magic's DSL service for
   each view's visualization, palette categories and buttons, resolves every templated button to its template element
   and that element's UML3 keyword, and reads the active Create View dialog. `tools/check_palettes.py` compares this
   with `tests/cameo/palette-expectations.json`; seven negative controls (an unregistered view definition, a missing
