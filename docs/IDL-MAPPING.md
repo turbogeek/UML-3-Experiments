@@ -59,7 +59,7 @@ The imported file becomes a root package named after the file (`shop_order`), an
 
 Basic types: `short/long/long long` → `Int16/Int32/Int64`; `unsigned …` and `uint8…uint64` → `UInt8…UInt64`;
 `int8` → `Int8`; `float/double` → `Float32/Float64`; `long double` → `LongDouble`; `boolean` → `Boolean`;
-`char/string` → `String`; `octet` → `Octet`; `wchar` → `WChar`; `wstring` → `WString`; `any` → `Any`.
+`char` → `Char` (UML3Types); `string` → `String`; `octet` → `Octet`; `wchar` → `WChar`; `wstring` → `WString`; `any` → `Any`.
 
 Names that are SysML/KerML reserved words are quoted (`'state'`, `'message'`), and export unquotes them.
 

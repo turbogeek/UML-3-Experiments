@@ -312,6 +312,47 @@ The full mapping and tool usage are in [`IDL-MAPPING.md`](IDL-MAPPING.md). Desig
 
   Each was fixed and has a regression test.
 
+## Documentation as model elements (2026-09-17)
+
+UML3 documentation follows [DOC-CONVENTIONS.md](DOC-CONVENTIONS.md): every element owns a `doc` (what it is, usage,
+rationale, references), each package summarizes its contents, explanations that span several elements are named
+`comment ... about` annotations, and there are no banners or star decoration, which waste space on diagrams.
+`tools/check_docs.py` enforces rules D01-D07, including citations checked against the clause headings of the KerML
+and SysML v2 specifications, and `tools/compare_model_tokens.py` proves that a documentation change leaves the model
+unchanged. The rewrite found tooling defects, all fixed with regression tests:
+
+* sysml-validator: `comment X about A, B` (a list) and dependency bodies (`dependency d from A to B { doc ... }`)
+  were rejected although the SysML v2 grammar allows them (fixed in the validator, parser tests added).
+* check_names: `done`/`start` are legal names, named comments are namespace members, named control nodes
+  (`merge retry`) are elements, and a `doc` or `comment` body ends a statement (the prefix-order LINT after a comment
+  was silently skipped; negative test n20).
+* check_traceability: quoted example snippets now match regardless of documentation.
+
+### Open issues found while documenting
+
+The documentation agents were told not to change models, so they reported what they found. These are decisions for
+the maintainers; none is fixed yet.
+
+| Id | Where | Issue |
+|---|---|---|
+| I-01 | UML3Components | `Component :> ActiveClass` makes every component active; UML 2.5.1 components are not active by default |
+| I-02 | UML3Components, example 02 | `#layer package` without a body applies `Layer` without values; example 02 adds `@Layer { ... }` as well, giving two annotations |
+| I-03 | UML3Views | `ComponentDiagram` filters on `@SysML::ConnectionUsage`, which also matches interface and allocation usages (deployments appear on component diagrams) |
+| I-04 | UML3Views | No view selects the messaging flows (`#publishes`, `#subscribes`, `#sends`, `#handles`): flow usages are not connection usages |
+| I-05 | UML3Views | The `isLibraryElement` filter also hides user models declared as `library package` (per KerML; not tested in CATIA Magic) |
+| I-06 | UML3Components | `CommunicationPath` does not specialize `Association`; `Deployment` and `Manifestation` are the only non-abstract base definitions |
+| I-07 | UML3IDL | `Discriminator`, `IdlOneway`, `IdlReturn` are plain metadata, while the design says marker keywords are semantic |
+| I-08 | UML3Types | `MapEntry[*]` keeps entries unique, not keys; `Int64`/`UInt64` state no bounds; `Date`, `TimeOfDay`, `DurationValue` clash with names in the Time and ISQ libraries |
+| I-09 | UML3Messaging | `#handles` / `#sends` semantics were never defined; documented as the handler side of an exchange, to be confirmed. Header `correlationId` / `causationId` conventions documented, to be confirmed |
+| I-10 | UML3Data, UML3Messaging | Semantic keywords such as `#idempotent`, `#audited` on a definition act as labels only (only usages join the sets) |
+| I-11 | example 01 | `Places` has two navigable ends but only one mirrored feature; `PaymentDeclined` is never raised; the order-lines composition is modeled twice (feature and `#composition`) |
+| I-12 | examples 01, 03 | Orders are identified by `orderNumber : String` in 01 and `orderId : Uuid` in 03; `CapturePayment.amount` has no currency; `PaymentCaptured` is never carried |
+| I-13 | example 02 | `ClusterNetwork` ends `[1]..[1]` limit each node to one link; `nodeB` has nothing deployed; layer packages hold parts not tied to `StoreSystem` |
+| I-14 | example 04 | `OPEN_ORDERS_V.queryText` filters a column the table does not have; `#primaryKey` plus `@PrimaryKey { ... }` (and `#foreignKey` plus `@ForeignKey`) create two metadata usages whose values contradict; the physical schema is partial |
+| I-15 | example 05 | `deploymentDiagram` shows none of the deploy/manifest allocations (they are nested in `productionCluster`) |
+| I-16 | example 06 | `RetryPayment` never uses `attempts` (unbounded loop); `OrderLifecycle` has no final state |
+| I-17 | check_rules | No rule reports a keyword applied twice to one element (prefix `#k` plus body `@K`), which I-14 shows is an easy mistake |
+
 ## Validator findings (sysml-validator issues found during this work)
 
 * **No name resolution.** Unresolved types, imports and specializations pass.
