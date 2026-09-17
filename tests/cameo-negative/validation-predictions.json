@@ -183,6 +183,18 @@
       "why": "IDL import of names that are Groovy Map pseudo-properties (E10 fixture); observed 0 failures in the 2026-09-17 --cameo run before this entry",
       "observed": false,
       "observedRules": []
+    },
+    {
+      "package": "UML3ProbeKeywordOverridesBase",
+      "flagged": true,
+      "confidence": "high",
+      "why": "E15: redefining the baseType bound by UML3Core::DataTypeMetadata violates validateFeatureValueOverriding (KerML 8.3.4.10.2); the same failure was seen on UML3IDL (UnionMetadata :> DataTypeMetadata) on 2026-09-17"
+    },
+    {
+      "package": "UML3ProbeKeywordCategory",
+      "flagged": false,
+      "confidence": "medium",
+      "why": "E15: the category UML3Core::DataTypeKind leaves baseType unbound, so binding it in a specialization overrides nothing"
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"

@@ -250,7 +250,8 @@ def main() -> int:
         _, val = call(args.port, "/run-script", {"scriptName": VALIDATE_SCRIPT})
         text = val.get("result") or val.get("error") or ""
         (LOGS / "validation-engine.txt").write_text(text, encoding="utf-8")
-        expected = {p["package"]: p["observed"] for p in
+        # 'observed' is the regression expectation; a prediction not yet run falls back to its 'flagged' value
+        expected = {p["package"]: p.get("observed", p["flagged"]) for p in
                     json.loads(VALIDATION_EXPECTED.read_text(encoding="utf-8"))["predictions"]}
         flagged: dict[str, bool] = {}
         rows = []

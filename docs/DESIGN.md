@@ -125,7 +125,7 @@ Collection kinds need no new types:
 | Validation engine (KerML/SysML constraint suites) | `validateUML3Packages.groovy` | **0 failures on library + examples** |
 | Diagram keyword labels | `probeKeywordDisplay.groovy` | semantic keywords render `«#keyword»`; plain metadata is not in the label |
 | View contents (expose + filter) | `probeViewContents.groovy` | 9/9 views match predicted includes and excludes |
-| Design rules | `tools/check_rules.py` | examples 0 errors; 13 rules (R01–R12, R14) each proven to fire |
+| Design rules | `tools/check_rules.py` | examples 0 errors; 14 rules (R01–R12, R14, R15) each proven to fire |
 | Syntax | `sysml-validator` (ANTLR) | Library and examples pass; negative tests fail as expected |
 | Name resolution, lint and keyword applicability | `tools/check_names.py` | Library, examples and requirements pass; 20 negative tests fail as expected; 0 false positives on 251 official OMG models |
 | Documentation | `tools/check_docs.py` | 0 findings on D01–D07 in library, examples and requirements |

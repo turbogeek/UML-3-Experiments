@@ -21,6 +21,7 @@ library package UML3Core {
 	Contents:
 	- Classifiers: Class, ActiveClass, InterfaceType, DataType, Signal, ExceptionType
 	  (#classType, #activeClass, #interfaceType, #dataType, #signal, #exceptionType).
+	- Keyword category: DataTypeKind, the abstract parent of #dataType and of extension data type keywords.
 	- Behavioral features: Operation, Query, Constructor (#operation, #query, #constructor).
 	- Relationships: Association, Aggregation, Composition (#association, #aggregation, #composition).
 	- Marker keywords: #static, #final, #id, #navigable, #singleton, #template, #templateParameter.
@@ -283,7 +284,37 @@ library package UML3Core {
 		:>> baseType = interfaceTypes meta SysML::Usage;
 	}
 
-	metadata def <dataType> DataTypeMetadata :> SemanticMetadata {
+	comment KeywordCategoryDesign about DataTypeKind, DataTypeMetadata
+		/*
+		Keyword categories. An extension keyword that refines a UML3 keyword, such as the IDL #union for
+		#dataType, cannot specialize the UML3 keyword's metadata definition: that definition binds baseType,
+		and KerML forbids a redefinition to override a bound (non-default) value
+		(validateFeatureValueOverriding; CATIA Magic reports it as an error, E15). baseType cannot be a
+		default value instead, because semantic metadata requires baseType to be bound.
+		A category is an abstract metadata definition that specializes SemanticMetadata and leaves baseType
+		unbound. The UML3 keyword and each refining extension keyword specialize the category and bind their
+		own base, and views, rules and generators select the whole family with '@Category'.
+		Rationale: views and rules in UML3 libraries select extension keywords without depending on the
+		extension libraries (UML3-EXT-005), and check_rules.py R15 reports a keyword that overrides a bound base.
+		References: KerML 8.3.4.10.2; KerML 8.4.4.13.3; KerML 7.4.13; E15.
+		*/
+
+	abstract metadata def DataTypeKind :> SemanticMetadata {
+		doc
+		/*
+		Category of the data type keywords: #dataType and the extension keywords whose elements are data
+		types with a more specific base, such as the IDL #union. It leaves baseType unbound, so it is not
+		applied to elements itself.
+
+		Usage: an extension keyword specializes the category and binds its own base, which must specialize
+		UML3Core::dataTypes; a view selects all data type keywords with '@DataTypeKind'.
+		  metadata def <union> UnionMetadata :> DataTypeKind { :>> baseType = idlUnions meta SysML::Usage; }
+		  view def ClassDiagram :> GeneralView { filter @ClassMetadata or @DataTypeKind; }
+		References: KerML 7.4.13; KerML 8.4.4.13.3; UML 2.5.1 DataType.
+		*/
+	}
+
+	metadata def <dataType> DataTypeMetadata :> DataTypeKind {
 		doc /* Keyword #dataType: the element is a UML3 DataType; apply to attribute definitions and usages only. */
 		:>> baseType = dataTypes meta SysML::Usage;
 	}

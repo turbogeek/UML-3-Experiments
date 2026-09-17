@@ -20,6 +20,9 @@ It reuses the index of check_names.py (declarations, keywords, bodies) and repor
   R12  WARNING   a usage with 2+ UML3 semantic keywords: CATIA Magic 2026x applies only the first
                  keyword's implied specialization (experiments E02/E03)
   R14  ERROR     'constant' on a package-level usage (KerML: constant features must be variable; CATIA Magic E08)
+  R15  ERROR     a redefinition gives a value to a feature whose value is already bound (not 'default') in a
+                 general type, e.g. a keyword metadata def that specializes #dataType and rebinds baseType
+                 (KerML validateFeatureValueOverriding; CATIA Magic E15)
 
 Keywords are normalized to the qualified name of the library metadata def they resolve to, so
 '#primaryKey' (prefix, short name) and '@PrimaryKey' (body, declared name) are the same keyword.
@@ -295,7 +298,50 @@ def check(model: Model, scopes: list[cn.Scope]) -> list[Finding]:
             names = ", ".join("#" + model.keyword_label(q) for q in e.semantic_keywords)
             add("R12", "WARNING", e, f"{names}: CATIA Magic 2026x applies only the first semantic keyword's "
                                      "implied specialization (E02/E03); order keywords by query importance")
+
+        overriding = _valued_redefinitions(s)
+        if overriding:
+            generals = [t for t in (model.resolve_type(n, s) for n in e.typed_by) if t is not None]
+            generals += [g for t in list(generals) for g in model.supers_closure(t)] + model.supers_closure(s)
+            for name in sorted(overriding):
+                owner = next((g for g in generals if _valued_features(model, g).get(name) is False), None)
+                if owner is not None:
+                    hint = " specialize a keyword category such as UML3Core::DataTypeKind instead;" \
+                        if name == "baseType" else ""
+                    add("R15", "ERROR", e, f"redefines '{name}', whose value is already bound (not 'default') in "
+                                           f"'{owner.qname}':{hint} KerML validateFeatureValueOverriding forbids "
+                                           "overriding it (CATIA Magic E15)")
     return out
+
+
+def _valued_redefinitions(scope: cn.Scope) -> dict[str, bool]:
+    """Features the body redefines with a value (':>> f = v', ':>> f default v', 'attribute g :>> f := v'):
+    name -> True when the value is a default."""
+    out: dict[str, bool] = {}
+    body, depth = scope.body, 0
+    for k, t in enumerate(body):
+        if t.text == "{":
+            depth += 1
+        elif t.text == "}":
+            depth -= 1
+        elif depth == 0 and t.text in (":>>", "redefines") and k + 1 < len(body) and body[k + 1].kind == "ident":
+            j = k + 2
+            while j < len(body) and body[j].text not in (";", "{", "}"):
+                if body[j].text in ("=", "default"):
+                    out[body[k + 1].text] = body[j].text == "default"
+                    break
+                j += 1
+    return out
+
+
+def _valued_features(model: Model, scope: cn.Scope) -> dict[str, bool]:
+    """Features of a definition that have a value, owned or redefined: name -> True when the value is a default."""
+    values = _valued_redefinitions(scope)
+    for m in model.members(scope):
+        words = [t.text for t in m.decl]
+        if "=" in words or "default" in words:
+            values.setdefault(m.name, "default" in words)
+    return values
 
 
 def _string_value(body: list[cn.Tok], feature: str) -> str | None:

@@ -99,16 +99,17 @@ library package UML3Views {
 		associations (including aggregations and compositions) and dependencies.
 
 		Usage: view domainClassDiagram : ClassDiagram { expose OnlineStoreDomain::*; }
-		The filter selects elements marked #classType, #activeClass, #interfaceType, #dataType, #signal,
-		#exceptionType, #template, #association, #aggregation, #composition or a dependency keyword
-		(#uses, #realizes...), and every enum def. Features are not selected.
+		The filter selects elements marked #classType, #activeClass, #interfaceType, a data type keyword
+		(#dataType or an extension keyword of the category UML3Core::DataTypeKind, such as #union),
+		#signal, #exceptionType, #template, #association, #aggregation, #composition or a dependency
+		keyword (#uses, #realizes...), and every enum def. Features are not selected.
 		Compact form: it renders as a tree diagram, one box per element with its name and keyword label. Use
 		ClassDetailDiagram to show attributes, operations and documentation in compartments.
 		The first filter hides library elements that 'expose' brings in through imports (E06).
 		References: UML 2.5.1 Class diagram; SysML 7.26.2; SysML 9.2.20; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeMetadata
+		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeKind
 			or @SignalMetadata or @ExceptionTypeMetadata or @Template or @SysML::EnumerationDefinition
 			or @AssociationMetadata or @AggregationMetadata or @CompositionMetadata or @DependencyKind;
 		render asTreeDiagram;
@@ -126,7 +127,7 @@ library package UML3Views {
 		References: UML 2.5.1 Class diagram; SysML 7.26.2; SysML 7.26.5; E14.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeMetadata
+		filter @ClassMetadata or @ActiveClassMetadata or @InterfaceTypeMetadata or @DataTypeKind
 			or @SignalMetadata or @ExceptionTypeMetadata or @Template or @SysML::EnumerationDefinition
 			or @AssociationMetadata or @AggregationMetadata or @CompositionMetadata or @DependencyKind;
 	}
@@ -286,7 +287,8 @@ library package UML3Views {
 		Tabular class listing: one row for each class, interface, data type and enumeration.
 
 		Usage: view domainClassTable : ClassTable { expose OnlineStoreDomain::*; }
-		The filter selects elements marked #classType, #interfaceType or #dataType, and every enum def;
+		The filter selects elements marked #classType, #interfaceType or a data type keyword (#dataType or
+		a UML3Core::DataTypeKind extension keyword such as #union), and every enum def;
 		signals, exceptions and active classes have their own keywords and are not selected. It renders as
 		an element table (Views::asElementTable). Not a UML 2.5.1 diagram kind: it lists the classifiers of
 		a class diagram.
@@ -294,7 +296,7 @@ library package UML3Views {
 		References: UML 2.5.1 Class diagram; SysML 9.2.19; SysML 9.2.20.
 		*/
 		filter not (as KerML::Element).isLibraryElement;
-		filter @ClassMetadata or @InterfaceTypeMetadata or @DataTypeMetadata or @SysML::EnumerationDefinition;
+		filter @ClassMetadata or @InterfaceTypeMetadata or @DataTypeKind or @SysML::EnumerationDefinition;
 		render asElementTable;
 	}
 }

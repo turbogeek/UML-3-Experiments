@@ -87,7 +87,10 @@ package UML3ExtensibilityRequirements {
 		/*
 		UML3 checks, views and generators that apply to a UML3 concept shall apply to every element that has the
 		semantics of that concept, including an element marked with a user keyword whose base specializes the
-		concept or whose metadata definition specializes the UML3 keyword.
+		concept or whose metadata definition specializes the UML3 keyword or its keyword category.
+		A semantic keyword that needs a more specific base cannot specialize the UML3 keyword, because KerML
+		forbids overriding its bound baseType (E15); it specializes the keyword category, such as
+		UML3Core::DataTypeKind, which views select.
 		*/
 		@Rationale { text = "An extension that escapes the design rules and views of the concept it refines defeats layering, which happens whenever a tool selects elements by keyword name instead of by semantics."; }
 		@StatusInfo { status = StatusKind::open; }
@@ -255,6 +258,7 @@ package UML3ExtensibilityRequirements {
 		#realizes dependency from UML3Core::DependencyKind to 'UML3-EXT-004';
 		#realizes dependency from Metaobjects::SemanticMetadata to 'UML3-EXT-007';
 		#realizes dependency from UML3Core::DependencyKind to 'UML3-EXT-010';
+		#realizes dependency from UML3Core::DataTypeKind to 'UML3-EXT-005';
 		#realizes dependency from UML3Data::MapsTo to 'UML3-EXT-010';
 	}
 }

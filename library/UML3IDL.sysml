@@ -119,13 +119,15 @@ library package UML3IDL {
 		doc /* All IDL union values; #union usages subset this feature, which subsets UML3Core dataTypes. */
 	}
 
-	metadata def <union> UnionMetadata :> DataTypeMetadata {
+	metadata def <union> UnionMetadata :> DataTypeKind {
 		doc
 		/*
 		Keyword #union: an IDL Union (a definition specializes Union, a usage subsets idlUnions).
-		Rationale: it specializes UML3Core::DataTypeMetadata because a union is a data type, so views and
-		rules that select data types by '@DataTypeMetadata' (for example UML3Views::ClassDiagram) also
-		select unions (E14).
+		Rationale: it specializes the category UML3Core::DataTypeKind because a union is a data type, so
+		views that select data types by '@DataTypeKind' (for example UML3Views::ClassDiagram) also select
+		unions. It cannot specialize UML3Core::DataTypeMetadata, whose bound baseType KerML forbids a
+		redefinition to override (E15).
+		References: KerML 8.3.4.10.2; UML3Core::DataTypeKind.
 		*/
 		:>> baseType = idlUnions meta SysML::Usage;
 	}

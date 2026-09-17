@@ -31,4 +31,12 @@ package RulesClean {
 	}
 	#domainEvent item def InvoicePaid { attribute invoiceId : Uuid; }
 	#topic part def InvoiceTopic { @QualityOfService { delivery = DeliveryGuarantee::atLeastOnce; } }
+
+	abstract attribute def Choice :> DataType;
+	abstract attribute choices : Choice[0..*] nonunique :> dataTypes;
+	metadata def <choice> ChoiceMetadata :> DataTypeKind {
+		:>> baseType = choices meta SysML::Usage;
+	}
+	item def Settings { attribute retries : Integer default 3; }
+	item def PatientSettings :> Settings { :>> retries = 5; }
 }

@@ -1,0 +1,37 @@
+{
+  "experiment": "E15 keyword categories: refining a UML3 semantic keyword in an extension library",
+  "recorded": "2026-09-17, before the run",
+  "setup": "Trigger: run_tests.py --cameo on 2026-09-17 failed because the validation engine flagged UML3IDL with validateFeatureValueOverriding on UnionMetadata (':> DataTypeMetadata' with ':>> baseType = idlUnions ...'). Probes tests/cameo-negative/p06-keyword-overrides-bound-base.sysml (the failing shape, isolated) and p07-keyword-category.sysml (the category pattern: abstract metadata def UML3Core::DataTypeKind :> SemanticMetadata with baseType unbound; DataTypeMetadata and the probe keyword specialize it). Checks: probe load status, validation engine per package (validation-predictions.json), implied specializations Q06-Q09 (probe-effects.json), and the IDL views (svg-expectations.json: PaymentDetail, a #union, is drawn by ClassDiagram, whose filter now uses @DataTypeKind).",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "p06 loads without builder errors (the load path reports parsing and linking only)",
+      "confidence": "high"
+    },
+    {
+      "id": "P2",
+      "claim": "The validation engine flags UML3ProbeKeywordOverridesBase with validateFeatureValueOverriding on baseType",
+      "confidence": "high"
+    },
+    {
+      "id": "P3",
+      "claim": "p07 loads and the validation engine reports no ERROR for UML3ProbeKeywordCategory: an abstract metadata def specializing SemanticMetadata with baseType unbound is legal, and binding baseType below it overrides nothing",
+      "confidence": "medium"
+    },
+    {
+      "id": "P4",
+      "claim": "#probeChoice attribute def Selection specializes ProbeChoice and UML3Core::DataType (Q06, Q07); #dataType attribute def Amount still specializes DataType and not ProbeChoice (Q08, Q09)",
+      "confidence": "medium"
+    },
+    {
+      "id": "P5",
+      "claim": "UML3IDL and UML3Core are not flagged after UnionMetadata and DataTypeMetadata specialize DataTypeKind",
+      "confidence": "medium"
+    },
+    {
+      "id": "P6",
+      "claim": "A view filter '@DataTypeKind' selects elements marked #dataType and #union: shop_order_views::idlTypes draws PaymentDetail and Money",
+      "confidence": "medium"
+    }
+  ]
+}

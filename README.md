@@ -39,7 +39,7 @@ package Shop {
 | `library/UML3Data.sysml` | Logical models (`#entity`, `#aggregateRoot`, `#valueObject`, `#relationship` with cardinality); keys and constraints (`#primaryKey`, `#foreignKey` + referential actions, `#unique`, `#indexed`, `@Index`); physical schemas (`#database`, `#table`, `#column` + `@Column`, `#dbView`); governance (`#audited`, `#transient`, `@Sensitivity`); logical-to-physical `#mapsTo` |
 | `library/UML3IDL.sysml` + `tools/idl/` | OMG IDL 4.2 **import and export** (Groovy, inside CATIA Magic or on the command line): modules, structs, typedefs, sequences, arrays, bounded strings, fixed, enums, unions (`#union`, `@Discriminator`, `@Case`), exceptions, interfaces with operations, `oneway` and `raises`, constants and common annotations. IDL basic types `Octet`, `WChar`, `WString`, `LongDouble`, `Any`. Mapping: [`docs/IDL-MAPPING.md`](docs/IDL-MAPPING.md). **Code generation** from IDL or from the model: Java per the OMG IDL4 to Java 1.0 mapping and Rust ([`docs/IDL-CODEGEN.md`](docs/IDL-CODEGEN.md)) |
 
-`examples/` models one online store: class model, architecture and deployment, messaging, database, native behaviors (activity, state machine, use cases, instances; example 06), and a set of views (diagrams) over them. `tools/check_rules.py` checks 13 design rules (R01–R12, R14), e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
+`examples/` models one online store: class model, architecture and deployment, messaging, database, native behaviors (activity, state machine, use cases, instances; example 06), and a set of views (diagrams) over them. `tools/check_rules.py` checks 14 design rules (R01–R12, R14, R15), e.g. tables need primary keys, interface realizations must be complete, and required ports must be connected. The full UML → SysML v2 mapping and design rationale are in [`docs/DESIGN.md`](docs/DESIGN.md).
 
 ### Documentation and requirements
 
@@ -65,7 +65,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Syntax | `sysml-validator` (ANTLR) | library and examples pass |
 | UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, UML3 elements, views and examples verified |
 | Names, lint, keyword applicability | `tools/check_names.py` | library, examples and requirements pass; 20 negative tests fail as expected |
-| Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 13 rules proven to fire; clean control stays clean |
+| Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 14 rules proven to fire; clean control stays clean |
 | Documentation | `tools/check_docs.py` | library, examples and requirements: 0 findings on rules D01–D07; one fixture per rule plus a clean control; documentation-only rewrites proven model-identical (`tools/compare_model_tokens.py`) |
 | Requirements and use cases | `tools/check_requirements.py` | 247 requirements, 59 use cases: form, evidence, realization and traces resolve; every requirement is traced by a use case |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
