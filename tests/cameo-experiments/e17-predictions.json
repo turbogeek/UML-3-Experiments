@@ -13,7 +13,9 @@
     {
       "id": "P2",
       "claim": "The validation engine reports no ERROR on UML3CatiaMagic or OnlineStoreCatiaMagicViews, although each view definition specializes both a UML3 view definition and bsv",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "refuted",
+      "observation": "validateViewDefinitionOnlyOneViewRendering on 'UML3 Class Diagram' and validateViewUsageOnlyOneViewRendering on domainClasses: 'Only one renderer is allowed. Current renderers: render asTreeDiagram, render asInterconnectionDiagram.' 'UML3 Class Detail Diagram' is not flagged (logs/cameo/e17/validation-e17b.txt)"
     },
     {
       "id": "P3",
@@ -25,22 +27,30 @@
     {
       "id": "P4",
       "claim": "Every templated button's OperationFromTemplate.getTemplate() is the unnamed template element of the expected kind carrying the expected UML3 keyword metadata (class -> item def with ClassMetadata; data type -> attribute def with DataTypeMetadata; association -> connection def with AssociationMetadata; uses -> dependency with UsesDependency)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "Checked on the registered variants (see P11)"
     },
     {
       "id": "P5",
       "claim": "A view typed by 'UML3 Class Diagram' gets DisplayMode TREE: the rendering of UML3Views::ClassDiagram (render asTreeDiagram, first general type) wins over the asInterconnectionDiagram rendering that bsv inherits from 'Symbolic View'",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "confirmed",
+      "observation": "v0 (UML3Views::ClassDiagram first) is TREE"
     },
     {
       "id": "P6",
       "claim": "A view typed by 'UML3 Class Detail Diagram' gets DisplayMode NESTED (the only inherited rendering is asInterconnectionDiagram), not UNDEFINED like UML3Views::ClassDetailDiagram",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed, with a consequence",
+      "observation": "v4 is NESTED; its SVG is byte-identical to the compact class diagram, so a detail view under bsv loses the compartments that make it a detail view"
     },
     {
       "id": "P7",
       "claim": "The views typed by the CATIA Magic definitions expose the same elements as example 05's domainClassDiagram and domainClassDetails (the UML3Views filters are inherited): the includes and excludes of VW1 and VW10 hold",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed for the compact form",
+      "observation": "The SVGs of v0, v1, v2, v4 and v6 are byte-identical to example 05's domainClassDiagram, so the UML3Views filters are inherited from the second general type; the detail form does not match domainClassDetails (see P6)"
     },
     {
       "id": "P8",
@@ -53,31 +63,53 @@
       "id": "P9",
       "run": "E17b",
       "claim": "After resetCache(), without reloading the project, E17V1-E17V6 (bsv as first general) are registered visualizations under 'Base Symbolic View', and E17V0 (UML3Views::ClassDiagram first) is not",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "After resetCache() the visualization list contains E17V1-E17V6 under 'Base Symbolic View' and not E17V0; no project reload was needed"
     },
     {
       "id": "P10",
       "run": "E17b",
       "claim": "The views of the registered variants get UML3ClassPalette: the UML3 Classifiers and UML3 Relationships categories, and no Actions, Other Actions, States or Cases category",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "v1-v6: Selections, Tools, Common, UML3 Classifiers (4 buttons), UML3 Relationships (3), Items/Ports/Attributes, Connectors, Specializations, Other Relationships, Requirements/Constraints; Actions, Other Actions, States and Cases removed"
     },
     {
       "id": "P11",
       "run": "E17b",
       "claim": "Each templated button resolves to its template element: class and interface -> ItemDefinition with ClassMetadata / InterfaceTypeMetadata, data type -> AttributeDefinition with DataTypeMetadata, association -> ConnectionDefinition with AssociationMetadata, uses -> Dependency with UsesDependency",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "class -> ItemDefinitionImpl ClassMetadata; interface -> ItemDefinitionImpl InterfaceTypeMetadata; data type -> AttributeDefinitionImpl DataTypeMetadata; association -> ConnectionDefinitionImpl AssociationMetadata; uses -> DependencyImpl UsesDependency; enum def and generalization use code ADD_ENUM_DEF and ADD_SUBCLASSIFICATION"
     },
     {
       "id": "P12",
       "run": "E17b",
       "claim": "DisplayMode: v0 TREE (first general's rendering), v1 NESTED (bsv first, so sv's asInterconnectionDiagram), v2 TREE and v3 TREE (owned rendering), v4 NESTED, v5 TREE (redefined rendering), v6 unknown",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "confirmed",
+      "observation": "v0 TREE, v1 NESTED, v2 TREE, v3 TREE, v4 NESTED, v5 TREE, v6 TREE; NESTED and TREE draw identical class diagrams (same SVG)"
     },
     {
       "id": "P13",
       "run": "E17b",
       "claim": "Validation engine: validateViewDefinitionOnlyOneViewRendering flags E17V0, E17V1 (two inherited renderings), E17V2 (owned plus two inherited) and E17V3 (owned plus sv's); E17V4 (only sv's) and E17V5 (the owned rendering redefines sv's) are not flagged; E17V6 unknown",
+      "confidence": "low",
+      "observed": "partly refuted",
+      "observation": "Flagged: E17V0 and E17V1 (two inherited renderings) and their views. Not flagged: E17V2 and E17V3 (an owned rendering next to inherited ones), E17V4, E17V5, E17V6. CATIA Magic accepts an owned rendering over inherited ones, although the SysML OCL counts inherited ViewRenderingMemberships too, so by the specification E17V2 and E17V3 still have more than one; E17V5 and E17V6 have one because their owned rendering redefines the inherited ones"
+    },
+    {
+      "id": "P14",
+      "run": "E17c",
+      "claim": "E17V7 (:> bsv, UML3Views::ClassDetailDiagram with 'render rendering :>> asInterconnectionDiagram [0];') is registered with the UML3 palette and not flagged, and its view is UNDEFINED with an SVG identical to example 05's domainClassDetails (full compartments)",
       "confidence": "low"
+    },
+    {
+      "id": "P15",
+      "run": "E17c",
+      "claim": "E17V9 (:> bsv, UML3Views::ClassDiagram with one owned 'render rendering compactRendering :>> asTreeDiagram, asInterconnectionDiagram;') is registered, TREE, not flagged, and its SVG is identical to example 05's domainClassDiagram",
+      "confidence": "medium"
     }
   ]
 }
