@@ -12,6 +12,14 @@ def MINE_PREFIXES = ["UML3", "OnlineStore"]
 // Exact package names of other test loads (e.g. IDL imports), one per line, written by the test tooling.
 def extraFile = new File(new File(System.getProperty("user.home"), "Documents/GitHub/sysmlv2-validator/utilityScripts"), "uml3-undo-extra.txt")
 def MINE_NAMES = extraFile.exists() ? (extraFile.readLines("UTF-8").collect { it.trim() }.findAll { it && !it.startsWith("#") } as Set) : ([] as Set)
+// Optional exact bound (uml3-undo-limit.txt, one integer): undo exactly that many harness commands, even if packages
+// with UML3 names remain. Used when earlier loads (e.g. a model the user is reviewing) must survive. Deleted once read.
+def limitFile = new File(extraFile.parentFile, "uml3-undo-limit.txt")
+Integer LIMIT = null
+if (limitFile.exists()) {
+    try { LIMIT = Integer.valueOf(limitFile.getText("UTF-8").trim()) } catch (Throwable ignored) {}
+    limitFile.delete()
+}
 def sb = new StringBuilder()
 
 // RootNamespaces are unnamed Namespaces; the packages are their owned members.
@@ -37,15 +45,15 @@ def countMine = {
 SwingUtilities.invokeAndWait({
     try {
         def am = ActionsProvider.getInstance().getMainMenuActions()
-        sb.append("myPackagesBefore=" + countMine() + "\n")
+        sb.append("myPackagesBefore=" + countMine() + (LIMIT != null ? " limit=" + LIMIT : "") + "\n")
         int n = 0
         // SAFETY GUARD (added after an audit found 'General View' / 'Multiple add' commands interleaved
         // with harness loads): only undo commands created by the harness load endpoint. Anything else on
         // top of the undo stack may be the user's work, so stop and report it instead of undoing it.
-        final Set<String> HARNESS_COMMANDS = ["SysMLv2TestHarness: REST Load SysML", "UML3 IDL Import"] as Set
+        final Set<String> HARNESS_COMMANDS = ["SysMLv2TestHarness: REST Load SysML", "UML3 IDL Import", "UML3 View Diagrams"] as Set
         def history = app.getProject().getCommandHistory()
-        while (n < 25) {
-            if (countMine() <= 0) { sb.append("clean -- none of my packages remain\n"); break }
+        while (n < (LIMIT != null ? LIMIT : 25)) {
+            if (LIMIT == null && countMine() <= 0) { sb.append("clean -- none of my packages remain\n"); break }
             def top = history.getCommandForUndo()
             String topName = null
             try { topName = top == null ? null : top.getName() } catch (x) { topName = String.valueOf(top) }

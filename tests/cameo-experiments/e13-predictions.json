@@ -1,0 +1,13 @@
+{
+  "experiment": "E13: views rendered as diagrams and exported to SVG in CATIA Magic (tools/cameo-scripts/exportViewDiagrams.groovy)",
+  "recorded": "2026-09-17, before the first run",
+  "setup": "Libraries and examples 01-05 loaded; the 9 views of examples/05-OnlineStoreViews.sysml requested; a bounded undo removes only the commands of this run",
+  "predictions": [
+    {"id": "P1", "claim": "No view has a diagram before the run (E07: loading and evaluating views creates none)", "confidence": "high"},
+    {"id": "P2", "claim": "Diagrams.createDiagram(view, Diagrams.getViewDefinition(view), false) creates a diagram for every view without an exception, inside the session", "confidence": "medium"},
+    {"id": "P3", "claim": "The whole run leaves exactly one undoable command named 'UML3 View Diagrams' on top of the history", "confidence": "medium"},
+    {"id": "P4", "claim": "DisplayExposedElements shows at least the elements of each view's recorded 'includes' (tests/cameo/view-predictions.json) and none of its 'excludes' as shapes", "confidence": "low"},
+    {"id": "P5", "claim": "ImageExporter.export(diagram, SVG, file) writes a non-empty SVG for every view, and each 'includes' name occurs as text in the SVG", "confidence": "low"},
+    {"id": "P6", "claim": "Undoing the 'UML3 View Diagrams' command removes the diagrams: afterwards Diagrams.getDiagram(view) is null again", "confidence": "medium"}
+  ]
+}
