@@ -87,9 +87,21 @@ def check(data: dict, idx: cn.Index) -> list[dict]:
             path = ROOT / ex["file"]
             if not path.exists():
                 add("EXAMPLE", row, f"example file {ex['file']} missing")
-            elif ex["contains"] not in path.read_text(encoding="utf-8"):
+            elif not contains_snippet(path.read_text(encoding="utf-8"), ex["contains"]):
                 add("EXAMPLE", row, f"snippet not found in {ex['file']}: {ex['contains']!r}")
     return findings
+
+
+def contains_snippet(text: str, snippet: str) -> bool:
+    """The snippet occurs in the model text, ignoring documentation: 'attribute x : T;' matches
+    'attribute x : T { doc /* ... */ }' (token streams normalized by compare_model_tokens)."""
+    if snippet in text:
+        return True
+    from compare_model_tokens import normalized  # noqa: E402 (same tools directory)
+    whole, part = normalized(text), normalized(snippet)
+    # a snippet without a final ';' may be followed by anything, e.g. '#classType item def Customer'
+    n = len(part)
+    return n > 0 and any(whole[i:i + n] == part for i in range(len(whole) - n + 1))
 
 
 def cell(text: str) -> str:
