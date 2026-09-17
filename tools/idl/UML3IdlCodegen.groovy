@@ -23,7 +23,7 @@ class IdlCodegenContext {
     private void index(List<IdlDefinition> defs, List<String> scope) {
         defs.each { d ->
             scopeOf[d] = scope
-            if (d instanceof IdlConst) { constants.put(d.name, ((IdlConst) d).value); constants[(scope + [d.name]).join("::")] = ((IdlConst) d).value }
+            if (d instanceof IdlConst) { constants.put(d.name, ((IdlConst) d).value); constants.put((scope + [d.name]).join("::"), ((IdlConst) d).value) }
             if (d instanceof IdlModule) index(((IdlModule) d).defs, scope + [d.name])
         }
     }
@@ -72,6 +72,87 @@ class IdlCodegenContext {
             if (++guard > 100) throw new IdlException("typedef cycle at '" + t.name + "'", t.line)
         }
         return [cur, dims, curScope]
+    }
+
+    // IDL 4.2 escape sequences (7.2.6.2: \n \t \v \b \r \f \a \\ \? \' \" octal, x hex, u hex) are kept verbatim by the
+    // lexer; Java and Rust accept different subsets, so each escape is decoded and re-emitted for the target.
+    // (Backslash and 'u' are never adjacent in this source: Groovy, like Java, translates such escapes everywhere.)
+    static final String BS = "\\"
+
+    static String translateEscapes(String s, boolean rust) {
+        StringBuilder out = new StringBuilder()
+        int i = 0
+        while (i < s.length()) {
+            String c = s.substring(i, i + 1)
+            if (c != BS || i + 1 >= s.length()) { out.append(c); i++; continue }
+            String e = s.substring(i + 1, i + 2)
+            int cp
+            int next = i + 2
+            Map<String, Integer> simple = ["n": 10, "t": 9, "v": 11, "b": 8, "r": 13, "f": 12, "a": 7, "?": 63, "'": 39, '"': 34]
+            if (e == BS) cp = 92
+            else if (simple.containsKey(e)) cp = simple.get(e)
+            else if (e == "x" || e == "u") {
+                int max = e == "x" ? 2 : 4
+                int j = next
+                while (j < s.length() && j < next + max && Character.digit(s.charAt(j), 16) >= 0) j++
+                if (j == next) { out.append(c).append(e); i = next; continue }
+                cp = Integer.parseInt(s.substring(next, j), 16)
+                next = j
+            } else if (Character.digit(s.charAt(i + 1), 8) >= 0) {
+                int j = i + 1
+                while (j < s.length() && j < i + 4 && Character.digit(s.charAt(j), 8) >= 0) j++
+                cp = Integer.parseInt(s.substring(i + 1, j), 8)
+                next = j
+            } else { out.append(e); i = next; continue }   // unknown escape: keep the character
+            out.append(codePoint(cp, rust))
+            i = next
+        }
+        return out.toString()
+    }
+
+    static String codePoint(int cp, boolean rust) {
+        Map<Integer, String> common = [10: "n", 9: "t", 13: "r", 92: BS, 39: "'", 34: '"']
+        if (common.containsKey(cp)) return BS + common.get(cp)
+        if (!rust && cp == 8) return BS + "b"
+        if (!rust && cp == 12) return BS + "f"
+        if (cp >= 32 && cp < 127) return String.valueOf((char) cp)
+        String hex = Integer.toHexString(cp)
+        return rust ? BS + "u{" + hex + "}" : BS + "u" + "0000".substring(Math.min(4, hex.length())) + hex
+    }
+
+    // Rust: a struct/union/exception member stored by value that leads back to the containing type (directly or
+    // through other by-value members) needs Box<..>, otherwise the type has infinite size. Sequences break cycles.
+    Set<IdlDefinition> byValueReach(IdlDefinition d) {
+        Set<IdlDefinition> seen = new LinkedHashSet<>()
+        List<IdlDefinition> todo = [d]
+        while (todo) {
+            IdlDefinition cur = todo.remove(0)
+            List<IdlMember> ms = cur instanceof IdlStruct ? ((IdlStruct) cur).members :
+                cur instanceof IdlExceptionDef ? ((IdlExceptionDef) cur).members :
+                cur instanceof IdlUnion ? ((IdlUnion) cur).cases.collect { it.member } : []
+            if (cur instanceof IdlStruct && ((IdlStruct) cur).base) {
+                IdlDefinition b = lookup(((IdlStruct) cur).base, scopeOf[cur])
+                if (b != null && seen.add(b)) todo << b
+            }
+            ms.each { m ->
+                IdlDefinition t = byValueTarget(m.type, scopeOf[cur])
+                if (t != null && seen.add(t)) todo << t
+            }
+        }
+        return seen
+    }
+
+    IdlDefinition byValueTarget(IdlTypeRef t, List<String> scope) {
+        if (t.kind != "scoped") return null
+        IdlDefinition d = lookup(t.name, scope)
+        if (d == null) return null
+        if (d instanceof IdlTypedef) return byValueTarget(((IdlTypedef) d).type, scopeOf[d])
+        return (d instanceof IdlStruct || d instanceof IdlUnion || d instanceof IdlExceptionDef) ? d : null
+    }
+
+    boolean needsBox(IdlTypeRef memberType, List<String> scope, IdlDefinition container) {
+        IdlDefinition t = byValueTarget(memberType, scope)
+        return t != null && (t.is(container) || byValueReach(t).any { it.is(container) })
     }
 
     // union discriminator / label support: the resolved discriminator kind and label values
@@ -355,10 +436,7 @@ class IdlToJava {
         return "(" + jt + ") " + n
     }
 
-    static String javaEscape(String s) {
-        // IDL escapes (\n, \", \\, \x41, A) are kept by the lexer; Java accepts the same forms except \x
-        return s.replaceAll(/\\x([0-9a-fA-F]{1,2})/) { all, hex -> String.format("\\u%04x", Integer.parseInt((String) hex, 16)) }
-    }
+    static String javaEscape(String s) { return IdlCodegenContext.translateEscapes(s, false) }
 
     // ---- definitions
 
@@ -803,6 +881,7 @@ class IdlToRust {
             String fn = fieldName(m.decl.name)
             IdlNaming.checkDistinct(seen, fn, m.decl.name, "member", m.line)
             String t = rustType(m.type, m.decl.dims, ms)
+            if (ctx.needsBox(m.type, ms, d)) t = "Box<" + t + ">"
             if (m.annotation("optional") != null) t = "Option<" + t + ">"
             docs(m, m.type).each { line(ind + 1, it) }
             line(ind + 1, "pub " + fn + ": " + t + ",")
@@ -837,9 +916,9 @@ class IdlToRust {
             throw new IdlException("constant refers to '" + ((IdlScopedValue) v).name + "', which is not a value", line)
         }
         if (v instanceof Boolean) return v.toString()
-        if (base.kind in ["string", "wstring"]) return '"' + String.valueOf(v).replaceAll(/\\x([0-9a-fA-F]{1,2})/) { all, h -> "\\u{" + h + "}" } + '"'
+        if (base.kind in ["string", "wstring"]) return '"' + IdlCodegenContext.translateEscapes(String.valueOf(v), true) + '"'
         String rt = elementType(base, (List<String>) r[2])
-        if (rt == "char") return v instanceof Number ? "'\\u{" + Long.toHexString(((Number) v).longValue()) + "}'" : "'" + v + "'"
+        if (rt == "char") return "'" + (v instanceof Number ? IdlCodegenContext.codePoint(((Number) v).intValue(), true) : IdlCodegenContext.translateEscapes(String.valueOf(v), true)) + "'"
         if (rt in ["f32", "f64"]) { String s = String.valueOf(v instanceof Double ? v : ((Number) v).doubleValue()); return s.contains("E") ? s.replace("E", "e") : s }
         if (rt == "bool") return String.valueOf(v).toLowerCase()
         return String.valueOf(v) + (rt == "i128" ? "" : "")
@@ -875,6 +954,7 @@ class IdlToRust {
             String vn = typeName(m.decl.name)
             IdlNaming.checkDistinct(seen, vn, m.decl.name, "union member", m.line)
             String t = rustType(m.type, m.decl.dims, scope)
+            if (ctx.needsBox(m.type, scope, u)) t = "Box<" + t + ">"
             line(ind + 1, "/// " + (uc.isDefault ? "default" : "") + (uc.isDefault && values ? ", " : "") + (values ? "case " + values.collect { lit(it) }.join(", ") : ""))
             if (values.size() == 1 && !uc.isDefault) {
                 line(ind + 1, vn + "(" + t + "),")

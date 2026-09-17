@@ -1,0 +1,8 @@
+# generated Rust must use Rust escapes and box by-value recursion (and compile with rustc)
+pub const UNICODE: &str = "a\u{a0}b";
+pub const CONTROL: &str = "bell\u{7} tab\t vt\u{b} q? octA hexB";
+pub const QUOTE: char = '\'';
+pub const OMEGA: char = '\u{3a9}';
+pub children: crate::escapes2::NodeSeq,
+pub parent: Option<Box<crate::escapes2::NodeAlias>>,
+Inner(Box<crate::escapes2::Tree>),

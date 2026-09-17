@@ -3,7 +3,7 @@
 //   java     writes <outDir>/java/<package dirs>/*.java  (OMG IDL4 to Java 1.0)
 //   rust     writes <outDir>/rust/lib.rs
 //   compile  compiles the generated Java in-process (javax.tools) into <outDir>/classes;
-//            compiles lib.rs with rustc when rustc is on PATH (otherwise RUSTC|SKIPPED)
+//            compiles lib.rs with rustc (PATH or ~/.cargo/bin; otherwise RUSTC|SKIPPED)
 // Result lines: RESULT|OK|..  RESULT|FAIL|..  JAVA|OK|<n files>  JAVAC|OK / JAVAC|FAIL|<diagnostic>  RUST|OK
 //               RUSTC|OK / RUSTC|FAIL|<diagnostic> / RUSTC|SKIPPED   WARN|..   (no System.exit)
 import javax.tools.*
@@ -60,11 +60,14 @@ try {
         rustFile.setText(rs, "UTF-8")
         println "RUST|OK|" + rustFile.path
         if ("compile" in opts) {
-            String rustc = System.getenv("PATH").split(File.pathSeparator).collect { new File(it, System.getProperty("os.name").toLowerCase().contains("win") ? "rustc.exe" : "rustc") }.find { it.exists() }?.path
+            String exe = System.getProperty("os.name").toLowerCase().contains("win") ? "rustc.exe" : "rustc"
+            // PATH first; rustup's default location covers shells started before the install
+            List<String> dirs = System.getenv("PATH").split(File.pathSeparator).toList() + [new File(System.getProperty("user.home"), ".cargo/bin").path]
+            String rustc = dirs.collect { new File(it, exe) }.find { it.exists() }?.path
             if (rustc == null) println "RUSTC|SKIPPED|rustc not on PATH"
             else {
                 def p = [rustc, "--crate-type", "lib", "--edition", "2021", "--emit", "metadata", "-o", new File(outDir, "rust/lib.rmeta").path, rustFile.path].execute()
-                def err = new StringBuilder(); p.consumeProcessErrorStream(err); p.waitFor()
+                def outText = new StringBuilder(), err = new StringBuilder(); p.waitForProcessOutput(outText, err)
                 if (p.exitValue() == 0) println "RUSTC|OK"
                 else { ok = false; err.readLines().findAll { it.startsWith("error") }.take(5).each { println "RUSTC|FAIL|" + clean(it) } }
             }

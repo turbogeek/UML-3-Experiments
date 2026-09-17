@@ -12,7 +12,7 @@ groovy tools/idl/idl2code.groovy tests/idl/shop_order.idl out java rust compile
 |---|---|
 | `java` | `out/java/<package dirs>/*.java` |
 | `rust` | `out/rust/lib.rs` (one library crate root) |
-| `compile` | Java is compiled with the in-process `javac` (`javax.tools`, needs a JDK). `lib.rs` is compiled with `rustc --emit metadata` when `rustc` is on `PATH`, otherwise `RUSTC|SKIPPED` |
+| `compile` | Java is compiled with the in-process `javac` (`javax.tools`, needs a JDK). `lib.rs` is compiled with `rustc --emit metadata` (found on `PATH` or in `~/.cargo/bin`), otherwise `RUSTC|SKIPPED` |
 
 Result lines: `JAVA|OK|n`, `JAVAC|OK` / `JAVAC|FAIL|file:line: message`, `RUST|OK`, `RUSTC|OK|FAIL|SKIPPED`, then `RESULT|OK|FAIL`.
 The scripts never call `System.exit`. A construct a generator cannot map gives an `IdlException` with the line number;
@@ -91,7 +91,7 @@ OMG has no IDL to Rust mapping. The conventions follow the Rust backend of
 | `typedef` | `pub type X = T;` |
 | `const` | `pub const NAME: T = v;` (`&str` for strings; enum constants use the variant path) |
 | `enum` (with `@value`) | `#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, PartialOrd, Ord)] #[repr(i64)] pub enum` with explicit discriminants |
-| `struct S : B` | `#[derive(Debug, Clone, PartialEq)] pub struct S { pub b_field…, pub field: T }`: base members flattened first, as Rust has no inheritance |
+| `struct S : B` | `#[derive(Debug, Clone, PartialEq)] pub struct S { pub b_field…, pub field: T }`: base members flattened first, as Rust has no inheritance; a member that contains the struct itself by value (directly or through other members; sequences excluded) is `Box<T>` |
 | `@optional` | `Option<T>` |
 | `@key` and other annotations | `/// @key` doc comments |
 | `union U switch (D)` | `pub enum U`: `Member(T)` for a single label, `Member(D, T)` when the member has several labels or is `default`; `impl U { pub fn discriminator(&self) -> D }` |
@@ -106,23 +106,27 @@ These are not mapped (an `IdlException` names the construct):
 
 **Verification.**
 - `tests/idl/codegen/rust_mapping.idl` exercises one construct per rule, and `rust_mapping.rs.expect` lists the required lines.
-- No Rust toolchain is installed on the test machine, so the Rust output has not been compiled yet. The tests compile it automatically once `rustc` is on `PATH`.
+- Every fixture's Rust is compiled with rustc 1.98.1 (stable, MSVC, installed with rustup). A negative control (a generator deliberately broken to emit `i33`) is reported as `RUSTC|FAIL`.
+- `tests/idl/codegen/escapes_and_recursion.idl` covers escapes Java and Rust do not share (`\a`, `\v`, `\?`, octal, hex, unicode), which are re-emitted per language, and by-value recursion, which Rust boxes.
+`, `\?`, octal, hex, unicode), which are re-emitted per language, and by-value recursion, which Rust boxes.
 
 ## Corpus results (tools/idl_corpus_check.py)
 
 The generators run on every file of the IDL corpora that the importer accepts. The corpora are 701 third-party files,
 held as git submodules in `external/idl`: ic-idl, rtps-gen, hdds, eProsima IDL-Parser, Cyclone DDS, GlassFish ORB and JacORB.
 
-| Of 394 accepted files | Java (generated and compiled) | Rust (generated) |
+| Of 394 accepted files | Java (generated and compiled) | Rust (generated and compiled with rustc) |
 |---|---|---|
 | OK | 304 | 266 |
 | Not mapped, reported with a reason | 90 | 128 |
-| Crash, or Java that does not compile | 0 (invariant I5) | 0 |
+| Crash, or code that does not compile | 0 (invariant I5) | 0 (invariant I5) |
 
 The most frequent reasons for not mapping:
 - A type declared in an included file (45).
 - An interface base or `raises` target from another file (32).
 - Rust: object references (29) and `any` (14).
 - Duplicate names in the JacORB must-fail files.
+
+Compiling the corpus Rust found two generator bugs, now fixed: IDL escapes that are not valid Rust (`\u00A0`, `\a`), and a struct that contains itself by value through a typedef (JacORB `bugjac462.idl`), which now uses `Box`.
 
 Per-file results are regression-protected by `tests/idl/corpus/baseline.json` (invariant I6).

@@ -1,0 +1,20 @@
+// E11 regressions found by compiling the generated Rust for the corpus:
+// IDL escape sequences Rust/Java do not share (ic-idl string_types.idl) and by-value recursion (JacORB bugjac462.idl).
+module Escapes2 {
+    const string UNICODE = "a\u00A0b";
+    const string CONTROL = "bell\a tab\t vt\v q\? oct\101 hex\x42";
+    const char QUOTE = '\'';
+    const wchar OMEGA = 937;
+    struct Node;
+    typedef Node NodeAlias;
+    typedef sequence<Node> NodeSeq;
+    struct Node {
+        long id;
+        NodeSeq children;
+        @optional NodeAlias parent;
+    };
+    union Tree switch (short) {
+        case 1: long leaf;
+        case 2: Tree inner;
+    };
+};

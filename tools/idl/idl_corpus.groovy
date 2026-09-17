@@ -7,7 +7,8 @@
 //     ACCEPT = parsed AND SysML emitted; an emitter IdlException is UNSUPPORTED ("mapping: ...")
 //     java  OK (generated and compiled by the in-process javac) | NOMAP:<IdlException> | NOCOMPILE:<first error> |
 //           CRASH:<non-IdlException> | -
-//     rust  OK (generated; not compiled here) | NOMAP:<IdlException> | CRASH:<non-IdlException> | -
+//     rust  OK (generated and compiled with rustc --emit metadata) | GENERATED (no rustc found) | NOMAP:<IdlException> |
+//           NOCOMPILE:<first error> | CRASH:<non-IdlException> | -
 // Prints SUMMARY|<outcome>=<n>...|java=<ok>|rust=<ok> at the end. No System.exit (project rule).
 import java.util.concurrent.*
 import javax.tools.*
@@ -49,6 +50,18 @@ def compileJava = { Map<String, String> sources ->
     if (ok) return null
     def e = diags.diagnostics.find { it.kind == Diagnostic.Kind.ERROR }
     return e == null ? "compilation failed" : (e.source?.name ?: "?") + ":" + e.lineNumber + ": " + e.getMessage(Locale.ROOT)
+}
+
+// rustc from PATH or rustup's default location; null when not installed
+String rustc = (System.getenv("PATH").split(File.pathSeparator).toList() + [new File(System.getProperty("user.home"), ".cargo/bin").path])
+    .collect { new File(it, System.getProperty("os.name").toLowerCase().contains("win") ? "rustc.exe" : "rustc") }.find { it.exists() }?.path
+def compileRust = { String src ->
+    File dir = new File(scratch, "rust"); dir.deleteDir(); dir.mkdirs()
+    File lib = new File(dir, "lib.rs"); lib.setText(src, "UTF-8")
+    def p = [rustc, "--crate-type", "lib", "--edition", "2021", "--emit", "metadata", "-o", new File(dir, "lib.rmeta").path, lib.path].execute()
+    def o = new StringBuilder(), e = new StringBuilder()
+    p.waitForProcessOutput(o, e)
+    return p.exitValue() == 0 ? null : (e.readLines().find { it.startsWith("error") } ?: "rustc failed") + " " + (e.readLines().find { it.contains("-->") } ?: "")
 }
 
 def generator = { Closure gen ->
@@ -96,7 +109,15 @@ out.withWriter("UTF-8") { w ->
                 String err = compileJava(javaSources)
                 if (err != null) java = "NOCOMPILE:" + err
             }
-            String rust = generator { codegen.toRust(ast) }
+            String rustSource = null
+            String rust = generator { rustSource = codegen.toRust(ast) }
+            if (rust == "OK") {
+                if (rustc == null) rust = "GENERATED"
+                else {
+                    String err = compileRust(rustSource)
+                    if (err != null) rust = "NOCOMPILE:" + err
+                }
+            }
             return ["ACCEPT", ast.warnings.size() + " warnings", rt, sysml, java, rust]
         } as Callable<List<String>>
         List<String> r
@@ -122,4 +143,5 @@ pool.shutdownNow()
 scratch.deleteDir()
 println "SUMMARY|" + ["ACCEPT", "UNSUPPORTED", "REJECT", "CRASH", "TIMEOUT"].collect { it + "=" + counts[it] }.join("|") +
     "|java=" + counts["java"] + "|rust=" + counts["rust"] + "|total=" + files.size()
+println "RUSTC|" + (rustc ?: "not found (rust column GENERATED)")
 println "RESULT|OK|" + out.path

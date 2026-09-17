@@ -1,0 +1,7 @@
+// Regression: root-level constants (qualified key == simple name) named like Groovy Map pseudo-properties crashed
+// the generators (ReadOnlyPropertyException on map["properties"] = v).
+const long properties = 1;
+const long Empty = properties;
+module Uses {
+    struct Holder { short grid[Empty]; };
+};

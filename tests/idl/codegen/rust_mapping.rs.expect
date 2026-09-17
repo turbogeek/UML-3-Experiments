@@ -1,6 +1,6 @@
 # lines that must appear (trimmed) in the generated lib.rs; one per Rust mapping rule (docs/IDL-CODEGEN.md)
 pub mod telemetry {
-pub const SOURCE: &str = "probe\u{41}";
+pub const SOURCE: &str = "probeA";
 pub const SEPARATOR: char = ';';
 pub const ENABLED: bool = true;
 pub const GAIN: f32 = 2.0;

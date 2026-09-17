@@ -1,0 +1,4 @@
+# Java has no a/v/x/? escapes: they are emitted as unicode escapes or plain characters
+Escapes2/Constants.java|public static final String CONTROL = "bell\u0007 tab\t vt\u000b q? octA hexB";
+Escapes2/Constants.java|public static final String UNICODE = "a\u00a0b";
+Escapes2/Constants.java|public static final char OMEGA = (char) 937;

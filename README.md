@@ -67,8 +67,8 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
 | Keyword labels | CATIA Magic label functions | 19/19 render `«#keyword»` |
 | IDL import/export | `tools/idl/`, `run_tests.py` suite `idl-import` and `cameo_check.py --idl` | fixture imports as expected, 5 unsupported constructs rejected with clear messages; in CATIA Magic: 0 build errors, 0 validation failures, export from the model identical to the canonical original |
-| IDL corpora (701 third-party files, `external/idl` submodules) | `tools/idl_corpus_check.py` | 394 imported with stable round trips, 0 crashes; generated Java compiles for 304, Rust generated for 266; per-file baseline |
-| IDL code generation | `tools/idl/idl2code.groovy`, suite `idl-codegen` | 34/34 OMG IDL4-Java naming examples (2 spec inconsistencies documented), 53/53 spec Java declarations, Java compiled with javac; Rust checked against expected lines (not compiled: no rustc installed) |
+| IDL corpora (701 third-party files, `external/idl` submodules) | `tools/idl_corpus_check.py` | 394 imported with stable round trips, 0 crashes; generated Java compiles for 304, generated Rust compiles for 266; per-file baseline |
+| IDL code generation | `tools/idl/idl2code.groovy`, suite `idl-codegen` | 34/34 OMG IDL4-Java naming examples (2 spec inconsistencies documented), 53/53 spec Java declarations, Java compiled with javac, Rust with rustc 1.98.1 |
 | Keyword semantics (implied specialization) | CATIA Magic API | 42/42 against the recorded baseline (1 case is a known Cameo deviation, see Known issues) |
 
 Every Cameo run loads files in dependency order and undoes only its own harness-load commands. It stops and fails if any other command is on the undo stack, and cleanup is confirmed by an inspection with a positive control. The harness is then shut down. Experiments record their predictions in git before they run (`tests/cameo*/`).
@@ -80,7 +80,6 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 * **ANTLR validator gaps:** example 06 (native behaviors) is exempt from the ANTLR syntax suite, because the validator also rejects the official OMG training models that use the same constructs. CATIA Magic loads it with 0 errors and 0 validation failures (`tests/validator-known-gaps.json`).
 * **Views are model elements, not yet opened diagrams:** CATIA Magic evaluates their content, but creating or opening the diagram for a view is still to be done.
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
-* **Rust output is not compiled yet:** no Rust toolchain is installed on the test machine. The tests compile it automatically when `rustc` is on `PATH`.
 * **IDL v1 scope:** valuetypes, maps, anonymous nested sequences, shift operators in constants, types nested in interfaces, and IDL CCM constructs are rejected on import. Export writes canonical IDL (qualified names, resolved constants), not the original text.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 
@@ -111,5 +110,5 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 
 * Sibling checkouts of `SysML-v2-Release` and `sysml-validator` (with `validator-cli/target/sysml-validator.jar` built). Override their locations with `SYSML_RELEASE` and `SYSML_VALIDATOR_JAR`.
 * Python 3, a JDK 17+ (the Java generator test compiles in-process), and Groovy for the local tools.
-* The IDL corpora: `git submodule update --init --depth 1`. Optional: `rustc` on `PATH` to also compile the generated Rust.
+* The IDL corpora: `git submodule update --init --depth 1`. Optional: a Rust toolchain (`winget install Rustlang.Rustup`) so the tests also compile the generated Rust; without it Rust is only generated and checked against expected lines.
 * For `--cameo`: CATIA Magic / MSoSA 2026x with the SysML v2 plugin and `start-v2language-test-harness.groovy` running (REST on port 8770).

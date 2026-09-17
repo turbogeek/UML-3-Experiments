@@ -8,7 +8,8 @@ tests/idl/corpus/baseline.json. Invariants (any violation fails):
   I3  a file under a known-invalid directory (expectations.json "mustFail") is not ACCEPTed,
       unless the baseline records it as a known leniency (v1 has no semantic checks)
   I4  no regression: a file ACCEPTed in the baseline is still ACCEPTed
-  I5  code generation never crashes (CRASH) and generated Java always compiles (no NOCOMPILE): a generator may
+  I5  code generation never crashes (CRASH) and generated Java and Rust always compile (no NOCOMPILE; Rust only
+      when rustc is installed): a generator may
       only refuse a construct with an IdlException (NOMAP)
   I6  no regression: Java / Rust generation that was OK in the baseline is still OK
 Newly ACCEPTed files are reported as improvements; rerun with --update-baseline to record them.
@@ -49,7 +50,7 @@ def main() -> int:
     results_tsv = LOGS / "results.tsv"
     g = subprocess.run(["groovy", str(ROOT / "tools" / "idl" / "idl_corpus.groovy"), str(LOGS / "files.txt"),
                         str(results_tsv), "20"], cwd=ROOT, capture_output=True, text=True, encoding="utf-8",
-                       errors="replace", shell=(os.name == "nt"), timeout=1200)
+                       errors="replace", shell=(os.name == "nt"), timeout=3000)
     summary = next((l for l in g.stdout.splitlines() if l.startswith("SUMMARY|")), None)
     if summary is None or not results_tsv.exists():
         print("TOOL ERROR: corpus runner produced no summary\n" + g.stdout[-2000:] + g.stderr[-2000:], file=sys.stderr)
@@ -70,7 +71,8 @@ def main() -> int:
             val = r.get(col) or "-"
             if val.startswith("CRASH") or val.startswith("NOCOMPILE"):
                 violations.append(f"I5 {col} {val[:200]} {f}")
-            if entry.get(col) == "OK" and val != "OK":
+            # without rustc the rust column says GENERATED; that is not a regression of generation
+            if entry.get(col) == "OK" and val != "OK" and not (col == "rust" and val == "GENERATED"):
                 violations.append(f"I6 {col} regression {f}: was OK, now {val[:200]}")
         if o in ("CRASH", "TIMEOUT"):
             violations.append(f"I1 {o} {f}: {r['detail']}")

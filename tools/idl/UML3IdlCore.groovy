@@ -1488,7 +1488,7 @@ class UML3Idl {
 
     private static void collectConstants(List<IdlDefinition> defs, List<String> scope, Map<String, Object> into) {
         defs.each { d ->
-            if (d instanceof IdlConst) { into.put(d.name, ((IdlConst) d).value); into[(scope + [d.name]).join("::")] = ((IdlConst) d).value }
+            if (d instanceof IdlConst) { into.put(d.name, ((IdlConst) d).value); into.put((scope + [d.name]).join("::"), ((IdlConst) d).value) }
             if (d instanceof IdlModule) collectConstants(((IdlModule) d).defs, scope + [d.name], into)
         }
     }
