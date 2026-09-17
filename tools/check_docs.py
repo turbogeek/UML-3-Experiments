@@ -7,6 +7,7 @@ Documentation checker for UML3 SysML v2 files (rules in docs/DOC-CONVENTIONS.md)
   D04  named element without an owned 'doc'
        profile 'library': every named definition, usage, feature and enumeration literal
        profile 'example': every named definition and usage except parameters (in/out/inout) and enum literals
+  D06  a package doc without a "Contents:" section summarizing the package's elements
   D05  unresolvable citation in comment text: 'KerML n.n', 'SysML n.n' (clause numbers of the specification PDFs,
        extracted with pdftotext), 'UML 2.5.1 Name' (a UML concept of traceability/uml2-to-uml3.json),
        'UML3Xxx::Name' (an element of library/), 'Enn' (an experiment in tests/ or docs/DESIGN.md)
@@ -165,6 +166,37 @@ def main() -> int:
             for m in CITE_EXP.finditer(body):
                 if m.group(1) not in experiments:
                     findings.append({"code": "D05", "line": line, "message": f"experiment {m.group(1)} not found"})
+        # D06 a package doc explains the package and summarizes its contents ("Contents:" section)
+        toks = lex(text)
+        for i, (kind, val, line) in enumerate(toks):
+            if kind == "ident" and val == "package" and i + 1 < len(toks):
+                depth, j, doc_texts = 0, i + 1, []
+                while j < len(toks) and toks[j][1] != "{":
+                    if toks[j][1] == ";":
+                        break
+                    j += 1
+                if j >= len(toks) or toks[j][1] != "{":
+                    continue
+                k = j + 1
+                while k < len(toks):
+                    v = toks[k][1]
+                    if v == "{":
+                        depth += 1
+                    elif v == "}":
+                        if depth == 0:
+                            break
+                        depth -= 1
+                    elif depth == 0 and v == "doc":
+                        m = k + 1
+                        while m < len(toks) and toks[m][0] != "comment":
+                            m += 1
+                        if m < len(toks):
+                            doc_texts.append(toks[m][1])
+                    k += 1
+                name = toks[i + 1][1]
+                if doc_texts and not any(re.search(r"^\s*\*?\s*Contents:", d, re.M) for d in doc_texts):
+                    findings.append({"code": "D06", "line": line,
+                                     "message": f"package '{name}' doc has no 'Contents:' summary of its elements"})
         # D04 missing documentation
         fm = cn.index_file(f)
         seen: set[int] = set()

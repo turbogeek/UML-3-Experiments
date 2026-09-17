@@ -17,6 +17,16 @@ library package UML3Core {
 
 	Rationale: keywords are semantic metadata rather than a new grammar, so UML3 models stay ordinary
 	SysML v2 that any conforming tool can load, query and validate.
+
+	Contents:
+	- Classifiers: Class, ActiveClass, InterfaceType, DataType, Signal, ExceptionType
+	  (#classType, #activeClass, #interfaceType, #dataType, #signal, #exceptionType).
+	- Behavioral features: Operation, Query, Constructor (#operation, #query, #constructor).
+	- Relationships: Association, Aggregation, Composition (#association, #aggregation, #composition).
+	- Marker keywords: #static, #final, #id, #navigable, #singleton, #template, #templateParameter.
+	- Generalization sets: @GeneralizationSet on the general, @InGeneralizationSet on each specific classifier.
+	- AggregationKind: the UML aggregation kind as a value.
+	- Dependency keywords: #uses, #realizes, #creates, #calls, #traces, #instantiates.
 	References: KerML 7.4.13; KerML 9.2.16; SysML 7.27.3; docs/DESIGN.md.
 	*/
 

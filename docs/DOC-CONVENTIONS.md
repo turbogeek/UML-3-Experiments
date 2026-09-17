@@ -13,6 +13,7 @@ annotating elements (KerML 7.2.4.2) that tools show on diagrams, navigate and qu
 | D02 | No unattached `/* */` comment. Use `doc` (owned by the element it documents) or `comment Name about A, B` (named, pointing at the elements it discusses) | A bare comment in a namespace annotates the *namespace* (KerML 7.2.4.2), not the elements written next to it; the link to those elements is lost in the model |
 | D03 | No `//` notes or `//* */` block notes | Notes are not model elements, so they are invisible to tools, diagrams and queries |
 | D04 | Every named element has an owned `doc`. Library: every definition, usage, feature, enumeration literal and metadata attribute. Examples: every definition and named usage; parameters and enumeration literals may rely on the owner's doc | Users of a standard library read the element, not the file |
+| D06 | Every package doc explains the package and ends its description with a `Contents:` section: one line per group of elements, naming the key definitions and keywords | A reader or a tool browsing a library sees what it offers without opening every element |
 | D05 | Citations resolve: `KerML n.n.n` / `SysML n.n.n` must be clause numbers of the specifications, `UML 2.5.1 X` a UML metaclass in `traceability/uml2-to-uml3.json`, `UML3Xxx::Name` an element of `library/`, `Enn` an experiment of this repository | References in a standard must be checkable |
 
 ## What a doc says

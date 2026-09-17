@@ -8,6 +8,7 @@ Suites (each result is recorded in logs/test-report.json):
                       (SYNTAX via the validator, IMPORT/TYPE/KEYWORD/QUALIFIED/LINT via check_names)
   checker-calibration check_names.py on the official OMG models              -> must PASS
                       (guards the checker against false positives)
+  docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
                       the SysMLv2 test harness REST API, undo the loads, stop the harness.
@@ -219,6 +220,26 @@ def main() -> int:
                           "passed": result.startswith("RESULT|FAIL") and substring in result})
     report["suites"]["idl-import"] = {"passed": bool(idl_cases) and all(c["passed"] for c in idl_cases),
                                       "cases": idl_cases}
+
+    # 4b2. documentation (docs/DOC-CONVENTIONS.md): library and examples are fully documented with verifiable
+    #      citations; each tests/docs fixture yields exactly its expected finding codes
+    doc_cases = []
+    for profile, target in (("library", ROOT / "library"), ("example", ROOT / "examples")):
+        rep_path = LOGS / f"docs-{profile}.json"
+        d = run([sys.executable, str(ROOT / "tools" / "check_docs.py"), "--profile", profile, "--report", str(rep_path), str(target)])
+        rep = json.loads(rep_path.read_text(encoding="utf-8")) if d.returncode != 2 and rep_path.exists() else {}
+        doc_cases.append({"case": profile, "passed": d.returncode == 0, "counts": rep.get("counts"),
+                          "error": d.stderr.strip()[-300:] if d.returncode == 2 else None})
+    for entry in (ROOT / "tests" / "docs" / "expected.txt").read_text(encoding="utf-8").splitlines():
+        if not entry.strip() or entry.startswith("#"):
+            continue
+        fname, codes = entry.split("|", 1)
+        rep_path = LOGS / "docs-fixture.json"
+        d = run([sys.executable, str(ROOT / "tools" / "check_docs.py"), "--report", str(rep_path), str(ROOT / "tests" / "docs" / fname)])
+        observed = sorted({x["code"] for fr in json.loads(rep_path.read_text(encoding="utf-8"))["files"] for x in fr["findings"]})             if d.returncode != 2 else ["TOOL_ERROR"]
+        expected = sorted(c for c in codes.split(",") if c.strip())
+        doc_cases.append({"case": "fixture " + fname, "expected": expected, "observed": observed, "passed": observed == expected})
+    report["suites"]["docs"] = {"passed": all(c["passed"] for c in doc_cases), "cases": doc_cases}
 
     # 4c2. IDL code generation (Java: OMG IDL4-Java 1.0, Rust: docs/IDL-CODEGEN.md): spec naming examples; every
     #      tests/idl/codegen fixture generates, compiles (javac in-process; rustc when on PATH) and contains its

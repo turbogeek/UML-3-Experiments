@@ -1,0 +1,9 @@
+# file|expected finding codes (the checker must report exactly these codes, library profile)
+d00-clean.sysml|
+d01-banner.sysml|D01
+d01-stars.sysml|D01
+d02-unattached.sysml|D02
+d03-note.sysml|D03
+d04-missing.sysml|D04
+d05-citation.sysml|D05
+d06-no-contents.sysml|D06
