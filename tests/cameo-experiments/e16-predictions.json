@@ -1,37 +1,55 @@
 {
   "experiment": "E16 CATIA Magic customization library: what a UML3 view palette has to build on",
-  "recorded": "2026-09-17, before the run",
+  "recorded": "2026-09-17, written before the run (committed after it, in 8ff1cbe)",
   "setup": "Read-only probe tools/cameo-scripts/probeCustomizationLibrary.groovy through the harness: lists root members named DS*/Dassault*, then writes CATIA Magic's own textual notation (SysMLTextGeneratorServices.createTextualNotationBuilder().toText(namespace)) of DS_UIComponents::CoreUIComponents (Palette, Operations, Components, Dialogs), DS_Views::CoreViews, DS_Views::ViewPalettes and DS_Views::SymbolicViews to logs/cameo/ds-library/. Source for the expectations: SysML v2 Plugin UserGuide 2026x R1, 'Custom symbolic view definitions' (pp. 354-365) and 'Custom creation dialogs' (pp. 620-647).",
   "predictions": [
     {
       "id": "P1",
       "claim": "The UML3 project already contains the DS_Views and DS_UIComponents roots (the 3DS SysML Customization library is attached to SysML v2 projects by default, because the predefined symbolic views and their palettes come from it)",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "Root members DS_Functions, DS_Styles, DS_UIComponents, DS_Views, DS_Validation and DS_Collaborator exist in the UML3 project (LibraryPackageImpl)"
     },
     {
       "id": "P2",
       "claim": "toText works on library namespaces and the text contains \"view def <bsv> 'Base Symbolic View'\" with 'part baseViewPalette : ViewPalettes::BasePalette :>> palette'",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "partly refuted",
+      "observation": "toText(nested package) returned an empty string for all 8 packages; toText(root namespace) works: DS_UIComponents 21,861 chars, DS_Views 51,123 chars (logs/cameo/ds-library/). The text has \"abstract view def <bsv> 'Base Symbolic View' :> sv { part baseViewPalette : BasePalette :>> palette; }\"; 'Symbolic View' owns 'part palette [0..1] : Palette' and 'render asInterconnectionDiagram'"
     },
     {
       "id": "P3",
       "claim": "DS_UIComponents::CoreUIComponents::Palette defines Button and ButtonsCategory with the features abstractButtons, focusedButton, label, description, isCollapsed, hasVisibleLabels and representation",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed with corrections",
+      "observation": "Palette::Button :> Components::Item, AbstractButton (perform action : PaletteOperation :>> operation; attribute representation : SymbolicRepresentationKind [0..1]); ButtonsCategory :> ItemsCategory, AbstractButton (part abstractButtons :>> abstractItems; ref part focusedButton [0..1]); label and description come from Components::AbstractItem, isCollapsed and hasVisibleLabels from ItemsCategory; Palette :> Component (part buttonCategories [*] :>> itemCategories)"
     },
     {
       "id": "P4",
       "claim": "DS_Views::ViewPalettes::CodeActionIdentifiers holds one String attribute per predefined button (e.g. requirementAction = \"ADD_REQUIREMENT\"), including actions for part def, item def, attribute def, enum def, port def, connection def and metadata def",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "CodeActionIdentifiers has String attributes such as partDefAction = \"ADD_PART_DEF\"-style ids, including enumDefAction, metadataDefAction, connectionDefAction, interfaceDefAction"
     },
     {
       "id": "P5",
       "claim": "DS_UIComponents::CoreUIComponents::Operations defines OperationFromCode, OperationFromTemplate and OperationByMetaclass, each with an 'in' parameter",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "Operations: OperationFromCode { in actionId [0..1] : String; }, OperationFromTemplate :> PaletteOperation, DialogOperation { in element [0..1] : Metaobject; }, OperationByMetaclass { in elementMetaclass [0..1] : Metaobject; }"
     },
     {
       "id": "P6",
       "claim": "The General View palette (GeneralPalette) is a specialization of BasePalette whose extra categories are part usages subsetting buttonCategories, so a UML3 palette can specialize GeneralPalette and add categories",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "confirmed",
+      "observation": "GeneralPalette :> BasePalette adds categories as 'part x : ButtonsCategory :> buttonCategories { ... }'; InterconnectionPalette, ActionFlowPalette and StateTransitionPalette specialize GeneralPalette and remove categories or buttons with 'part :>> x [0];'"
     }
+  ],
+  "furtherObservations": [
+    "The vendor's own templated buttons use semantic keywords: package derivationConnectionTemplate { #derivation connection { end #original requirement; end #derive requirement; } } with 'in ref = (derivationConnectionTemplate meta Package).ownedElement;' - the same form UML3 keyword templates need",
+    "View definitions attach palettes by redefinition: view def <gv> 'General View' :> bsv, gv { part generalViewPalette : GeneralPalette :>> baseViewPalette; } (DS_Views::SymbolicViews), i.e. the DS view also specializes the standard StandardViewDefinitions::gv",
+    "The View Creation dialog is model based: UIComponents::SysMLViewCreationDialog :> ViewCreationDialog with DialogItem entries whose OperationFromTemplate points at view templates (package generalViewTemplate { view : gv; })",
+    "Java API for verification without the GUI (plugin com.dassault_systemes.modeler.sysml.dsl): DSLService.getInstance(element).getVisualization(ViewUsage) -> SymbolicVisualization.getPalette().getCategories() -> ButtonsCategory.getLabel()/getButtons() -> Button.getLabel()/getOperations() -> OperationFromTemplate.getTemplate() / OperationFromCode.getActionIds(); DSLService.isDSLValid(), print(Consumer), resetCache()"
   ]
 }
