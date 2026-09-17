@@ -167,6 +167,22 @@
       "why": "library package; loaded and validated in every --cameo run since the IDL work (observed 0 failures before this entry was added)",
       "observed": false,
       "observedRules": []
+    },
+    {
+      "package": "escapes_and_bounds",
+      "flagged": false,
+      "confidence": "high",
+      "why": "IDL import of keyword-escaped names and constant-expression bounds (E10 fixture); observed 0 failures in the 2026-09-17 --cameo run before this entry",
+      "observed": false,
+      "observedRules": []
+    },
+    {
+      "package": "groovy_map_keys",
+      "flagged": false,
+      "confidence": "high",
+      "why": "IDL import of names that are Groovy Map pseudo-properties (E10 fixture); observed 0 failures in the 2026-09-17 --cameo run before this entry",
+      "observed": false,
+      "observedRules": []
     }
   ],
   "observedOn": "2026-09-16, CATIA Magic MSoSA 2026x Refresh1, suites DassaultSystemesValidationSuite + SysMLConstraintsSuite"
