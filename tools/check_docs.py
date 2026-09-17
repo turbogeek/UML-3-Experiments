@@ -263,6 +263,10 @@ def main() -> int:
                 if id(child) in seen:
                     continue
                 seen.add(id(child))
+                # element templates (packages named ...Template whose one element a palette button or creation
+                # command copies, E17) own no documentation: a doc would be copied into every created element
+                if child.decl_kind == "package" and child.name and child.name.endswith("Template"):
+                    continue
                 if child.decl and child.name:
                     words = {t.text for t in child.decl if t.kind == "ident"}
                     is_param = bool(words & {"in", "out", "inout", "return", "subject", "actor", "stakeholder"}) and not child.is_def
