@@ -47,7 +47,7 @@ LEX = re.compile(r"""
 BANNER = re.compile(r"^\s*\*?\s*([=\-~#*_])\1{4,}\s*$")
 STAR_LINE = re.compile(r"^\s*\*(\s|$)")
 CITE_SPEC = re.compile(r"\b(KerML|SysML)\s+(?:v?\d\.\d\s+)?(?:clause\s+)?(\d+(?:\.\d+)+)")
-CITE_UML = re.compile(r"\bUML 2\.5\.1\s+([A-Z][A-Za-z]+)")
+CITE_UML = re.compile(r"\bUML 2\.5\.1\s+([A-Z][A-Za-z]+(?:\.[a-zA-Z]+)?)")
 CITE_UML3 = re.compile(r"\b(UML3[A-Za-z]+::[A-Za-z_][A-Za-z0-9_:]*)")
 CITE_EXP = re.compile(r"\b(E\d{2})\b")
 
@@ -138,8 +138,8 @@ def main() -> int:
         for f in cn.collect([args.stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library")], (".sysml",)):
             idx.add(cn.index_file(f))
         idx.finalize()
-        uml_concepts = {r["uml2"].split()[0] for r in json.loads((ROOT / "traceability" / "uml2-to-uml3.json")
-                                                                  .read_text(encoding="utf-8"))["rows"]}
+        uml_concepts = {tok for r in json.loads((ROOT / "traceability" / "uml2-to-uml3.json").read_text(encoding="utf-8"))["rows"]
+                        for tok in re.findall(r"[A-Z][A-Za-z]+(?:\.[a-zA-Z]+)?", r["uml2"])}
         experiments = set(re.findall(r"\bE\d{2}\b", (ROOT / "docs" / "DESIGN.md").read_text(encoding="utf-8")))
         experiments |= {m.group(1).upper() for p in ROOT.glob("tests/**/*") for m in [re.match(r"(e\d{2})", p.name)] if m}
     except Exception as exc:  # environment problems are exit code 2

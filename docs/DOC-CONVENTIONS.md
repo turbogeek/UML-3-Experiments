@@ -55,3 +55,23 @@ comment MarkerKeywordDesign about staticFeatures, finalElements, Static, Final
 
 In behavior models (`state def`, `action def`, use cases), put a `comment about` next to the transitions, decisions
 or steps whose *why* is not obvious. The comment says what it achieves and why, not what the notation already shows.
+
+## Frequently cited clauses (verified against the specification PDFs)
+
+| Topic | Clause |
+|---|---|
+| Comments and documentation | KerML 7.2.4.2; SysML 7.4 |
+| Specialization, subsetting, redefinition | KerML 7.3.2.3, 7.3.4.4, 7.3.4.5 |
+| Disjoining (families that may not be joined) | KerML 7.3.2.5 |
+| Data types, classes, associations, connectors | KerML 7.4.2, 7.4.3, 7.4.5, 7.4.6 |
+| Metadata and semantic metadata (baseType) | KerML 7.4.13; SysML 7.27, 7.27.3 |
+| Metaobjects library (SemanticMetadata) | KerML 9.2.16 |
+| Occurrences / Objects / Performances libraries | KerML 9.2.4, 9.2.5, 9.2.6 |
+| Dependencies, annotations, packages | SysML 7.3, 7.4, 7.5 |
+| Definition and usage | SysML 7.6 |
+| Attributes, enumerations, occurrences | SysML 7.7, 7.8, 7.9 |
+| Items, parts, ports, connections, interfaces, allocations | SysML 7.10, 7.11, 7.12, 7.13, 7.14, 7.15 |
+| Flows and messages | SysML 7.16 |
+| Actions, states, calculations, constraints | SysML 7.17, 7.18, 7.19, 7.20 |
+| Requirements, cases, analysis, verification, use cases | SysML 7.21, 7.22, 7.23, 7.24, 7.25 |
+| Views and viewpoints | SysML 7.26 |
