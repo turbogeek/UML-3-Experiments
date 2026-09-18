@@ -4,9 +4,9 @@ library package UML3DiagramKinds {
 	UML3DiagramKinds: which UML3 keywords belong to which diagram kind, as a model instead of a list repeated
 	in every tool.
 
-	One part per diagram kind records three things: the keywords whose elements a view of that kind shows,
-	the keywords a modeling tool should let the user create on it, and the UML3Views definitions that render
-	it. Keywords and view definitions are held as metaobjects ('classType meta KerML::Type'), not as
+	One part per diagram kind records four things: the keywords whose elements a view of that kind shows,
+	the keywords a modeling tool should let the user create on it, the UML3Views definitions that render
+	it, and whether a palette offers the definition or the usage of a keyword first. Keywords and view definitions are held as metaobjects ('classType meta KerML::Type'), not as
 	strings, so a rename cannot leave a stale entry behind.
 
 	Usage: a tool customization, report or generator reads the keywords of a kind instead of repeating them:
@@ -22,7 +22,8 @@ library package UML3DiagramKinds {
 	create markers that only annotate an existing element (#template).
 
 	Contents:
-	- DiagramKind: the definition, with shows, creates and views.
+	- CreationForm: definition or usage, the form a palette offers first.
+	- DiagramKind: the definition, with shows, creates, views and defaultForm.
 	- packageDiagram, classDiagram, classTable, componentDiagram, deploymentDiagram,
 	  entityRelationshipDiagram, messageSchema, sequenceDiagram: the UML3 diagram kinds.
 	References: UML3Views; docs/CATIA-MAGIC-CUSTOMIZATION.md; docs/DESIGN.md issue I-35.
@@ -34,17 +35,34 @@ library package UML3DiagramKinds {
 	private import UML3Data::*;
 	private import UML3Messaging::*;
 
+	enum def CreationForm {
+		doc
+		/*
+		The two forms in which a palette can create an element that carries a UML3 keyword: the definition
+		('#classType item def') or a usage ('#classType item'). A palette offers both in one menu, like the
+		SysML v2 part and part def buttons, and the diagram kind decides which one is on top.
+		References: SysML 7.6 (definition and usage); UML3DiagramKinds::DiagramKind::defaultForm.
+		*/
+		enum definition {
+			doc /* The palette offers the definition first: the diagram is a model of types. */
+		}
+		enum usage {
+			doc /* The palette offers the usage first: the diagram is a configuration of parts. */
+		}
+	}
+
 	part def DiagramKind {
 		doc
 		/*
 		One UML3 diagram kind: what it shows, what can be created on it, and the views that render it.
 
-		Usage: declare one part per diagram kind and bind the three lists.
+		Usage: declare one part per diagram kind and bind the three lists and the default form.
 		  part classDiagram : DiagramKind {
 		    attribute :>> label = "class diagram";
 		    attribute :>> shows = (classType meta KerML::Type);
 		    attribute :>> creates = (classType meta KerML::Type);
 		    attribute :>> views = (UML3Views::ClassDiagram meta KerML::Type);
+		    attribute :>> defaultForm = CreationForm::definition;
 		  }
 		References: UML3Views; docs/DESIGN.md issue I-35.
 		*/
@@ -61,7 +79,7 @@ library package UML3DiagramKinds {
 		attribute creates : KerML::Type[0..*] nonunique {
 			doc
 			/*
-				The keywords a tool should offer for creating elements on this diagram kind, including features
+			The keywords a tool should offer for creating elements on this diagram kind, including features
 			that appear inside a shape. A palette button exists for each of these; elements without a UML3
 			keyword (packages, enumeration definitions, plain attributes, specializations) are created with
 			the tool's own commands and are not listed. A kind that creates nothing, such as a table, binds
@@ -70,6 +88,22 @@ library package UML3DiagramKinds {
 		}
 		attribute views : KerML::Type[0..*] nonunique {
 			doc /* The UML3Views definitions that render this diagram kind: the compact form first, then the detail form. */
+		}
+		attribute defaultForm : CreationForm[0..1] {
+			doc
+			/*
+			Which form of a keyword's element a palette offers on top, when the keyword can create both a
+			definition and a usage.
+
+			Rationale: the choice follows what the diagram is a picture of. A class, entity-relationship or
+			message schema diagram is a model of types: the modeler declares classifiers and relates them, a
+			UML class is a definition, and a usage is only an occasional example of one. A component or
+			deployment diagram is a configuration: the modeler places parts that are typed by definitions
+			declared elsewhere and wires them, and connectors, deployments and flows connect usages, not
+			definitions, so creating the usage first makes the next step, drawing the connection, work at
+			once. SysML v2 offers usages first for the same reason, because it models systems as usage
+			trees. A kind whose palette has no definition-and-usage pair binds no value.
+			*/
 		}
 	}
 
@@ -132,6 +166,7 @@ library package UML3DiagramKinds {
 		attribute :>> views = (
 			UML3Views::ClassDiagram meta KerML::Type,
 			UML3Views::ClassDetailDiagram meta KerML::Type);
+		attribute :>> defaultForm = CreationForm::definition;
 	}
 
 	part classTable : DiagramKind {
@@ -183,6 +218,7 @@ library package UML3DiagramKinds {
 			delegation meta KerML::Type,
 			realizes meta KerML::Type);
 		attribute :>> views = (UML3Views::ComponentDiagram meta KerML::Type);
+		attribute :>> defaultForm = CreationForm::usage;
 	}
 
 	part deploymentDiagram : DiagramKind {
@@ -212,6 +248,7 @@ library package UML3DiagramKinds {
 		attribute :>> views = (
 			UML3Views::DeploymentDiagram meta KerML::Type,
 			UML3Views::DeploymentDetailDiagram meta KerML::Type);
+		attribute :>> defaultForm = CreationForm::usage;
 	}
 
 	part entityRelationshipDiagram : DiagramKind {
@@ -247,6 +284,7 @@ library package UML3DiagramKinds {
 		attribute :>> views = (
 			UML3Views::EntityRelationshipDiagram meta KerML::Type,
 			UML3Views::EntityRelationshipDetailDiagram meta KerML::Type);
+		attribute :>> defaultForm = CreationForm::definition;
 	}
 
 	part messageSchema : DiagramKind {
@@ -290,6 +328,7 @@ library package UML3DiagramKinds {
 		attribute :>> views = (
 			UML3Views::MessageSchemaView meta KerML::Type,
 			UML3Views::MessageSchemaDetailView meta KerML::Type);
+		attribute :>> defaultForm = CreationForm::definition;
 	}
 
 	part sequenceDiagram : DiagramKind {

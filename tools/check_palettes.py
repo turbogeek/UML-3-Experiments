@@ -7,8 +7,11 @@ Per view:
                  registers a custom view definition only through its FIRST general type)
   CATEGORIES     every expected UML3 category is in the palette, and no category listed in absentCategories is
   BUTTONS        every expected button is there with the element kind and UML3 keyword its template carries
-                 (a 'class' button must copy an ItemDefinition annotated with classType), and no templated
+                 (a 'class def' button must copy an ItemDefinition annotated with classType), and no templated
                  button is left without a template
+  FOCUS          a button expected as 'focused' sits in a menu and is the one the palette shows (isFocused), and a
+                 button expected as 'menu' sits in a menu and is not focused: a definition-and-usage menu offers
+                 the form its diagram kind's defaultForm names
   DIALOG         the UML3 Create View dialog is the active one and offers the expected commands (optional)
 
 Usage (library): check(verify_text) -> report dict;  CLI: python tools/check_palettes.py palettes.txt
@@ -44,6 +47,7 @@ def parse(text: str) -> dict:
             views[f[1]]["buttons"][f[2]].append({
                 "label": f[5], "kind": m.group(1) if m else None,
                 "keywords": [k for k in (m.group(3).split(",") if m else []) if k],
+                "menu": f[3], "focused": f[6] == "true",
                 "operation": f[8]})
         elif f[0] == "ERROR" and len(f) > 2:
             views[f[1]]["errors"].append("|".join(f[2:]))
@@ -78,13 +82,23 @@ def check(verify_text: str, expectations: dict | None = None) -> dict:
                 problems.append(f"category {category!r} missing (palette has {o['categories']})")
                 continue
             seen = {b["label"]: b for b in o["buttons"].get(category, [])}
-            for label, kind, keyword in buttons:
+            for expected_button in buttons:
+                label, kind, keyword = expected_button[:3]
+                place = expected_button[3] if len(expected_button) > 3 else None  # 'focused', 'menu' or unchecked
                 b = seen.get(label)
                 if b is None:
                     problems.append(f"{category}: no button labeled {label!r}")
-                elif b["kind"] != kind or (keyword and keyword not in b["keywords"]):
+                    continue
+                if b["kind"] != kind or (keyword and keyword not in b["keywords"]):
                     problems.append(f"{category}: button {label!r} copies {b['kind']} {b['keywords']}, "
                                     f"expected {kind} [{keyword}]")
+                if place is not None and not b.get("menu"):
+                    problems.append(f"{category}: button {label!r} is not in a menu (expected {place})")
+                elif place == "focused" and not b.get("focused"):
+                    problems.append(f"{category}: button {label!r} in menu {b['menu']!r} is not the focused one")
+                elif place == "menu" and b.get("focused"):
+                    problems.append(f"{category}: button {label!r} in menu {b['menu']!r} is focused, expected "
+                                    "the other form on top")
             for b in o["buttons"].get(category, []):
                 if b["operation"].startswith("template:null"):
                     problems.append(f"{category}: button {b['label']!r} has no template element")

@@ -413,6 +413,11 @@ In the kernel, `Item :> Object :> Occurrence`, `Performance :> Occurrence`, `Obj
 9. **A keyword is written two ways (2026-09-17, E20/E21).** Every keyword definition carries the keyword in
    its short name and a terse id in its declared name, so a modeler can write `#classType` or `#cls` and a
    diagram still reads `«#classType»`. Terse ids are given only where they save at least three characters.
+10. **Palettes offer the definition and the usage (2026-09-17).** A keyword that marks both a definition and a
+   usage gets a two-button menu, as in SysML v2. The diagram kind decides which is on top and records it as
+   `defaultForm`: the definition on type models (class, entity-relationship, message schema), the usage on
+   configurations (component, deployment), because connectors connect usages. See
+   [CATIA-MAGIC-CUSTOMIZATION.md](CATIA-MAGIC-CUSTOMIZATION.md#definition-and-usage-buttons).
 
 ## Harness safety incident and guard (E07)
 
@@ -506,6 +511,6 @@ the maintainers; none is fixed yet.
 ## Validator findings (sysml-validator issues found during this work)
 
 * **No name resolution.** Unresolved types, imports and specializations pass.
-* **Lexer bug.** An identifier starting with `def` combined with a multiplicity is rejected. `attribute definitionQuery : String[0..1];` fails, but `attribute definitionQuery : String;` and `attribute x : String[0..1];` both pass.
+* **Lexer bug (fixed 2026-09-17, sysml-validator `a38a6c4`).** An identifier starting with `def` after a construct keyword was rejected in some forms: `attribute definitionQuery : String[0..1];` failed. The cause was the lexer's compound keyword tokens (`attribute def`, `enum def`, `use case`, 29 in all), which matched even when the second word was only the start of a name. The forms that seemed to pass were silent misparses: `attribute definitionQuery : String;` parsed as an attribute *definition* named `initionQuery`, and so did example 01's `attribute defaultCurrency`. It surfaced again with `UML3DiagramKinds`' `attribute defaultForm` and the enum literal `definition`. Each compound token now ends at a word boundary; `CompoundKeywordBoundaryTest` checks the token stream, because a clean parse alone did not reveal the misparse.
 * **Reversed prefix order.** It rejects the legal `out abstract item x` and accepts the illegal `abstract out item x`, which is the reverse of the BNF and of CATIA Magic. The library avoids the conflict by not combining a direction with `abstract`.
 * **KerML keywords rejected as SysML names.** `class`, `datatype`, `feature`, `type`, `composite`, `value` and `sequence` are refused. This is arguably stricter than the SysML reserved-word list, but models should avoid these names anyway, for portability.

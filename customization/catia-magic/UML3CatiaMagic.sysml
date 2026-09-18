@@ -123,11 +123,17 @@ library package UML3CatiaMagic {
 		package layerPackageTemplate { #layer package; }
 
 		package classTemplate { #classType item def; }
+		package classUsageTemplate { #classType item; }
 		package activeClassTemplate { #activeClass part def; }
+		package activeClassUsageTemplate { #activeClass part; }
 		package interfaceTypeTemplate { #interfaceType item def; }
+		package interfaceTypeUsageTemplate { #interfaceType item; }
 		package dataTypeTemplate { #dataType attribute def; }
+		package dataTypeUsageTemplate { #dataType attribute; }
 		package signalTemplate { #signal item def; }
+		package signalUsageTemplate { #signal item; }
 		package exceptionTypeTemplate { #exceptionType item def; }
+		package exceptionTypeUsageTemplate { #exceptionType item; }
 		package operationTemplate { #operation action; }
 		package queryTemplate { #query calc; }
 		package constructorTemplate { #constructor action; }
@@ -157,8 +163,11 @@ library package UML3CatiaMagic {
 		package instantiatesTemplate { #instantiates dependency from Client to Supplier; }
 
 		package componentTemplate { #component part def; }
+		package componentUsageTemplate { #component part; }
 		package serviceTemplate { #service part def; }
+		package serviceUsageTemplate { #service part; }
 		package subsystemTemplate { #subsystem part def; }
+		package subsystemUsageTemplate { #subsystem part; }
 		package servicePortTemplate { #servicePort port def; }
 		package providedPortTemplate { #provided port; }
 		package requiredPortTemplate { #required port; }
@@ -174,9 +183,13 @@ library package UML3CatiaMagic {
 		}
 
 		package nodeTemplate { #node part def; }
+		package nodeUsageTemplate { #node part; }
 		package deviceTemplate { #device part def; }
+		package deviceUsageTemplate { #device part; }
 		package executionEnvironmentTemplate { #executionEnvironment part def; }
+		package executionEnvironmentUsageTemplate { #executionEnvironment part; }
 		package artifactTemplate { #artifact item def; }
+		package artifactUsageTemplate { #artifact item; }
 		package communicationPathTemplate {
 			#communicationPath connection def {
 				end [0..*] ref;
@@ -195,8 +208,11 @@ library package UML3CatiaMagic {
 		}
 
 		package entityTemplate { #entity item def; }
+		package entityUsageTemplate { #entity item; }
 		package aggregateRootTemplate { #aggregateRoot item def; }
+		package aggregateRootUsageTemplate { #aggregateRoot item; }
 		package valueObjectTemplate { #valueObject attribute def; }
+		package valueObjectUsageTemplate { #valueObject attribute; }
 		package relationshipTemplate {
 			#relationship connection def {
 				end [0..*] ref;
@@ -204,23 +220,36 @@ library package UML3CatiaMagic {
 			}
 		}
 		package tableTemplate { #table item def; }
+		package tableUsageTemplate { #table item; }
 		package databaseViewTemplate { #dbView item def; }
+		package databaseViewUsageTemplate { #dbView item; }
 		package databaseTemplate { #database part def; }
+		package databaseUsageTemplate { #database part; }
 		package columnTemplate { #column attribute; }
 		package primaryKeyTemplate { #primaryKey attribute; }
 		package foreignKeyTemplate { ref #foreignKey item; }
 		package mapsToTemplate { #mapsTo dependency from Client to Supplier; }
 
 		package messageTypeTemplate { #messageType item def; }
+		package messageTypeUsageTemplate { #messageType item; }
 		package commandTemplate { #command item def; }
+		package commandUsageTemplate { #command item; }
 		package domainEventTemplate { #domainEvent item def; }
+		package domainEventUsageTemplate { #domainEvent item; }
 		package queryMessageTemplate { #queryMessage item def; }
+		package queryMessageUsageTemplate { #queryMessage item; }
 		package replyTemplate { #reply item def; }
+		package replyUsageTemplate { #reply item; }
 		package documentMessageTemplate { #documentMessage item def; }
+		package documentMessageUsageTemplate { #documentMessage item; }
 		package channelTemplate { #channel part def; }
+		package channelUsageTemplate { #channel part; }
 		package topicTemplate { #topic part def; }
+		package topicUsageTemplate { #topic part; }
 		package queueTemplate { #queue part def; }
+		package queueUsageTemplate { #queue part; }
 		package brokerTemplate { #broker part def; }
+		package brokerUsageTemplate { #broker part; }
 
 		package publishesTemplate {
 			part producer { port events : ProducerPort; }
@@ -318,53 +347,125 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Classifiers";
 			attribute :>> description default "UML3 classes, interfaces, data types, signals, exceptions and enumerations";
-			part classButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Class: a #classType item def. */
-				attribute :>> label = "class";
-				attribute :>> description = "#classType item def: a UML3 Class";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::classTemplate meta KerML::Package).ownedElement;
+			part classMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 Class, as a definition or a usage; the class diagram offers the definition first (the defaultForm of UML3DiagramKinds::classDiagram). */
+				part classDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Class: a #classType item def. */
+					attribute :>> label = "class def";
+					attribute :>> description = "#classType item def: a UML3 Class";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::classTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part classUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 Class: #classType item. */
+					attribute :>> label = "class";
+					attribute :>> description = "#classType item: a usage of a UML3 Class";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::classUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default classDefButton;
 			}
-			part activeClassButton : Button :> abstractButtons {
-				doc /* Creates a UML3 ActiveClass: an #activeClass part def with its own thread of control. */
-				attribute :>> label = "active class";
-				attribute :>> description = "#activeClass part def: a UML3 ActiveClass";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::activeClassTemplate meta KerML::Package).ownedElement;
+			part activeClassMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 ActiveClass, as a definition or a usage; the class diagram offers the definition first (the defaultForm of UML3DiagramKinds::classDiagram). */
+				part activeClassDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 ActiveClass: an #activeClass part def with its own thread of control. */
+					attribute :>> label = "active class def";
+					attribute :>> description = "#activeClass part def: a UML3 ActiveClass";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::activeClassTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part activeClassUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 ActiveClass: #activeClass part. */
+					attribute :>> label = "active class";
+					attribute :>> description = "#activeClass part: a usage of a UML3 ActiveClass";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::activeClassUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default activeClassDefButton;
 			}
-			part interfaceTypeButton : Button :> abstractButtons {
-				doc /* Creates a UML3 InterfaceType: an #interfaceType item def of abstract operations. */
-				attribute :>> label = "interface";
-				attribute :>> description = "#interfaceType item def: a UML3 InterfaceType";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::interfaceTypeTemplate meta KerML::Package).ownedElement;
+			part interfaceTypeMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 InterfaceType, as a definition or a usage; the class diagram offers the definition first (the defaultForm of UML3DiagramKinds::classDiagram). */
+				part interfaceTypeDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 InterfaceType: an #interfaceType item def of abstract operations. */
+					attribute :>> label = "interface def";
+					attribute :>> description = "#interfaceType item def: a UML3 InterfaceType";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::interfaceTypeTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part interfaceTypeUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 InterfaceType: #interfaceType item. */
+					attribute :>> label = "interface";
+					attribute :>> description = "#interfaceType item: a usage of a UML3 InterfaceType";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::interfaceTypeUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default interfaceTypeDefButton;
 			}
-			part dataTypeButton : Button :> abstractButtons {
-				doc /* Creates a UML3 DataType: a #dataType attribute def, a value without identity. */
-				attribute :>> label = "data type";
-				attribute :>> description = "#dataType attribute def: a UML3 DataType";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::dataTypeTemplate meta KerML::Package).ownedElement;
+			part dataTypeMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 DataType, as a definition or a usage; the class diagram offers the definition first (the defaultForm of UML3DiagramKinds::classDiagram). */
+				part dataTypeDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 DataType: a #dataType attribute def, a value without identity. */
+					attribute :>> label = "data type def";
+					attribute :>> description = "#dataType attribute def: a UML3 DataType";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::dataTypeTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part dataTypeUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 DataType: #dataType attribute. */
+					attribute :>> label = "data type";
+					attribute :>> description = "#dataType attribute: a usage of a UML3 DataType";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::dataTypeUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default dataTypeDefButton;
 			}
-			part signalButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Signal: a #signal item def, an asynchronous stimulus. */
-				attribute :>> label = "signal";
-				attribute :>> description = "#signal item def: a UML3 Signal";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::signalTemplate meta KerML::Package).ownedElement;
+			part signalMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 Signal, as a definition or a usage; the class diagram offers the definition first (the defaultForm of UML3DiagramKinds::classDiagram). */
+				part signalDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Signal: a #signal item def, an asynchronous stimulus. */
+					attribute :>> label = "signal def";
+					attribute :>> description = "#signal item def: a UML3 Signal";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::signalTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part signalUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 Signal: #signal item. */
+					attribute :>> label = "signal";
+					attribute :>> description = "#signal item: a usage of a UML3 Signal";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::signalUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default signalDefButton;
 			}
-			part exceptionTypeButton : Button :> abstractButtons {
-				doc /* Creates a UML3 ExceptionType: an #exceptionType item def raised by operations. */
-				attribute :>> label = "exception";
-				attribute :>> description = "#exceptionType item def: a UML3 ExceptionType";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::exceptionTypeTemplate meta KerML::Package).ownedElement;
+			part exceptionTypeMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 ExceptionType, as a definition or a usage; the class diagram offers the definition first (the defaultForm of UML3DiagramKinds::classDiagram). */
+				part exceptionTypeDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 ExceptionType: an #exceptionType item def raised by operations. */
+					attribute :>> label = "exception def";
+					attribute :>> description = "#exceptionType item def: a UML3 ExceptionType";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::exceptionTypeTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part exceptionTypeUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 ExceptionType: #exceptionType item. */
+					attribute :>> label = "exception";
+					attribute :>> description = "#exceptionType item: a usage of a UML3 ExceptionType";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::exceptionTypeUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default exceptionTypeDefButton;
 			}
 			part enumerationButton : Button :> abstractButtons {
 				doc /* Creates an enum def, which UML3 uses as the UML Enumeration without a keyword. */
@@ -527,29 +628,65 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Components";
 			attribute :>> description default "UML3 components, services, subsystems, interfaces and ports";
-			part componentButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Component: a #component part def. */
-				attribute :>> label = "component";
-				attribute :>> description = "#component part def: a UML3 Component";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::componentTemplate meta KerML::Package).ownedElement;
+			part componentMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 Component, as a definition or a usage; the component diagram offers the usage first (the defaultForm of UML3DiagramKinds::componentDiagram). */
+				part componentUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 Component: #component part. */
+					attribute :>> label = "component";
+					attribute :>> description = "#component part: a usage of a UML3 Component";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::componentUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part componentDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Component: a #component part def. */
+					attribute :>> label = "component def";
+					attribute :>> description = "#component part def: a UML3 Component";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::componentTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default componentUsageButton;
 			}
-			part serviceButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Service: a #service part def. */
-				attribute :>> label = "service";
-				attribute :>> description = "#service part def: a deployable UML3 Service";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::serviceTemplate meta KerML::Package).ownedElement;
+			part serviceMenu : ButtonsCategory :> abstractButtons {
+				doc /* A deployable UML3 Service, as a definition or a usage; the component diagram offers the usage first (the defaultForm of UML3DiagramKinds::componentDiagram). */
+				part serviceUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a deployable UML3 Service: #service part. */
+					attribute :>> label = "service";
+					attribute :>> description = "#service part: a usage of a deployable UML3 Service";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::serviceUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part serviceDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Service: a #service part def. */
+					attribute :>> label = "service def";
+					attribute :>> description = "#service part def: a deployable UML3 Service";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::serviceTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default serviceUsageButton;
 			}
-			part subsystemButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Subsystem: a #subsystem part def. */
-				attribute :>> label = "subsystem";
-				attribute :>> description = "#subsystem part def: a UML3 Subsystem of components";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::subsystemTemplate meta KerML::Package).ownedElement;
+			part subsystemMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 Subsystem of components, as a definition or a usage; the component diagram offers the usage first (the defaultForm of UML3DiagramKinds::componentDiagram). */
+				part subsystemUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 Subsystem of components: #subsystem part. */
+					attribute :>> label = "subsystem";
+					attribute :>> description = "#subsystem part: a usage of a UML3 Subsystem of components";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::subsystemUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part subsystemDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Subsystem: a #subsystem part def. */
+					attribute :>> label = "subsystem def";
+					attribute :>> description = "#subsystem part def: a UML3 Subsystem of components";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::subsystemTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default subsystemUsageButton;
 			}
 			part interfaceTypeButton : Button :> abstractButtons {
 				doc /* Creates the UML3 InterfaceType a component provides or requires. */
@@ -644,37 +781,85 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Deployment";
 			attribute :>> description default "UML3 nodes, devices, execution environments and artifacts";
-			part nodeButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Node: a #node part def. */
-				attribute :>> label = "node";
-				attribute :>> description = "#node part def: a UML3 deployment Node";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::nodeTemplate meta KerML::Package).ownedElement;
+			part nodeMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 deployment Node, as a definition or a usage; the deployment diagram offers the usage first (the defaultForm of UML3DiagramKinds::deploymentDiagram). */
+				part nodeUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 deployment Node: #node part. */
+					attribute :>> label = "node";
+					attribute :>> description = "#node part: a usage of a UML3 deployment Node";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::nodeUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part nodeDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Node: a #node part def. */
+					attribute :>> label = "node def";
+					attribute :>> description = "#node part def: a UML3 deployment Node";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::nodeTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default nodeUsageButton;
 			}
-			part deviceButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Device: a #device part def. */
-				attribute :>> label = "device";
-				attribute :>> description = "#device part def: a physical UML3 Device";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::deviceTemplate meta KerML::Package).ownedElement;
+			part deviceMenu : ButtonsCategory :> abstractButtons {
+				doc /* A physical UML3 Device, as a definition or a usage; the deployment diagram offers the usage first (the defaultForm of UML3DiagramKinds::deploymentDiagram). */
+				part deviceUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a physical UML3 Device: #device part. */
+					attribute :>> label = "device";
+					attribute :>> description = "#device part: a usage of a physical UML3 Device";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::deviceUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part deviceDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Device: a #device part def. */
+					attribute :>> label = "device def";
+					attribute :>> description = "#device part def: a physical UML3 Device";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::deviceTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default deviceUsageButton;
 			}
-			part executionEnvironmentButton : Button :> abstractButtons {
-				doc /* Creates a UML3 ExecutionEnvironment: an #executionEnvironment part def. */
-				attribute :>> label = "execution environment";
-				attribute :>> description = "#executionEnvironment part def: a container or runtime";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::executionEnvironmentTemplate meta KerML::Package).ownedElement;
+			part executionEnvironmentMenu : ButtonsCategory :> abstractButtons {
+				doc /* A container or runtime, as a definition or a usage; the deployment diagram offers the usage first (the defaultForm of UML3DiagramKinds::deploymentDiagram). */
+				part executionEnvironmentUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a container or runtime: #executionEnvironment part. */
+					attribute :>> label = "execution environment";
+					attribute :>> description = "#executionEnvironment part: a usage of a container or runtime";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::executionEnvironmentUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part executionEnvironmentDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 ExecutionEnvironment: an #executionEnvironment part def. */
+					attribute :>> label = "execution environment def";
+					attribute :>> description = "#executionEnvironment part def: a container or runtime";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::executionEnvironmentTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default executionEnvironmentUsageButton;
 			}
-			part artifactButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Artifact: an #artifact item def, a deployable file or image. */
-				attribute :>> label = "artifact";
-				attribute :>> description = "#artifact item def: a deployable UML3 Artifact";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::artifactTemplate meta KerML::Package).ownedElement;
+			part artifactMenu : ButtonsCategory :> abstractButtons {
+				doc /* A deployable UML3 Artifact, as a definition or a usage; the deployment diagram offers the usage first (the defaultForm of UML3DiagramKinds::deploymentDiagram). */
+				part artifactUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a deployable UML3 Artifact: #artifact item. */
+					attribute :>> label = "artifact";
+					attribute :>> description = "#artifact item: a usage of a deployable UML3 Artifact";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::artifactUsageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part artifactDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Artifact: an #artifact item def, a deployable file or image. */
+					attribute :>> label = "artifact def";
+					attribute :>> description = "#artifact item def: a deployable UML3 Artifact";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::artifactTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default artifactUsageButton;
 			}
 		}
 		part uml3DeploymentLinksCategory : ButtonsCategory :> buttonCategories {
@@ -736,29 +921,65 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Logical Data";
 			attribute :>> description default "UML3 entities, aggregate roots, value objects and relationships";
-			part entityButton : Button :> abstractButtons {
-				doc /* Creates a UML3 Entity: an #entity item def with its own identity. */
-				attribute :>> label = "entity";
-				attribute :>> description = "#entity item def: a UML3 Entity (needs #primaryKey or #id)";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::entityTemplate meta KerML::Package).ownedElement;
+			part entityMenu : ButtonsCategory :> abstractButtons {
+				doc /* A UML3 Entity (needs #primaryKey or #id), as a definition or a usage; the entity-relationship diagram offers the definition first (the defaultForm of UML3DiagramKinds::entityRelationshipDiagram). */
+				part entityDefButton : Button :> abstractButtons {
+					doc /* Creates a UML3 Entity: an #entity item def with its own identity. */
+					attribute :>> label = "entity def";
+					attribute :>> description = "#entity item def: a UML3 Entity (needs #primaryKey or #id)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::entityTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part entityUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a UML3 Entity (needs #primaryKey or #id): #entity item. */
+					attribute :>> label = "entity";
+					attribute :>> description = "#entity item: a usage of a UML3 Entity (needs #primaryKey or #id)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::entityUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default entityDefButton;
 			}
-			part aggregateRootButton : Button :> abstractButtons {
-				doc /* Creates an #aggregateRoot item def, the entry point of a domain-driven design aggregate. */
-				attribute :>> label = "aggregate root";
-				attribute :>> description = "#aggregateRoot item def: the root of an aggregate";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::aggregateRootTemplate meta KerML::Package).ownedElement;
+			part aggregateRootMenu : ButtonsCategory :> abstractButtons {
+				doc /* The root of an aggregate, as a definition or a usage; the entity-relationship diagram offers the definition first (the defaultForm of UML3DiagramKinds::entityRelationshipDiagram). */
+				part aggregateRootDefButton : Button :> abstractButtons {
+					doc /* Creates an #aggregateRoot item def, the entry point of a domain-driven design aggregate. */
+					attribute :>> label = "aggregate root def";
+					attribute :>> description = "#aggregateRoot item def: the root of an aggregate";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::aggregateRootTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part aggregateRootUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of the root of an aggregate: #aggregateRoot item. */
+					attribute :>> label = "aggregate root";
+					attribute :>> description = "#aggregateRoot item: a usage of the root of an aggregate";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::aggregateRootUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default aggregateRootDefButton;
 			}
-			part valueObjectButton : Button :> abstractButtons {
-				doc /* Creates a #valueObject attribute def, a value compared by its content. */
-				attribute :>> label = "value object";
-				attribute :>> description = "#valueObject attribute def: a value without identity";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::valueObjectTemplate meta KerML::Package).ownedElement;
+			part valueObjectMenu : ButtonsCategory :> abstractButtons {
+				doc /* A value without identity, as a definition or a usage; the entity-relationship diagram offers the definition first (the defaultForm of UML3DiagramKinds::entityRelationshipDiagram). */
+				part valueObjectDefButton : Button :> abstractButtons {
+					doc /* Creates a #valueObject attribute def, a value compared by its content. */
+					attribute :>> label = "value object def";
+					attribute :>> description = "#valueObject attribute def: a value without identity";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::valueObjectTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part valueObjectUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a value without identity: #valueObject attribute. */
+					attribute :>> label = "value object";
+					attribute :>> description = "#valueObject attribute: a usage of a value without identity";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::valueObjectUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default valueObjectDefButton;
 			}
 			part relationshipButton : Button :> abstractButtons {
 				doc /* Creates a #relationship connection def whose end multiplicities give the cardinality. */
@@ -776,29 +997,65 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Physical Data";
 			attribute :>> description default "UML3 tables, database views, databases, columns, keys and mappings";
-			part tableButton : Button :> abstractButtons {
-				doc /* Creates a #table item def, which needs a #primaryKey column. */
-				attribute :>> label = "table";
-				attribute :>> description = "#table item def: a relational Table (needs a #primaryKey column)";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::tableTemplate meta KerML::Package).ownedElement;
+			part tableMenu : ButtonsCategory :> abstractButtons {
+				doc /* A relational Table (needs a #primaryKey column), as a definition or a usage; the entity-relationship diagram offers the definition first (the defaultForm of UML3DiagramKinds::entityRelationshipDiagram). */
+				part tableDefButton : Button :> abstractButtons {
+					doc /* Creates a #table item def, which needs a #primaryKey column. */
+					attribute :>> label = "table def";
+					attribute :>> description = "#table item def: a relational Table (needs a #primaryKey column)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::tableTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part tableUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a relational Table (needs a #primaryKey column): #table item. */
+					attribute :>> label = "table";
+					attribute :>> description = "#table item: a usage of a relational Table (needs a #primaryKey column)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::tableUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default tableDefButton;
 			}
-			part databaseViewButton : Button :> abstractButtons {
-				doc /* Creates a #dbView item def, which should set queryText. */
-				attribute :>> label = "database view";
-				attribute :>> description = "#dbView item def: a database view (set queryText)";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::databaseViewTemplate meta KerML::Package).ownedElement;
+			part databaseViewMenu : ButtonsCategory :> abstractButtons {
+				doc /* A database view (set queryText), as a definition or a usage; the entity-relationship diagram offers the definition first (the defaultForm of UML3DiagramKinds::entityRelationshipDiagram). */
+				part databaseViewDefButton : Button :> abstractButtons {
+					doc /* Creates a #dbView item def, which should set queryText. */
+					attribute :>> label = "database view def";
+					attribute :>> description = "#dbView item def: a database view (set queryText)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::databaseViewTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part databaseViewUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a database view (set queryText): #dbView item. */
+					attribute :>> label = "database view";
+					attribute :>> description = "#dbView item: a usage of a database view (set queryText)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::databaseViewUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default databaseViewDefButton;
 			}
-			part databaseButton : Button :> abstractButtons {
-				doc /* Creates a #database part def that holds tables and views. */
-				attribute :>> label = "database";
-				attribute :>> description = "#database part def: a database holding tables and views";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::databaseTemplate meta KerML::Package).ownedElement;
+			part databaseMenu : ButtonsCategory :> abstractButtons {
+				doc /* A database holding tables and views, as a definition or a usage; the entity-relationship diagram offers the definition first (the defaultForm of UML3DiagramKinds::entityRelationshipDiagram). */
+				part databaseDefButton : Button :> abstractButtons {
+					doc /* Creates a #database part def that holds tables and views. */
+					attribute :>> label = "database def";
+					attribute :>> description = "#database part def: a database holding tables and views";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::databaseTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part databaseUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a database holding tables and views: #database part. */
+					attribute :>> label = "database";
+					attribute :>> description = "#database part: a usage of a database holding tables and views";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::databaseUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default databaseDefButton;
 			}
 			part columnButton : Button :> abstractButtons {
 				doc /* Creates a #column attribute of a table. */
@@ -858,53 +1115,125 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Messages";
 			attribute :>> description default "UML3 commands, events, queries, replies and documents";
-			part commandButton : Button :> abstractButtons {
-				doc /* Creates a #command item def: a request for one handler to act. */
-				attribute :>> label = "command";
-				attribute :>> description = "#command item def: a request addressed to one handler";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::commandTemplate meta KerML::Package).ownedElement;
+			part commandMenu : ButtonsCategory :> abstractButtons {
+				doc /* A request addressed to one handler, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part commandDefButton : Button :> abstractButtons {
+					doc /* Creates a #command item def: a request for one handler to act. */
+					attribute :>> label = "command def";
+					attribute :>> description = "#command item def: a request addressed to one handler";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::commandTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part commandUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a request addressed to one handler: #command item. */
+					attribute :>> label = "command";
+					attribute :>> description = "#command item: a usage of a request addressed to one handler";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::commandUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default commandDefButton;
 			}
-			part domainEventButton : Button :> abstractButtons {
-				doc /* Creates a #domainEvent item def: a fact that has happened. */
-				attribute :>> label = "domain event";
-				attribute :>> description = "#domainEvent item def: something that has happened";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::domainEventTemplate meta KerML::Package).ownedElement;
+			part domainEventMenu : ButtonsCategory :> abstractButtons {
+				doc /* Something that has happened, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part domainEventDefButton : Button :> abstractButtons {
+					doc /* Creates a #domainEvent item def: a fact that has happened. */
+					attribute :>> label = "domain event def";
+					attribute :>> description = "#domainEvent item def: something that has happened";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::domainEventTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part domainEventUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of something that has happened: #domainEvent item. */
+					attribute :>> label = "domain event";
+					attribute :>> description = "#domainEvent item: a usage of something that has happened";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::domainEventUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default domainEventDefButton;
 			}
-			part queryMessageButton : Button :> abstractButtons {
-				doc /* Creates a #queryMessage item def: a request for data. */
-				attribute :>> label = "query message";
-				attribute :>> description = "#queryMessage item def: a request for data";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::queryMessageTemplate meta KerML::Package).ownedElement;
+			part queryMessageMenu : ButtonsCategory :> abstractButtons {
+				doc /* A request for data, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part queryMessageDefButton : Button :> abstractButtons {
+					doc /* Creates a #queryMessage item def: a request for data. */
+					attribute :>> label = "query message def";
+					attribute :>> description = "#queryMessage item def: a request for data";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::queryMessageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part queryMessageUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a request for data: #queryMessage item. */
+					attribute :>> label = "query message";
+					attribute :>> description = "#queryMessage item: a usage of a request for data";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::queryMessageUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default queryMessageDefButton;
 			}
-			part replyButton : Button :> abstractButtons {
-				doc /* Creates a #reply item def: the answer to a command or query. */
-				attribute :>> label = "reply";
-				attribute :>> description = "#reply item def: the answer to a request";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::replyTemplate meta KerML::Package).ownedElement;
+			part replyMenu : ButtonsCategory :> abstractButtons {
+				doc /* The answer to a request, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part replyDefButton : Button :> abstractButtons {
+					doc /* Creates a #reply item def: the answer to a command or query. */
+					attribute :>> label = "reply def";
+					attribute :>> description = "#reply item def: the answer to a request";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::replyTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part replyUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of the answer to a request: #reply item. */
+					attribute :>> label = "reply";
+					attribute :>> description = "#reply item: a usage of the answer to a request";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::replyUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default replyDefButton;
 			}
-			part documentMessageButton : Button :> abstractButtons {
-				doc /* Creates a #documentMessage item def: data passed without a request. */
-				attribute :>> label = "document message";
-				attribute :>> description = "#documentMessage item def: data passed between systems";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::documentMessageTemplate meta KerML::Package).ownedElement;
+			part documentMessageMenu : ButtonsCategory :> abstractButtons {
+				doc /* Data passed between systems, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part documentMessageDefButton : Button :> abstractButtons {
+					doc /* Creates a #documentMessage item def: data passed without a request. */
+					attribute :>> label = "document message def";
+					attribute :>> description = "#documentMessage item def: data passed between systems";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::documentMessageTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part documentMessageUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of data passed between systems: #documentMessage item. */
+					attribute :>> label = "document message";
+					attribute :>> description = "#documentMessage item: a usage of data passed between systems";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::documentMessageUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default documentMessageDefButton;
 			}
-			part messageTypeButton : Button :> abstractButtons {
-				doc /* Creates a #messageType item def when no more specific message keyword fits. */
-				attribute :>> label = "message type";
-				attribute :>> description = "#messageType item def: a message with the standard header";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::messageTypeTemplate meta KerML::Package).ownedElement;
+			part messageTypeMenu : ButtonsCategory :> abstractButtons {
+				doc /* A message with the standard header, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part messageTypeDefButton : Button :> abstractButtons {
+					doc /* Creates a #messageType item def when no more specific message keyword fits. */
+					attribute :>> label = "message type def";
+					attribute :>> description = "#messageType item def: a message with the standard header";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::messageTypeTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part messageTypeUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a message with the standard header: #messageType item. */
+					attribute :>> label = "message type";
+					attribute :>> description = "#messageType item: a usage of a message with the standard header";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::messageTypeUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default messageTypeDefButton;
 			}
 		}
 		part uml3ChannelsCategory : ButtonsCategory :> buttonCategories {
@@ -913,37 +1242,85 @@ library package UML3CatiaMagic {
 			attribute :>> hasVisibleLabels default true;
 			attribute :>> label default "UML3 Channels";
 			attribute :>> description default "UML3 channels, topics, queues and brokers";
-			part topicButton : Button :> abstractButtons {
-				doc /* Creates a #topic part def: publish and subscribe to many consumers. */
-				attribute :>> label = "topic";
-				attribute :>> description = "#topic part def: publish-subscribe channel (declare @QualityOfService)";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::topicTemplate meta KerML::Package).ownedElement;
+			part topicMenu : ButtonsCategory :> abstractButtons {
+				doc /* Publish-subscribe channel (declare @QualityOfService), as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part topicDefButton : Button :> abstractButtons {
+					doc /* Creates a #topic part def: publish and subscribe to many consumers. */
+					attribute :>> label = "topic def";
+					attribute :>> description = "#topic part def: publish-subscribe channel (declare @QualityOfService)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::topicTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part topicUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of publish-subscribe channel (declare @QualityOfService): #topic part. */
+					attribute :>> label = "topic";
+					attribute :>> description = "#topic part: a usage of publish-subscribe channel (declare @QualityOfService)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::topicUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default topicDefButton;
 			}
-			part queueButton : Button :> abstractButtons {
-				doc /* Creates a #queue part def: point-to-point delivery to one consumer. */
-				attribute :>> label = "queue";
-				attribute :>> description = "#queue part def: point-to-point channel (declare @QualityOfService)";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::queueTemplate meta KerML::Package).ownedElement;
+			part queueMenu : ButtonsCategory :> abstractButtons {
+				doc /* Point-to-point channel (declare @QualityOfService), as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part queueDefButton : Button :> abstractButtons {
+					doc /* Creates a #queue part def: point-to-point delivery to one consumer. */
+					attribute :>> label = "queue def";
+					attribute :>> description = "#queue part def: point-to-point channel (declare @QualityOfService)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::queueTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part queueUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of point-to-point channel (declare @QualityOfService): #queue part. */
+					attribute :>> label = "queue";
+					attribute :>> description = "#queue part: a usage of point-to-point channel (declare @QualityOfService)";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::queueUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default queueDefButton;
 			}
-			part channelButton : Button :> abstractButtons {
-				doc /* Creates a #channel part def when the channel is neither a topic nor a queue. */
-				attribute :>> label = "channel";
-				attribute :>> description = "#channel part def: a channel that carries messages";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::channelTemplate meta KerML::Package).ownedElement;
+			part channelMenu : ButtonsCategory :> abstractButtons {
+				doc /* A channel that carries messages, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part channelDefButton : Button :> abstractButtons {
+					doc /* Creates a #channel part def when the channel is neither a topic nor a queue. */
+					attribute :>> label = "channel def";
+					attribute :>> description = "#channel part def: a channel that carries messages";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::channelTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part channelUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of a channel that carries messages: #channel part. */
+					attribute :>> label = "channel";
+					attribute :>> description = "#channel part: a usage of a channel that carries messages";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::channelUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default channelDefButton;
 			}
-			part brokerButton : Button :> abstractButtons {
-				doc /* Creates a #broker part def: the middleware that owns channels. */
-				attribute :>> label = "broker";
-				attribute :>> description = "#broker part def: the middleware hosting the channels";
-				perform action : OperationFromTemplate :>> operation {
-					in ref = (UML3ElementTemplates::brokerTemplate meta KerML::Package).ownedElement;
+			part brokerMenu : ButtonsCategory :> abstractButtons {
+				doc /* The middleware hosting the channels, as a definition or a usage; the message schema offers the definition first (the defaultForm of UML3DiagramKinds::messageSchema). */
+				part brokerDefButton : Button :> abstractButtons {
+					doc /* Creates a #broker part def: the middleware that owns channels. */
+					attribute :>> label = "broker def";
+					attribute :>> description = "#broker part def: the middleware hosting the channels";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::brokerTemplate meta KerML::Package).ownedElement;
+					}
 				}
+				part brokerUsageButton : Button :> abstractButtons {
+					doc /* Creates a usage of the middleware hosting the channels: #broker part. */
+					attribute :>> label = "broker";
+					attribute :>> description = "#broker part: a usage of the middleware hosting the channels";
+					perform action : OperationFromTemplate :>> operation {
+						in ref = (UML3ElementTemplates::brokerUsageTemplate meta KerML::Package).ownedElement;
+					}
+				}
+				:>> focusedButton default brokerDefButton;
 			}
 		}
 		part uml3MessageFlowsCategory : ButtonsCategory :> buttonCategories {

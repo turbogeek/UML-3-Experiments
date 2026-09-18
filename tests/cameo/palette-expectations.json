@@ -1,5 +1,5 @@
 {
-  "description": "The UML3 palettes CATIA Magic builds from customization/catia-magic, as tools/cameo-scripts/verifyPalettes.groovy reads them through the DSL service (experiment E17). Each button lists label, the element kind its template owns and the UML3 keyword that element carries, so the check fails if a button stops creating a UML3 element. absentCategories are the General View categories the UML3 palettes remove. The message flow buttons (I-36) copy flows whose ends are UML3Messaging ports, because a flow with undirected ends has no related features. The detail views carry the same palette as their compact counterpart and apply UML3DetailStyleSheet, which shows the compartments a rendered view hides (E19, I-36).",
+  "description": "The UML3 palettes CATIA Magic builds from customization/catia-magic, as tools/cameo-scripts/verifyPalettes.groovy reads them through the DSL service (experiment E17). Each button lists label, the element kind its template owns and the UML3 keyword that element carries, so the check fails if a button stops creating a UML3 element. absentCategories are the General View categories the UML3 palettes remove. The message flow buttons (I-36) copy flows whose ends are UML3Messaging ports, because a flow with undirected ends has no related features. The detail views carry the same palette as their compact counterpart and apply UML3DetailStyleSheet, which shows the compartments a rendered view hides (E19, I-36). 2026-09-17 (before running): 29 buttons became definition-and-usage menus; each entry's fourth element predicts the place in the menu ('focused' = the button the palette shows, 'menu' = the other form), following UML3DiagramKinds defaultForm: definition first on the class, entity-relationship and message schema palettes, usage first on the component and deployment palettes. The dependency menu's focus on 'uses' is predicted too.",
   "absentCategories": [
     "Actions",
     "Other Actions",
@@ -25,34 +25,76 @@
       "categories": {
         "UML3 Classifiers": [
           [
-            "class",
+            "class def",
             "ItemDefinitionImpl",
-            "classType"
+            "classType",
+            "focused"
+          ],
+          [
+            "class",
+            "ItemUsageImpl",
+            "classType",
+            "menu"
+          ],
+          [
+            "active class def",
+            "PartDefinitionImpl",
+            "activeClass",
+            "focused"
           ],
           [
             "active class",
-            "PartDefinitionImpl",
-            "activeClass"
+            "PartUsageImpl",
+            "activeClass",
+            "menu"
+          ],
+          [
+            "interface def",
+            "ItemDefinitionImpl",
+            "interfaceType",
+            "focused"
           ],
           [
             "interface",
-            "ItemDefinitionImpl",
-            "interfaceType"
+            "ItemUsageImpl",
+            "interfaceType",
+            "menu"
+          ],
+          [
+            "data type def",
+            "AttributeDefinitionImpl",
+            "dataType",
+            "focused"
           ],
           [
             "data type",
-            "AttributeDefinitionImpl",
-            "dataType"
+            "AttributeUsageImpl",
+            "dataType",
+            "menu"
+          ],
+          [
+            "signal def",
+            "ItemDefinitionImpl",
+            "signal",
+            "focused"
           ],
           [
             "signal",
+            "ItemUsageImpl",
+            "signal",
+            "menu"
+          ],
+          [
+            "exception def",
             "ItemDefinitionImpl",
-            "signal"
+            "exceptionType",
+            "focused"
           ],
           [
             "exception",
-            "ItemDefinitionImpl",
-            "exceptionType"
+            "ItemUsageImpl",
+            "exceptionType",
+            "menu"
           ]
         ],
         "UML3 Features": [
@@ -91,32 +133,38 @@
           [
             "uses",
             "DependencyImpl",
-            "uses"
+            "uses",
+            "focused"
           ],
           [
             "realizes",
             "DependencyImpl",
-            "realizes"
+            "realizes",
+            "menu"
           ],
           [
             "calls",
             "DependencyImpl",
-            "calls"
+            "calls",
+            "menu"
           ],
           [
             "creates",
             "DependencyImpl",
-            "creates"
+            "creates",
+            "menu"
           ],
           [
             "traces",
             "DependencyImpl",
-            "traces"
+            "traces",
+            "menu"
           ],
           [
             "instantiates",
             "DependencyImpl",
-            "instantiates"
+            "instantiates",
+            "menu"
           ]
         ]
       }
@@ -151,18 +199,39 @@
         "UML3 Components": [
           [
             "component",
+            "PartUsageImpl",
+            "component",
+            "focused"
+          ],
+          [
+            "component def",
             "PartDefinitionImpl",
-            "component"
+            "component",
+            "menu"
           ],
           [
             "service",
+            "PartUsageImpl",
+            "service",
+            "focused"
+          ],
+          [
+            "service def",
             "PartDefinitionImpl",
-            "service"
+            "service",
+            "menu"
           ],
           [
             "subsystem",
+            "PartUsageImpl",
+            "subsystem",
+            "focused"
+          ],
+          [
+            "subsystem def",
             "PartDefinitionImpl",
-            "subsystem"
+            "subsystem",
+            "menu"
           ],
           [
             "interface",
@@ -211,23 +280,51 @@
         "UML3 Deployment": [
           [
             "node",
+            "PartUsageImpl",
+            "node",
+            "focused"
+          ],
+          [
+            "node def",
             "PartDefinitionImpl",
-            "node"
+            "node",
+            "menu"
           ],
           [
             "device",
+            "PartUsageImpl",
+            "device",
+            "focused"
+          ],
+          [
+            "device def",
             "PartDefinitionImpl",
-            "device"
+            "device",
+            "menu"
           ],
           [
             "execution environment",
+            "PartUsageImpl",
+            "executionEnvironment",
+            "focused"
+          ],
+          [
+            "execution environment def",
             "PartDefinitionImpl",
-            "executionEnvironment"
+            "executionEnvironment",
+            "menu"
           ],
           [
             "artifact",
+            "ItemUsageImpl",
+            "artifact",
+            "focused"
+          ],
+          [
+            "artifact def",
             "ItemDefinitionImpl",
-            "artifact"
+            "artifact",
+            "menu"
           ]
         ],
         "UML3 Deployment Links": [
@@ -255,19 +352,40 @@
       "categories": {
         "UML3 Logical Data": [
           [
-            "entity",
+            "entity def",
             "ItemDefinitionImpl",
-            "entity"
+            "entity",
+            "focused"
+          ],
+          [
+            "entity",
+            "ItemUsageImpl",
+            "entity",
+            "menu"
+          ],
+          [
+            "aggregate root def",
+            "ItemDefinitionImpl",
+            "aggregateRoot",
+            "focused"
           ],
           [
             "aggregate root",
-            "ItemDefinitionImpl",
-            "aggregateRoot"
+            "ItemUsageImpl",
+            "aggregateRoot",
+            "menu"
+          ],
+          [
+            "value object def",
+            "AttributeDefinitionImpl",
+            "valueObject",
+            "focused"
           ],
           [
             "value object",
-            "AttributeDefinitionImpl",
-            "valueObject"
+            "AttributeUsageImpl",
+            "valueObject",
+            "menu"
           ],
           [
             "relationship",
@@ -277,19 +395,40 @@
         ],
         "UML3 Physical Data": [
           [
-            "table",
+            "table def",
             "ItemDefinitionImpl",
-            "table"
+            "table",
+            "focused"
+          ],
+          [
+            "table",
+            "ItemUsageImpl",
+            "table",
+            "menu"
+          ],
+          [
+            "database view def",
+            "ItemDefinitionImpl",
+            "dbView",
+            "focused"
           ],
           [
             "database view",
-            "ItemDefinitionImpl",
-            "dbView"
+            "ItemUsageImpl",
+            "dbView",
+            "menu"
+          ],
+          [
+            "database def",
+            "PartDefinitionImpl",
+            "database",
+            "focused"
           ],
           [
             "database",
-            "PartDefinitionImpl",
-            "database"
+            "PartUsageImpl",
+            "database",
+            "menu"
           ],
           [
             "column",
@@ -320,56 +459,126 @@
       "categories": {
         "UML3 Messages": [
           [
-            "command",
+            "command def",
             "ItemDefinitionImpl",
-            "command"
+            "command",
+            "focused"
+          ],
+          [
+            "command",
+            "ItemUsageImpl",
+            "command",
+            "menu"
+          ],
+          [
+            "domain event def",
+            "ItemDefinitionImpl",
+            "domainEvent",
+            "focused"
           ],
           [
             "domain event",
+            "ItemUsageImpl",
+            "domainEvent",
+            "menu"
+          ],
+          [
+            "query message def",
             "ItemDefinitionImpl",
-            "domainEvent"
+            "queryMessage",
+            "focused"
           ],
           [
             "query message",
+            "ItemUsageImpl",
+            "queryMessage",
+            "menu"
+          ],
+          [
+            "reply def",
             "ItemDefinitionImpl",
-            "queryMessage"
+            "reply",
+            "focused"
           ],
           [
             "reply",
+            "ItemUsageImpl",
+            "reply",
+            "menu"
+          ],
+          [
+            "document message def",
             "ItemDefinitionImpl",
-            "reply"
+            "documentMessage",
+            "focused"
           ],
           [
             "document message",
+            "ItemUsageImpl",
+            "documentMessage",
+            "menu"
+          ],
+          [
+            "message type def",
             "ItemDefinitionImpl",
-            "documentMessage"
+            "messageType",
+            "focused"
           ],
           [
             "message type",
-            "ItemDefinitionImpl",
-            "messageType"
+            "ItemUsageImpl",
+            "messageType",
+            "menu"
           ]
         ],
         "UML3 Channels": [
           [
-            "topic",
+            "topic def",
             "PartDefinitionImpl",
-            "topic"
+            "topic",
+            "focused"
+          ],
+          [
+            "topic",
+            "PartUsageImpl",
+            "topic",
+            "menu"
+          ],
+          [
+            "queue def",
+            "PartDefinitionImpl",
+            "queue",
+            "focused"
           ],
           [
             "queue",
+            "PartUsageImpl",
+            "queue",
+            "menu"
+          ],
+          [
+            "channel def",
             "PartDefinitionImpl",
-            "queue"
+            "channel",
+            "focused"
           ],
           [
             "channel",
+            "PartUsageImpl",
+            "channel",
+            "menu"
+          ],
+          [
+            "broker def",
             "PartDefinitionImpl",
-            "channel"
+            "broker",
+            "focused"
           ],
           [
             "broker",
-            "PartDefinitionImpl",
-            "broker"
+            "PartUsageImpl",
+            "broker",
+            "menu"
           ]
         ],
         "UML3 Message Flows": [
@@ -402,34 +611,76 @@
       "categories": {
         "UML3 Classifiers": [
           [
-            "class",
+            "class def",
             "ItemDefinitionImpl",
-            "classType"
+            "classType",
+            "focused"
+          ],
+          [
+            "class",
+            "ItemUsageImpl",
+            "classType",
+            "menu"
+          ],
+          [
+            "active class def",
+            "PartDefinitionImpl",
+            "activeClass",
+            "focused"
           ],
           [
             "active class",
-            "PartDefinitionImpl",
-            "activeClass"
+            "PartUsageImpl",
+            "activeClass",
+            "menu"
+          ],
+          [
+            "interface def",
+            "ItemDefinitionImpl",
+            "interfaceType",
+            "focused"
           ],
           [
             "interface",
-            "ItemDefinitionImpl",
-            "interfaceType"
+            "ItemUsageImpl",
+            "interfaceType",
+            "menu"
+          ],
+          [
+            "data type def",
+            "AttributeDefinitionImpl",
+            "dataType",
+            "focused"
           ],
           [
             "data type",
-            "AttributeDefinitionImpl",
-            "dataType"
+            "AttributeUsageImpl",
+            "dataType",
+            "menu"
+          ],
+          [
+            "signal def",
+            "ItemDefinitionImpl",
+            "signal",
+            "focused"
           ],
           [
             "signal",
+            "ItemUsageImpl",
+            "signal",
+            "menu"
+          ],
+          [
+            "exception def",
             "ItemDefinitionImpl",
-            "signal"
+            "exceptionType",
+            "focused"
           ],
           [
             "exception",
-            "ItemDefinitionImpl",
-            "exceptionType"
+            "ItemUsageImpl",
+            "exceptionType",
+            "menu"
           ]
         ],
         "UML3 Features": [
@@ -468,32 +719,38 @@
           [
             "uses",
             "DependencyImpl",
-            "uses"
+            "uses",
+            "focused"
           ],
           [
             "realizes",
             "DependencyImpl",
-            "realizes"
+            "realizes",
+            "menu"
           ],
           [
             "calls",
             "DependencyImpl",
-            "calls"
+            "calls",
+            "menu"
           ],
           [
             "creates",
             "DependencyImpl",
-            "creates"
+            "creates",
+            "menu"
           ],
           [
             "traces",
             "DependencyImpl",
-            "traces"
+            "traces",
+            "menu"
           ],
           [
             "instantiates",
             "DependencyImpl",
-            "instantiates"
+            "instantiates",
+            "menu"
           ]
         ]
       }
@@ -505,23 +762,51 @@
         "UML3 Deployment": [
           [
             "node",
+            "PartUsageImpl",
+            "node",
+            "focused"
+          ],
+          [
+            "node def",
             "PartDefinitionImpl",
-            "node"
+            "node",
+            "menu"
           ],
           [
             "device",
+            "PartUsageImpl",
+            "device",
+            "focused"
+          ],
+          [
+            "device def",
             "PartDefinitionImpl",
-            "device"
+            "device",
+            "menu"
           ],
           [
             "execution environment",
+            "PartUsageImpl",
+            "executionEnvironment",
+            "focused"
+          ],
+          [
+            "execution environment def",
             "PartDefinitionImpl",
-            "executionEnvironment"
+            "executionEnvironment",
+            "menu"
           ],
           [
             "artifact",
+            "ItemUsageImpl",
+            "artifact",
+            "focused"
+          ],
+          [
+            "artifact def",
             "ItemDefinitionImpl",
-            "artifact"
+            "artifact",
+            "menu"
           ]
         ],
         "UML3 Deployment Links": [
@@ -549,19 +834,40 @@
       "categories": {
         "UML3 Logical Data": [
           [
-            "entity",
+            "entity def",
             "ItemDefinitionImpl",
-            "entity"
+            "entity",
+            "focused"
+          ],
+          [
+            "entity",
+            "ItemUsageImpl",
+            "entity",
+            "menu"
+          ],
+          [
+            "aggregate root def",
+            "ItemDefinitionImpl",
+            "aggregateRoot",
+            "focused"
           ],
           [
             "aggregate root",
-            "ItemDefinitionImpl",
-            "aggregateRoot"
+            "ItemUsageImpl",
+            "aggregateRoot",
+            "menu"
+          ],
+          [
+            "value object def",
+            "AttributeDefinitionImpl",
+            "valueObject",
+            "focused"
           ],
           [
             "value object",
-            "AttributeDefinitionImpl",
-            "valueObject"
+            "AttributeUsageImpl",
+            "valueObject",
+            "menu"
           ],
           [
             "relationship",
@@ -571,19 +877,40 @@
         ],
         "UML3 Physical Data": [
           [
-            "table",
+            "table def",
             "ItemDefinitionImpl",
-            "table"
+            "table",
+            "focused"
+          ],
+          [
+            "table",
+            "ItemUsageImpl",
+            "table",
+            "menu"
+          ],
+          [
+            "database view def",
+            "ItemDefinitionImpl",
+            "dbView",
+            "focused"
           ],
           [
             "database view",
-            "ItemDefinitionImpl",
-            "dbView"
+            "ItemUsageImpl",
+            "dbView",
+            "menu"
+          ],
+          [
+            "database def",
+            "PartDefinitionImpl",
+            "database",
+            "focused"
           ],
           [
             "database",
-            "PartDefinitionImpl",
-            "database"
+            "PartUsageImpl",
+            "database",
+            "menu"
           ],
           [
             "column",
@@ -614,56 +941,126 @@
       "categories": {
         "UML3 Messages": [
           [
-            "command",
+            "command def",
             "ItemDefinitionImpl",
-            "command"
+            "command",
+            "focused"
+          ],
+          [
+            "command",
+            "ItemUsageImpl",
+            "command",
+            "menu"
+          ],
+          [
+            "domain event def",
+            "ItemDefinitionImpl",
+            "domainEvent",
+            "focused"
           ],
           [
             "domain event",
+            "ItemUsageImpl",
+            "domainEvent",
+            "menu"
+          ],
+          [
+            "query message def",
             "ItemDefinitionImpl",
-            "domainEvent"
+            "queryMessage",
+            "focused"
           ],
           [
             "query message",
+            "ItemUsageImpl",
+            "queryMessage",
+            "menu"
+          ],
+          [
+            "reply def",
             "ItemDefinitionImpl",
-            "queryMessage"
+            "reply",
+            "focused"
           ],
           [
             "reply",
+            "ItemUsageImpl",
+            "reply",
+            "menu"
+          ],
+          [
+            "document message def",
             "ItemDefinitionImpl",
-            "reply"
+            "documentMessage",
+            "focused"
           ],
           [
             "document message",
+            "ItemUsageImpl",
+            "documentMessage",
+            "menu"
+          ],
+          [
+            "message type def",
             "ItemDefinitionImpl",
-            "documentMessage"
+            "messageType",
+            "focused"
           ],
           [
             "message type",
-            "ItemDefinitionImpl",
-            "messageType"
+            "ItemUsageImpl",
+            "messageType",
+            "menu"
           ]
         ],
         "UML3 Channels": [
           [
-            "topic",
+            "topic def",
             "PartDefinitionImpl",
-            "topic"
+            "topic",
+            "focused"
+          ],
+          [
+            "topic",
+            "PartUsageImpl",
+            "topic",
+            "menu"
+          ],
+          [
+            "queue def",
+            "PartDefinitionImpl",
+            "queue",
+            "focused"
           ],
           [
             "queue",
+            "PartUsageImpl",
+            "queue",
+            "menu"
+          ],
+          [
+            "channel def",
             "PartDefinitionImpl",
-            "queue"
+            "channel",
+            "focused"
           ],
           [
             "channel",
+            "PartUsageImpl",
+            "channel",
+            "menu"
+          ],
+          [
+            "broker def",
             "PartDefinitionImpl",
-            "channel"
+            "broker",
+            "focused"
           ],
           [
             "broker",
-            "PartDefinitionImpl",
-            "broker"
+            "PartUsageImpl",
+            "broker",
+            "menu"
           ]
         ],
         "UML3 Message Flows": [

@@ -6,3 +6,5 @@ palette-missing|CREATES
 palette-extra|CREATES
 orphan-view|ORPHAN
 orphan-palette|ORPHAN
+focus-wrong|FOCUS
+focus-undefined|FOCUS

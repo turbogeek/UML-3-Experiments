@@ -8,6 +8,9 @@ palette creates ('creates') and which view definitions render it ('views'). This
   CREATES   a palette (annotated '@PaletteForDiagramKind { kind = ... }') whose buttons do not create exactly the
             kind's 'creates' keywords; a templated button's keyword is the keyword of the element its template owns
   ORPHAN    a view definition in UML3Views that no kind lists, or a palette without the annotation
+  FOCUS     a palette menu that offers both the definition and a usage of a keyword focuses the other form than
+            its kind's 'defaultForm' (definition first on type models, usage first on configurations), or the
+            kind has no defaultForm although its palette has such menus
   MODEL     a name in the model, a filter or a template that does not resolve to a metadata definition
 
 Usage:
@@ -59,9 +62,11 @@ def parse_kinds(path: Path, idx: cn.Index) -> dict[str, dict]:
     for m in re.finditer(r"\n\tpart (\w+) : DiagramKind \{(.*?)\n\t\}", text, re.S):
         name, body = m.group(1), m.group(2)
         body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)  # documentation is not data
-        entry = {"label": None, "shows": set(), "creates": set(), "views": set()}
+        entry = {"label": None, "shows": set(), "creates": set(), "views": set(), "defaultForm": None}
         label = re.search(r':>> label = "([^"]*)"', body)
         entry["label"] = label.group(1) if label else None
+        form = re.search(r":>> defaultForm = CreationForm::(\w+);", body)
+        entry["defaultForm"] = form.group(1) if form else None
         for role in ("shows", "creates", "views"):
             b = re.search(rf":>> {role} = \((.*?)\);", body, re.S)
             if not b:
@@ -88,6 +93,7 @@ def parse_palettes(path: Path, idx: cn.Index) -> dict[str, dict]:
     text = path.read_text(encoding="utf-8")
     # template packages are collected by brace matching, because a template body can be several lines deep
     templates: dict[str, set[str]] = {}
+    forms: dict[str, str] = {}  # template -> 'definition' or 'usage', the form of the element it owns
     lines = text.splitlines()
     i = 0
     while i < len(lines):
@@ -100,7 +106,9 @@ def parse_palettes(path: Path, idx: cn.Index) -> dict[str, dict]:
                 j += 1
                 if depth <= 0:
                     break
-            templates[m.group(1)] = {resolve(k, idx) for k in re.findall(r"#(\w+)\b", "\n".join(body))}
+            joined = "\n".join(body)
+            templates[m.group(1)] = {resolve(k, idx) for k in re.findall(r"#(\w+)\b", joined)}
+            forms[m.group(1)] = "definition" if re.search(r"\bdef\b", joined) else "usage"
             i = j
             continue
         i += 1
@@ -112,8 +120,58 @@ def parse_palettes(path: Path, idx: cn.Index) -> dict[str, dict]:
         for t in re.findall(r"UML3ElementTemplates::(\w+Template) meta", body):
             keywords |= templates.get(t, set())
         palettes[name] = {"kind": kind.group(1) if kind else None, "creates": keywords,
-                          "templates": sorted(set(re.findall(r"UML3ElementTemplates::(\w+Template) meta", body)))}
+                          "templates": sorted(set(re.findall(r"UML3ElementTemplates::(\w+Template) meta", body))),
+                          "menus": parse_menus(body, forms)}
     return palettes
+
+
+MENU_TOKEN = re.compile(r"part\s+(?P<part>\w+)[^;{}]*\{|(?P<open>\{)|(?P<close>\})"
+                        r"|UML3ElementTemplates::(?P<tpl>\w+Template)\s+meta"
+                        r"|focusedButton\s+(?:default|=)\s+(?P<focus>\w+)")
+
+
+def parse_menus(body: str, forms: dict[str, str]) -> list[dict]:
+    """The menus of a palette (blocks that redefine focusedButton) with the form each button creates.
+
+    A menu is recognized by its focusedButton, not by its type, so the fixtures can use plain parts. Each button
+    is the innermost named part around a template reference, and its menu is the named part around the button."""
+    body = re.sub(r"/\*.*?\*/", "", body, flags=re.S)  # documentation may contain braces and words
+    body = re.sub(r'"[^"]*"', '""', body)
+    stack: list[dict] = []
+    menus: list[dict] = []
+
+    def innermost_named(below: int = 0) -> dict | None:
+        named = [e for e in stack if e["name"]]
+        return named[-1 - below] if len(named) > below else None
+
+    for m in MENU_TOKEN.finditer(body):
+        if m.group("part"):
+            stack.append({"name": m.group("part"), "template": None, "buttons": [], "focused": None})
+        elif m.group("open"):
+            stack.append({"name": None})
+        elif m.group("tpl"):
+            button = innermost_named()
+            if button is not None and button["template"] is None:
+                button["template"] = m.group("tpl")
+        elif m.group("focus"):
+            menu = innermost_named()
+            if menu is not None:
+                menu["focused"] = m.group("focus")
+        elif m.group("close") and stack:
+            e = stack.pop()
+            if not e["name"]:
+                continue
+            if e["template"] is not None:
+                parent = innermost_named()
+                if parent is not None:
+                    parent["buttons"].append((e["name"], e["template"]))
+            if e["focused"] is not None:
+                button_forms = {b: forms.get(t, "usage") for b, t in e["buttons"]}
+                menus.append({"menu": e["name"], "focused": e["focused"],
+                              "focusedForm": button_forms.get(e["focused"]),
+                              "paired": {"definition", "usage"} <= set(button_forms.values()),
+                              "buttons": [b for b, _ in e["buttons"]]})
+    return menus
 
 
 def check(kinds: dict, views: dict, palettes: dict) -> dict:
@@ -148,9 +206,20 @@ def check(kinds: dict, views: dict, palettes: dict) -> dict:
             problems.append(f"CREATES {name}: no button creates {missing} (listed by {palette['kind']}::creates)")
         if extra:
             problems.append(f"CREATES {name}: buttons create {extra}, which {palette['kind']}::creates does not list")
-    return {"passed": not problems, "kinds": {k: {r: sorted(v[r]) for r in ("shows", "creates", "views")}
-                                              for k, v in kinds.items()},
-            "palettes": {k: {"kind": v["kind"], "creates": sorted(v["creates"])} for k, v in palettes.items()},
+        paired = [mn for mn in palette.get("menus", []) if mn["paired"]]
+        if paired and kind.get("defaultForm") is None:
+            problems.append(f"FOCUS  {name}: {len(paired)} menus offer a definition and a usage, but "
+                            f"{palette['kind']} has no defaultForm to say which comes first")
+        for mn in paired:
+            if kind.get("defaultForm") is not None and mn["focusedForm"] != kind["defaultForm"]:
+                problems.append(f"FOCUS  {name}: menu {mn['menu']} focuses {mn['focused']} "
+                                f"(the {mn['focusedForm']}), but {palette['kind']}::defaultForm is "
+                                f"{kind['defaultForm']}")
+    return {"passed": not problems,
+            "kinds": {k: {**{r: sorted(v[r]) for r in ("shows", "creates", "views")},
+                          "defaultForm": v.get("defaultForm")} for k, v in kinds.items()},
+            "palettes": {k: {"kind": v["kind"], "creates": sorted(v["creates"]),
+                             "menus": v.get("menus", [])} for k, v in palettes.items()},
             "problems": problems}
 
 

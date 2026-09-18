@@ -46,16 +46,49 @@ collide, so a second copy silently disables every palette (E18).
 | View definition | Palette categories (buttons) |
 |---|---|
 | `UML3 Package Diagram` | UML3 Packages: package, layer, uses, dependency |
-| `UML3 Class Diagram` | UML3 Classifiers: class, active class, interface, data type, signal, exception, enum def. UML3 Features: attribute, operation, query, constructor. UML3 Relationships: association, aggregation, composition, subclassification, and a menu with uses, realizes, calls, creates, traces, instantiates |
-| `UML3 Component Diagram` | UML3 Components: component, service, subsystem, interface, service port def, provided port, required port. UML3 Wiring: assembly, delegation, realizes |
-| `UML3 Deployment Diagram` | UML3 Deployment: node, device, execution environment, artifact. UML3 Deployment Links: communication path, deploy, manifest |
-| `UML3 Entity Relationship Diagram` | UML3 Logical Data: entity, aggregate root, value object, relationship. UML3 Physical Data: table, database view, database, column, primary key, foreign key, maps to |
-| `UML3 Message Schema View` | UML3 Messages: command, domain event, query message, reply, document message, message type. UML3 Channels: topic, queue, channel, broker. UML3 Message Flows: publishes, subscribes, sends, handles |
+| `UML3 Class Diagram` | UML3 Classifiers: class def / class, active class def / active class, interface def / interface, data type def / data type, signal def / signal, exception def / exception, enum def. UML3 Features: attribute, operation, query, constructor. UML3 Relationships: association, aggregation, composition, subclassification, and a menu with uses, realizes, calls, creates, traces, instantiates |
+| `UML3 Component Diagram` | UML3 Components: component / component def, service / service def, subsystem / subsystem def, interface, service port def, provided port, required port. UML3 Wiring: assembly, delegation, realizes |
+| `UML3 Deployment Diagram` | UML3 Deployment: node / node def, device / device def, execution environment / execution environment def, artifact / artifact def. UML3 Deployment Links: communication path, deploy, manifest |
+| `UML3 Entity Relationship Diagram` | UML3 Logical Data: entity def / entity, aggregate root def / aggregate root, value object def / value object, relationship. UML3 Physical Data: table def / table, database view def / database view, database def / database, column, primary key, foreign key, maps to |
+| `UML3 Message Schema View` | UML3 Messages: command def / command, domain event def / domain event, query message def / query message, reply def / reply, document message def / document message, message type def / message type. UML3 Channels: topic def / topic, queue def / queue, channel def / channel, broker def / broker. UML3 Message Flows: publishes, subscribes, sends, handles |
 | `UML3 Class Detail Diagram`, `UML3 Deployment Detail Diagram`, `UML3 Entity Relationship Detail Diagram`, `UML3 Message Schema Detail View` | the palette of the matching compact view, on a view that shows its compartments (`UML3DetailStyleSheet`) |
 
 Each palette keeps the vendor's Selections, Tools, Common, Items/Ports/Attributes, Connectors, Specializations and
 Other Relationships categories and removes Actions, Other Actions, States, Cases and Requirements/Constraints,
 which belong to other diagram kinds.
+
+## Definition and usage buttons
+
+A keyword that can mark both a definition and a usage gets a menu with two buttons, as SysML v2 does for
+`part` and `part def`. The labels read like the text they create: **class def** makes `#classType item def`,
+**class** makes `#classType item`. The menu shows one of them on the palette and the other in its drop-down:
+
+| Diagram kind | On top | Why |
+|---|---|---|
+| class, entity-relationship, message schema | the definition | The diagram is a model of types: the modeler declares classifiers, entities and message types and relates them. A UML class is a definition; a usage is an occasional example of one. |
+| component, deployment | the usage | The diagram is a configuration: the modeler places parts typed by definitions declared elsewhere and wires them. Connectors, deployments and flows connect usages, not definitions, so creating the usage first makes the next step, drawing the connection, work at once. SysML v2 puts usages first for the same reason. |
+
+The choice is not written into each palette: `UML3DiagramKinds` records it once as the `defaultForm` of each
+kind, and the palette focuses the button of that form:
+
+```sysml
+part componentDiagram : DiagramKind {
+    ...
+    attribute :>> defaultForm = CreationForm::usage;
+}
+
+part componentMenu : ButtonsCategory :> abstractButtons {
+    part componentUsageButton : Button :> abstractButtons { ... }     // "component"
+    part componentDefButton : Button :> abstractButtons { ... }       // "component def"
+    :>> focusedButton default componentUsageButton;
+}
+```
+
+`tools/check_diagram_kinds.py` reports a menu that focuses the other form (rule FOCUS), and the CATIA Magic
+read-back checks which button the tool actually shows. Features (`#operation`, `#column`, ports), connectors and
+dependencies stay single buttons: they are always usages, or have no definition form a modeler draws. The
+interface button of the component palette is single too, because a component diagram refers to interfaces but
+does not declare them.
 
 ## How a button creates a UML3 element
 
@@ -140,7 +173,7 @@ has no button, so a keyword added to UML3 cannot be forgotten in the palette (is
 
 * Suite `catia-customization` (local): syntax, name resolution against `tests/catia-magic/ds-customization-stub.sysml`
   (a stub of the vendor library's names, so the checks run without CATIA Magic), documentation rules and design rules.
-* Suite `cameo` with `--palettes`: 10 views (six compact, four detail) are checked; `tools/cameo-scripts/verifyPalettes.groovy` asks CATIA Magic's DSL service for
+* Suite `cameo` with `--palettes`: 10 views (six compact, four detail) are checked, including which button of each definition-and-usage menu the palette shows; `tools/cameo-scripts/verifyPalettes.groovy` asks CATIA Magic's DSL service for
   each view's visualization, palette categories and buttons, resolves every templated button to its template element
   and that element's UML3 keyword, and reads the active Create View dialog. `tools/check_palettes.py` compares this
   with `tests/cameo/palette-expectations.json`; seven negative controls (an unregistered view definition, a missing
