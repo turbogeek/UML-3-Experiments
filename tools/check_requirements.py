@@ -56,6 +56,7 @@ AREAS = [  # code, package, title
     ("AI", "UML3AIRequirements", "Artificial intelligence"),
     ("SYS", "UML3SysMLInteropRequirements", "SysML v2 and KerML interoperation"),
     ("REQ", "UML3RequirementModelingRequirements", "Requirement modeling"),
+    ("PAT", "UML3PatternRequirements", "Patterns"),
 ]
 AREA_BY_PACKAGE = {p: c for c, p, _ in AREAS}
 ID_RE = re.compile(r"^UML3-([A-Z]+)-(\d{3})$")

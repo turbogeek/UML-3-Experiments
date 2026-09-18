@@ -622,7 +622,8 @@
         "SysML::PartDefinition",
         "SysML::ReferenceUsage"
       ],
-      "rationale": "No dedicated construct; a part def with ref roles plus connections, or an interaction occurrence def, expresses the same pattern."
+      "rationale": "No dedicated construct; a part def with ref roles plus connections, or an interaction occurrence def, expresses the same pattern.",
+      "notes": "Collaborations are UML's pattern construct. docs/PATTERNS.md maps them, and OMG SPMS 1.4, onto a pattern definition with typed role features and type-level or instance-level pattern instances; experiment E22 (tests/cameo-experiments/e22-pattern-observer.sysml) writes the Observer pattern that way with existing keywords. Requirement UML3-PAT-025 plans the UML3 construct that will make this row UML3."
     },
     {
       "area": "Components",

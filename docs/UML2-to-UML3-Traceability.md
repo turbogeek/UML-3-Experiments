@@ -88,7 +88,7 @@ This document traces each UML 2.x concept to how **UML3** realizes it on SysML v
 |---|---|---|---|---|---|---|
 | Port | **NATIVE+UML3** | `SysML::PortDefinition`, `SysML::PortUsage`, `SysML::ConjugatedPortDefinition` | `UML3Components::ServicePort`, `UML3Components::provided`, `UML3Components::required` | `#provided port orderApi : OrderApiPort;  #required port paymentApi : ~PaymentApiPort;` | [02-OnlineStoreArchitecture.sysml](../examples/02-OnlineStoreArchitecture.sysml) |  |
 | Connector / ConnectorEnd (assembly, delegation) | **NATIVE+UML3** | `SysML::ConnectionUsage`, `SysML::InterfaceUsage`, `SysML::BindingConnectorAsUsage` | `UML3Components::assembly`, `UML3Components::delegation` | `#assembly connect web.orderApi to orders.orderApi;` | [02-OnlineStoreArchitecture.sysml](../examples/02-OnlineStoreArchitecture.sysml) |  |
-| Collaboration / CollaborationUse | **PARTIAL** | `SysML::PartDefinition`, `SysML::ReferenceUsage` |  |  |  | No dedicated construct; a part def with ref roles plus connections, or an interaction occurrence def, expresses the same pattern. |
+| Collaboration / CollaborationUse | **PARTIAL** | `SysML::PartDefinition`, `SysML::ReferenceUsage` |  |  |  | No dedicated construct; a part def with ref roles plus connections, or an interaction occurrence def, expresses the same pattern. Collaborations are UML's pattern construct. docs/PATTERNS.md maps them, and OMG SPMS 1.4, onto a pattern definition with typed role features and type-level or instance-level pattern instances; experiment E22 (tests/cameo-experiments/e22-pattern-observer.sysml) writes the Observer pattern that way with existing keywords. Requirement UML3-PAT-025 plans the UML3 construct that will make this row UML3. |
 
 ## Components
 

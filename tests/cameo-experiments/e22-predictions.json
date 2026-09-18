@@ -1,0 +1,45 @@
+{
+  "experiment": "E22",
+  "title": "Is SysML v2 with UML3 a proper basis for OMG SPMS patterns? The Observer pattern in native constructs",
+  "recorded": "2026-09-17, before any CATIA Magic run",
+  "setup": "Load the UML3 libraries, then tests/cameo-experiments/e22-pattern-observer.sysml, then e22b-pattern-wrong-binding.sysml. The probe maps SPMS 1.4 (formal/26-04-02) onto native SysML v2 and existing UML3 keywords: PatternDefinition -> an abstract #template part def; Role -> an abstract ref #templateParameter feature with a type and a multiplicity; role relationship -> a connection between role features; PatternSection -> a named comment about the pattern; PatternInstance with Bindings -> a specialization that redefines the roles with design types (type level) or a usage that binds the roles to items of a configuration (instance level); PatternObservation -> valued metadata; RelatedPattern with Nature -> a dependency with metadata; the part of Formalisms a model can carry -> requirement definitions satisfied by the pattern instances. Local evidence before the run: the ANTLR validator reports 0 errors, check_names 0 findings, check_rules 0 findings, and R06 reports a class that plays the observable role without redefining notifyObservers (control in the scratchpad).",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "e22-pattern-observer.sysml loads with 0 builder errors: every construct is native SysML v2 or an existing UML3 keyword",
+      "expected": true,
+      "confidence": "high",
+      "why": "the same constructs already load in the libraries and examples: #template/#templateParameter (example 01 Repository), connections between features, named comments, valued metadata, dependencies with a body, satisfy requirement ... by, metaobject-typed attributes (UML3DiagramKinds)"
+    },
+    {
+      "id": "P2",
+      "claim": "The validation engine reports 0 failures for UML3ProbePatternObserver",
+      "expected": true,
+      "confidence": "medium",
+      "why": "new here are a part usage typed by an abstract pattern definition, a satisfy relationship whose satisfying feature is an attribute holding a metaobject, a requirement subject typed by KerML::Type, and a connection between abstract reference features; any of them could meet a CATIA Magic rule not exercised so far"
+    },
+    {
+      "id": "P3",
+      "claim": "The role features subset UML3Core::templateParameters and the pattern definition specializes the base of #template, so 'all roles of all patterns' is an ordinary subsetting query",
+      "expected": true,
+      "confidence": "high",
+      "why": "the implied relationships of semantic metadata (KerML 9.2.16), verified for #templateParameter in example 01"
+    },
+    {
+      "id": "P4",
+      "claim": "e22b-pattern-wrong-binding.sysml loads and validates with 0 failures although EmailNotifier does not conform to the role type Subject",
+      "expected": true,
+      "confidence": "medium",
+      "why": "KerML derives the types of a redefining feature from its typings and from the redefined feature, so a non-conforming binding intersects the types instead of violating a rule; if CATIA Magic flags it after all, role binding is checked by the language and a UML3 rule is unnecessary"
+    },
+    {
+      "id": "P5",
+      "claim": "CATIA Magic can evaluate the model-level requirement SubjectTypeOwnsNotify for the subject OrderService meta KerML::Type (ownedFeature->exists over the reflective KerML library) and returns true",
+      "expected": "unknown",
+      "confidence": "low",
+      "why": "CATIA Magic evaluates '(pkg meta KerML::Package).ownedElement' in the palette customization, but evaluating a requirement's constraint needs an evaluation entry point that has not been found yet; the experiment needs a script that evaluates the constraint through the tool's expression evaluator"
+    }
+  ],
+  "observations": null,
+  "conclusion": null
+}

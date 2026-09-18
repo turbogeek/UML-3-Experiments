@@ -29,6 +29,7 @@ them and generates [UML3-Requirements.md](UML3-Requirements.md).
 | AI | UML3AIRequirements | AI-assisted modeling (drafting, review, explanation, validation loops), modeling AI/ML systems (models, datasets, pipelines, agents, prompts), provenance and review of AI-produced model content, guardrails | |
 | SYS | UML3SysMLInteropRequirements | Using UML3 inside SysML v2 system models and with other KerML-based languages: shared elements, allocation of software to hardware, shared requirements and verification, SysML v2 API and services | |
 | REQ | UML3RequirementModelingRequirements | Stating the requirements of a software system in a UML3 model with native SysML v2 requirements: typed subjects, requirement kinds, measurable conditions, parameters, decomposition, derivation, refinement, satisfaction, allocation, verification objectives, requirement metadata and priority, requirement views and coverage queries, interchange | Stakeholder validation (VAL), checking the model itself (VER), requirements shared with a system model (SYS) |
+| PAT | UML3PatternRequirements | Design, architecture and integration patterns: pattern definitions with typed roles, role collaboration, sections, concerns and requirements; type-level and instance-level pattern instances, composition and observations; conformance checks; pattern relationships, catalogs and anti-patterns; pattern views, commands and queries; OMG SPMS interchange and UML 2.5.1 collaborations ([PATTERNS.md](PATTERNS.md)) | Integration patterns as components (MSG) |
 
 ## Requirement form
 
