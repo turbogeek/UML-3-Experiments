@@ -176,9 +176,12 @@ has no button, so a keyword added to UML3 cannot be forgotten in the palette (is
 * Suite `cameo` with `--palettes`: 10 views (six compact, four detail) are checked, including which button of each definition-and-usage menu the palette shows; `tools/cameo-scripts/verifyPalettes.groovy` asks CATIA Magic's DSL service for
   each view's visualization, palette categories and buttons, resolves every templated button to its template element
   and that element's UML3 keyword, and reads the active Create View dialog. `tools/check_palettes.py` compares this
-  with `tests/cameo/palette-expectations.json`; seven negative controls (an unregistered view definition, a missing
+  with `tests/cameo/palette-expectations.json`. Nine negative controls (an unregistered view definition, a missing
   category, a button that loses its keyword, a button that copies the wrong element kind, an unresolved template, a
-  category that should have been removed, the wrong active dialog) all fail the check.
+  category that should have been removed, the wrong active dialog, a menu that focuses the other form, a menu button
+  outside its menu) each mutate the recorded read-back `tests/cameo/palettes-recorded.txt` once and must fail the
+  check with the expected problem; suite `catia-customization` runs them every time
+  (`python tools/check_palettes.py --controls tests/cameo/palettes-recorded.txt`).
 
 `tools/cameo-scripts/captureDiagramWindow.groovy` opens a view's diagram and writes a screenshot of the CATIA Magic
 window, which is how the picture above was produced.

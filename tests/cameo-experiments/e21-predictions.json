@@ -37,8 +37,8 @@
       "expected": true,
       "confidence": "high",
       "why": "E20 showed the short name, the declared name and an alias all resolve to the same metadata def (K1-K4 PASS)",
-      "observed": "pending",
-      "observation": "Not exercised by the 22:33 run: no model element was written with a terse id. Made a permanent regression instead of a one-off probe: examples/01 now writes StoreSettings as '#cls #sgl item def', and the expectations T01/T02 (implied specialization) and X20/X21 (label) were recorded before the next run."
+      "observed": "confirmed",
+      "observation": "2026-09-17 23:16 run: example 01 writes StoreSettings as '#cls #sgl item def'. T01: it specializes UML3Core::Class (observed true); T02 control: it does not specialize ActiveClass (observed false); X20: its label is «#classType» «#singleton»; X21 control: «#cls» appears in no label. The terse id is a full second spelling of the keyword, and a diagram never shows it."
     },
     {
       "id": "P5",
@@ -50,5 +50,5 @@
       "observation": "The diagram-kind read-back finds 8/8 kinds (class diagram: 12 shown, 18 created, 2 views) with the model naming keywords by short name."
     }
   ],
-  "conclusion": null
+  "conclusion": "Confirmed (P1-P5). CATIA Magic's keyword label reads a metadata definition's short name and falls back to its declared name, so a UML3 keyword belongs in the short-name slot and a terse id in the declared name: 'metadata def <classType> cls'. Both spellings imply the same specialization, and diagrams show only the keyword. check_rules.py R16 enforces the slot order; example 01 keeps one element written with terse ids as a permanent regression case (T01, T02, X20, X21)."
 }

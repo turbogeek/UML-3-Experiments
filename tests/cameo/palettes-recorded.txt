@@ -1,0 +1,960 @@
+# verifyPalettes.groovy output recorded by tools/run_tests.py --cameo on 2026-09-17 (OVERALL PASS). tools/check_palettes.py --controls
+# mutates it once per negative control; re-record it from a passing CATIA Magic run when palette-expectations.json changes.
+RESET|DSLService
+DSL|valid|true
+VISLIST|Visualization|SysMLv2:Visualization|Visualization|Visualization|null|-
+VISLIST|Base Grid View|SysMLv2:Base Grid View|Visualization|Base Grid View|Visualization|-
+VISLIST|Symbolic View|SysMLv2:Symbolic View|SymbolicVisualization|Symbolic View|Visualization|-
+VISLIST|Base Table|SysMLv2:Base Table|TabularVisualization|Base Table|Base Grid View|-
+VISLIST|Base Symbolic View|SysMLv2:Base Symbolic View|SymbolicVisualization|Base Symbolic View|Symbolic View|3
+VISLIST|Requirements Table|SysMLv2:Requirements Table|TabularVisualization|Requirements Table|Base Table|-
+VISLIST|Generic Table|SysMLv2:Generic Table|TabularVisualization|Generic Table|Base Table|-
+VISLIST|UML3 Class Diagram|SysMLv2:UML3 Class Diagram|SymbolicVisualization|UML3 Class Diagram|Base Symbolic View|10
+VISLIST|UML3 Entity Relationship Detail Diagram|SysMLv2:UML3 Entity Relationship Detail Diagram|SymbolicVisualization|UML3 Entity Relationship Detail Diagram|Base Symbolic View|9
+VISLIST|UML3 Deployment Detail Diagram|SysMLv2:UML3 Deployment Detail Diagram|SymbolicVisualization|UML3 Deployment Detail Diagram|Base Symbolic View|9
+VISLIST|UML3 Class Detail Diagram|SysMLv2:UML3 Class Detail Diagram|SymbolicVisualization|UML3 Class Detail Diagram|Base Symbolic View|10
+VISLIST|General View|SysMLv2:General View|SymbolicVisualization|General View|Base Symbolic View|12
+VISLIST|Interconnection View|SysMLv2:Interconnection View|SymbolicVisualization|Interconnection View|Base Symbolic View|8
+VISLIST|UML3 Entity Relationship Diagram|SysMLv2:UML3 Entity Relationship Diagram|SymbolicVisualization|UML3 Entity Relationship Diagram|Base Symbolic View|9
+VISLIST|State Transition View|SysMLv2:State Transition View|SymbolicVisualization|State Transition View|Base Symbolic View|8
+VISLIST|UML3 Message Schema View|SysMLv2:UML3 Message Schema View|SymbolicVisualization|UML3 Message Schema View|Base Symbolic View|10
+VISLIST|UML3 Package Diagram|SysMLv2:UML3 Package Diagram|SymbolicVisualization|UML3 Package Diagram|Base Symbolic View|8
+VISLIST|Action Flow View|SysMLv2:Action Flow View|SymbolicVisualization|Action Flow View|Base Symbolic View|9
+VISLIST|UML3 Message Schema Detail View|SysMLv2:UML3 Message Schema Detail View|SymbolicVisualization|UML3 Message Schema Detail View|Base Symbolic View|10
+VISLIST|UML3 Component Diagram|SysMLv2:UML3 Component Diagram|SymbolicVisualization|UML3 Component Diagram|Base Symbolic View|9
+VISLIST|UML3 Deployment Diagram|SysMLv2:UML3 Deployment Diagram|SymbolicVisualization|UML3 Deployment Diagram|Base Symbolic View|9
+VIEW|OnlineStoreCatiaMagicViews::domainClasses|true|UML3 Class Diagram
+VIS|OnlineStoreCatiaMagicViews::domainClasses|SymbolicVisualization|SysMLv2:UML3 Class Diagram|UML3 Class Diagram|definition=UML3 Class Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::domainClasses|SysMLv2:UML3 Class Diagram
+VISDEF|OnlineStoreCatiaMagicViews::domainClasses|UML3 Class Diagram|SymbolicVisualization:UML3 Class Diagram
+CAT|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|false|true|7
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|classMenu|classDefButton|class def|true|null|template:ItemDefinitionImpl::classType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|classMenu|classUsageButton|class|false|null|template:ItemUsageImpl::classType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|activeClassMenu|activeClassDefButton|active class def|true|null|template:PartDefinitionImpl::activeClass
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|activeClassMenu|activeClassUsageButton|active class|false|null|template:PartUsageImpl::activeClass
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|interfaceTypeMenu|interfaceTypeDefButton|interface def|true|null|template:ItemDefinitionImpl::interfaceType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|interfaceTypeMenu|interfaceTypeUsageButton|interface|false|null|template:ItemUsageImpl::interfaceType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|dataTypeMenu|dataTypeDefButton|data type def|true|null|template:AttributeDefinitionImpl::dataType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|dataTypeMenu|dataTypeUsageButton|data type|false|null|template:AttributeUsageImpl::dataType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|signalMenu|signalDefButton|signal def|true|null|template:ItemDefinitionImpl::signal
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|signalMenu|signalUsageButton|signal|false|null|template:ItemUsageImpl::signal
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|exceptionTypeMenu|exceptionTypeDefButton|exception def|true|null|template:ItemDefinitionImpl::exceptionType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers|exceptionTypeMenu|exceptionTypeUsageButton|exception|false|null|template:ItemUsageImpl::exceptionType
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Classifiers||enumerationButton|null|false|null|code:ADD_ENUM_DEF
+CAT|OnlineStoreCatiaMagicViews::domainClasses|UML3 Features|false|true|4
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Features||attributeButton|null|false|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Features||operationButton|operation|false|null|template:ActionUsageImpl::operation
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Features||queryButton|query|false|null|template:CalculationUsageImpl::query
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Features||constructorButton|constructor|false|null|template:ActionUsageImpl::constructor
+CAT|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|false|true|5
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships||associationButton|association|false|PATH|template:ConnectionDefinitionImpl::association
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships||aggregationButton|aggregation|false|PATH|template:ConnectionDefinitionImpl::aggregation
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships||compositionButton|composition|false|PATH|template:ConnectionDefinitionImpl::composition
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships||generalizationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|dependencyMenu|usesButton|uses|true|PATH|template:DependencyImpl::uses
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|dependencyMenu|realizesButton|realizes|false|PATH|template:DependencyImpl::realizes
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|dependencyMenu|callsButton|calls|false|PATH|template:DependencyImpl::calls
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|dependencyMenu|createsButton|creates|false|PATH|template:DependencyImpl::creates
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|dependencyMenu|tracesButton|traces|false|PATH|template:DependencyImpl::traces
+BTN|OnlineStoreCatiaMagicViews::domainClasses|UML3 Relationships|dependencyMenu|instantiatesButton|instantiates|false|PATH|template:DependencyImpl::instantiates
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|true|true|8
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::domainClasses|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::domainClasses|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::storePackages|true|UML3 Package Diagram
+VIS|OnlineStoreCatiaMagicViews::storePackages|SymbolicVisualization|SysMLv2:UML3 Package Diagram|UML3 Package Diagram|definition=UML3 Package Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::storePackages|SysMLv2:UML3 Package Diagram
+VISDEF|OnlineStoreCatiaMagicViews::storePackages|UML3 Package Diagram|SymbolicVisualization:UML3 Package Diagram
+CAT|OnlineStoreCatiaMagicViews::storePackages|UML3 Packages|false|true|4
+BTN|OnlineStoreCatiaMagicViews::storePackages|UML3 Packages||packageButton|package|false|null|template:PackageImpl::
+BTN|OnlineStoreCatiaMagicViews::storePackages|UML3 Packages||layerButton|layer|false|null|template:PackageImpl::layer
+BTN|OnlineStoreCatiaMagicViews::storePackages|UML3 Packages||usesButton|uses|false|PATH|template:DependencyImpl::uses
+BTN|OnlineStoreCatiaMagicViews::storePackages|UML3 Packages||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+CAT|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|true|true|8
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::storePackages|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::storePackages|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::storePackages|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::storePackages|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::storePackages|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::storePackages|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::storePackages|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::storePackages|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::storePackages|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::storePackages|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::storePackages|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::storePackages|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::storePackages|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::storePackages|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::storePackages|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::storePackages|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::architectureComponents|true|UML3 Component Diagram
+VIS|OnlineStoreCatiaMagicViews::architectureComponents|SymbolicVisualization|SysMLv2:UML3 Component Diagram|UML3 Component Diagram|definition=UML3 Component Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::architectureComponents|SysMLv2:UML3 Component Diagram
+VISDEF|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Component Diagram|SymbolicVisualization:UML3 Component Diagram
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|false|true|7
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|componentMenu|componentUsageButton|component|true|null|template:PartUsageImpl::component
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|componentMenu|componentDefButton|component def|false|null|template:PartDefinitionImpl::component
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|serviceMenu|serviceUsageButton|service|true|null|template:PartUsageImpl::service
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|serviceMenu|serviceDefButton|service def|false|null|template:PartDefinitionImpl::service
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|subsystemMenu|subsystemUsageButton|subsystem|true|null|template:PartUsageImpl::subsystem
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components|subsystemMenu|subsystemDefButton|subsystem def|false|null|template:PartDefinitionImpl::subsystem
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components||interfaceTypeButton|interface|false|null|template:ItemDefinitionImpl::interfaceType
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components||servicePortDefButton|service port def|false|null|template:PortDefinitionImpl::servicePort
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components||providedPortButton|provided port|false|SHAPE_ON_BORDER|template:PortUsageImpl::provided
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Components||requiredPortButton|required port|false|SHAPE_ON_BORDER|template:PortUsageImpl::required
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Wiring|false|true|3
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Wiring||assemblyButton|assembly|false|PATH|template:ConnectionUsageImpl::assembly
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Wiring||delegationButton|delegation|false|PATH|template:ConnectionUsageImpl::delegation
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|UML3 Wiring||realizesButton|realizes|false|PATH|template:DependencyImpl::realizes
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::architectureComponents|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::architectureComponents|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::deployment|true|UML3 Deployment Diagram
+VIS|OnlineStoreCatiaMagicViews::deployment|SymbolicVisualization|SysMLv2:UML3 Deployment Diagram|UML3 Deployment Diagram|definition=UML3 Deployment Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::deployment|SysMLv2:UML3 Deployment Diagram
+VISDEF|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment Diagram|SymbolicVisualization:UML3 Deployment Diagram
+CAT|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|false|true|4
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|nodeMenu|nodeUsageButton|node|true|null|template:PartUsageImpl::node
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|nodeMenu|nodeDefButton|node def|false|null|template:PartDefinitionImpl::node
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|deviceMenu|deviceUsageButton|device|true|null|template:PartUsageImpl::device
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|deviceMenu|deviceDefButton|device def|false|null|template:PartDefinitionImpl::device
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|executionEnvironmentMenu|executionEnvironmentUsageButton|execution environment|true|null|template:PartUsageImpl::executionEnvironment
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|executionEnvironmentMenu|executionEnvironmentDefButton|execution environment def|false|null|template:PartDefinitionImpl::executionEnvironment
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|artifactMenu|artifactUsageButton|artifact|true|null|template:ItemUsageImpl::artifact
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment|artifactMenu|artifactDefButton|artifact def|false|null|template:ItemDefinitionImpl::artifact
+CAT|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment Links|false|true|3
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment Links||communicationPathButton|communication path|false|PATH|template:ConnectionDefinitionImpl::communicationPath
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment Links||deployButton|deploy|false|PATH|template:AllocationUsageImpl::deploy
+BTN|OnlineStoreCatiaMagicViews::deployment|UML3 Deployment Links||manifestButton|manifest|false|PATH|template:AllocationUsageImpl::manifest
+CAT|OnlineStoreCatiaMagicViews::deployment|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::deployment|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::deployment|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::deployment|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::deployment|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::deployment|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::deployment|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::deployment|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::deployment|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::deployment|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::deployment|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::deployment|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::deployment|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::deployment|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::deployment|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::deployment|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::deployment|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::deployment|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::deployment|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::deployment|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::deployment|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::deployment|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::logicalDataModel|true|UML3 Entity Relationship Diagram
+VIS|OnlineStoreCatiaMagicViews::logicalDataModel|SymbolicVisualization|SysMLv2:UML3 Entity Relationship Diagram|UML3 Entity Relationship Diagram|definition=UML3 Entity Relationship Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::logicalDataModel|SysMLv2:UML3 Entity Relationship Diagram
+VISDEF|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Entity Relationship Diagram|SymbolicVisualization:UML3 Entity Relationship Diagram
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|false|true|4
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|entityMenu|entityDefButton|entity def|true|null|template:ItemDefinitionImpl::entity
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|entityMenu|entityUsageButton|entity|false|null|template:ItemUsageImpl::entity
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|aggregateRootMenu|aggregateRootDefButton|aggregate root def|true|null|template:ItemDefinitionImpl::aggregateRoot
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|aggregateRootMenu|aggregateRootUsageButton|aggregate root|false|null|template:ItemUsageImpl::aggregateRoot
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|valueObjectMenu|valueObjectDefButton|value object def|true|null|template:AttributeDefinitionImpl::valueObject
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data|valueObjectMenu|valueObjectUsageButton|value object|false|null|template:AttributeUsageImpl::valueObject
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Logical Data||relationshipButton|relationship|false|PATH|template:ConnectionDefinitionImpl::relationship
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|false|true|7
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|tableMenu|tableDefButton|table def|true|null|template:ItemDefinitionImpl::table
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|tableMenu|tableUsageButton|table|false|null|template:ItemUsageImpl::table
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|databaseViewMenu|databaseViewDefButton|database view def|true|null|template:ItemDefinitionImpl::dbView
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|databaseViewMenu|databaseViewUsageButton|database view|false|null|template:ItemUsageImpl::dbView
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|databaseMenu|databaseDefButton|database def|true|null|template:PartDefinitionImpl::database
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data|databaseMenu|databaseUsageButton|database|false|null|template:PartUsageImpl::database
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data||columnButton|column|false|null|template:AttributeUsageImpl::column
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data||primaryKeyButton|primary key|false|null|template:AttributeUsageImpl::primaryKey
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data||foreignKeyButton|foreign key|false|null|template:ItemUsageImpl::foreignKey
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|UML3 Physical Data||mapsToButton|maps to|false|PATH|template:DependencyImpl::mapsTo
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::logicalDataModel|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModel|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::messageSchemas|true|UML3 Message Schema View
+VIS|OnlineStoreCatiaMagicViews::messageSchemas|SymbolicVisualization|SysMLv2:UML3 Message Schema View|UML3 Message Schema View|definition=UML3 Message Schema View
+VISTYPE|OnlineStoreCatiaMagicViews::messageSchemas|SysMLv2:UML3 Message Schema View
+VISDEF|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Message Schema View|SymbolicVisualization:UML3 Message Schema View
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|false|true|6
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|commandMenu|commandDefButton|command def|true|null|template:ItemDefinitionImpl::command
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|commandMenu|commandUsageButton|command|false|null|template:ItemUsageImpl::command
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|domainEventMenu|domainEventDefButton|domain event def|true|null|template:ItemDefinitionImpl::domainEvent
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|domainEventMenu|domainEventUsageButton|domain event|false|null|template:ItemUsageImpl::domainEvent
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|queryMessageMenu|queryMessageDefButton|query message def|true|null|template:ItemDefinitionImpl::queryMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|queryMessageMenu|queryMessageUsageButton|query message|false|null|template:ItemUsageImpl::queryMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|replyMenu|replyDefButton|reply def|true|null|template:ItemDefinitionImpl::reply
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|replyMenu|replyUsageButton|reply|false|null|template:ItemUsageImpl::reply
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|documentMessageMenu|documentMessageDefButton|document message def|true|null|template:ItemDefinitionImpl::documentMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|documentMessageMenu|documentMessageUsageButton|document message|false|null|template:ItemUsageImpl::documentMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|messageTypeMenu|messageTypeDefButton|message type def|true|null|template:ItemDefinitionImpl::messageType
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Messages|messageTypeMenu|messageTypeUsageButton|message type|false|null|template:ItemUsageImpl::messageType
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|false|true|4
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|topicMenu|topicDefButton|topic def|true|null|template:PartDefinitionImpl::topic
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|topicMenu|topicUsageButton|topic|false|null|template:PartUsageImpl::topic
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|queueMenu|queueDefButton|queue def|true|null|template:PartDefinitionImpl::queue
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|queueMenu|queueUsageButton|queue|false|null|template:PartUsageImpl::queue
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|channelMenu|channelDefButton|channel def|true|null|template:PartDefinitionImpl::channel
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|channelMenu|channelUsageButton|channel|false|null|template:PartUsageImpl::channel
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|brokerMenu|brokerDefButton|broker def|true|null|template:PartDefinitionImpl::broker
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Channels|brokerMenu|brokerUsageButton|broker|false|null|template:PartUsageImpl::broker
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Message Flows|false|true|4
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Message Flows||publishesButton|publishes|false|PATH|template:FlowUsageImpl::publishes
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Message Flows||subscribesButton|subscribes|false|PATH|template:FlowUsageImpl::subscribes
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Message Flows||sendsButton|sends|false|PATH|template:FlowUsageImpl::sends
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|UML3 Message Flows||handlesButton|handles|false|PATH|template:FlowUsageImpl::handles
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::messageSchemas|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::messageSchemas|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::domainClassDetails|true|UML3 Class Detail Diagram
+VIS|OnlineStoreCatiaMagicViews::domainClassDetails|SymbolicVisualization|SysMLv2:UML3 Class Detail Diagram|UML3 Class Detail Diagram|definition=UML3 Class Detail Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::domainClassDetails|SysMLv2:UML3 Class Detail Diagram
+VISDEF|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Class Detail Diagram|SymbolicVisualization:UML3 Class Detail Diagram
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|false|true|7
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|classMenu|classDefButton|class def|true|null|template:ItemDefinitionImpl::classType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|classMenu|classUsageButton|class|false|null|template:ItemUsageImpl::classType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|activeClassMenu|activeClassDefButton|active class def|true|null|template:PartDefinitionImpl::activeClass
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|activeClassMenu|activeClassUsageButton|active class|false|null|template:PartUsageImpl::activeClass
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|interfaceTypeMenu|interfaceTypeDefButton|interface def|true|null|template:ItemDefinitionImpl::interfaceType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|interfaceTypeMenu|interfaceTypeUsageButton|interface|false|null|template:ItemUsageImpl::interfaceType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|dataTypeMenu|dataTypeDefButton|data type def|true|null|template:AttributeDefinitionImpl::dataType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|dataTypeMenu|dataTypeUsageButton|data type|false|null|template:AttributeUsageImpl::dataType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|signalMenu|signalDefButton|signal def|true|null|template:ItemDefinitionImpl::signal
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|signalMenu|signalUsageButton|signal|false|null|template:ItemUsageImpl::signal
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|exceptionTypeMenu|exceptionTypeDefButton|exception def|true|null|template:ItemDefinitionImpl::exceptionType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers|exceptionTypeMenu|exceptionTypeUsageButton|exception|false|null|template:ItemUsageImpl::exceptionType
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Classifiers||enumerationButton|null|false|null|code:ADD_ENUM_DEF
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Features|false|true|4
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Features||attributeButton|null|false|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Features||operationButton|operation|false|null|template:ActionUsageImpl::operation
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Features||queryButton|query|false|null|template:CalculationUsageImpl::query
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Features||constructorButton|constructor|false|null|template:ActionUsageImpl::constructor
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|false|true|5
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships||associationButton|association|false|PATH|template:ConnectionDefinitionImpl::association
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships||aggregationButton|aggregation|false|PATH|template:ConnectionDefinitionImpl::aggregation
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships||compositionButton|composition|false|PATH|template:ConnectionDefinitionImpl::composition
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships||generalizationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|dependencyMenu|usesButton|uses|true|PATH|template:DependencyImpl::uses
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|dependencyMenu|realizesButton|realizes|false|PATH|template:DependencyImpl::realizes
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|dependencyMenu|callsButton|calls|false|PATH|template:DependencyImpl::calls
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|dependencyMenu|createsButton|creates|false|PATH|template:DependencyImpl::creates
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|dependencyMenu|tracesButton|traces|false|PATH|template:DependencyImpl::traces
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|UML3 Relationships|dependencyMenu|instantiatesButton|instantiates|false|PATH|template:DependencyImpl::instantiates
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|true|true|8
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::domainClassDetails|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::domainClassDetails|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::deploymentDetails|true|UML3 Deployment Detail Diagram
+VIS|OnlineStoreCatiaMagicViews::deploymentDetails|SymbolicVisualization|SysMLv2:UML3 Deployment Detail Diagram|UML3 Deployment Detail Diagram|definition=UML3 Deployment Detail Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::deploymentDetails|SysMLv2:UML3 Deployment Detail Diagram
+VISDEF|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment Detail Diagram|SymbolicVisualization:UML3 Deployment Detail Diagram
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|false|true|4
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|nodeMenu|nodeUsageButton|node|true|null|template:PartUsageImpl::node
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|nodeMenu|nodeDefButton|node def|false|null|template:PartDefinitionImpl::node
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|deviceMenu|deviceUsageButton|device|true|null|template:PartUsageImpl::device
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|deviceMenu|deviceDefButton|device def|false|null|template:PartDefinitionImpl::device
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|executionEnvironmentMenu|executionEnvironmentUsageButton|execution environment|true|null|template:PartUsageImpl::executionEnvironment
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|executionEnvironmentMenu|executionEnvironmentDefButton|execution environment def|false|null|template:PartDefinitionImpl::executionEnvironment
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|artifactMenu|artifactUsageButton|artifact|true|null|template:ItemUsageImpl::artifact
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment|artifactMenu|artifactDefButton|artifact def|false|null|template:ItemDefinitionImpl::artifact
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment Links|false|true|3
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment Links||communicationPathButton|communication path|false|PATH|template:ConnectionDefinitionImpl::communicationPath
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment Links||deployButton|deploy|false|PATH|template:AllocationUsageImpl::deploy
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|UML3 Deployment Links||manifestButton|manifest|false|PATH|template:AllocationUsageImpl::manifest
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::deploymentDetails|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::deploymentDetails|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::logicalDataModelDetails|true|UML3 Entity Relationship Detail Diagram
+VIS|OnlineStoreCatiaMagicViews::logicalDataModelDetails|SymbolicVisualization|SysMLv2:UML3 Entity Relationship Detail Diagram|UML3 Entity Relationship Detail Diagram|definition=UML3 Entity Relationship Detail Diagram
+VISTYPE|OnlineStoreCatiaMagicViews::logicalDataModelDetails|SysMLv2:UML3 Entity Relationship Detail Diagram
+VISDEF|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Entity Relationship Detail Diagram|SymbolicVisualization:UML3 Entity Relationship Detail Diagram
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|false|true|4
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|entityMenu|entityDefButton|entity def|true|null|template:ItemDefinitionImpl::entity
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|entityMenu|entityUsageButton|entity|false|null|template:ItemUsageImpl::entity
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|aggregateRootMenu|aggregateRootDefButton|aggregate root def|true|null|template:ItemDefinitionImpl::aggregateRoot
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|aggregateRootMenu|aggregateRootUsageButton|aggregate root|false|null|template:ItemUsageImpl::aggregateRoot
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|valueObjectMenu|valueObjectDefButton|value object def|true|null|template:AttributeDefinitionImpl::valueObject
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data|valueObjectMenu|valueObjectUsageButton|value object|false|null|template:AttributeUsageImpl::valueObject
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Logical Data||relationshipButton|relationship|false|PATH|template:ConnectionDefinitionImpl::relationship
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|false|true|7
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|tableMenu|tableDefButton|table def|true|null|template:ItemDefinitionImpl::table
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|tableMenu|tableUsageButton|table|false|null|template:ItemUsageImpl::table
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|databaseViewMenu|databaseViewDefButton|database view def|true|null|template:ItemDefinitionImpl::dbView
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|databaseViewMenu|databaseViewUsageButton|database view|false|null|template:ItemUsageImpl::dbView
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|databaseMenu|databaseDefButton|database def|true|null|template:PartDefinitionImpl::database
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data|databaseMenu|databaseUsageButton|database|false|null|template:PartUsageImpl::database
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data||columnButton|column|false|null|template:AttributeUsageImpl::column
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data||primaryKeyButton|primary key|false|null|template:AttributeUsageImpl::primaryKey
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data||foreignKeyButton|foreign key|false|null|template:ItemUsageImpl::foreignKey
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|UML3 Physical Data||mapsToButton|maps to|false|PATH|template:DependencyImpl::mapsTo
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::logicalDataModelDetails|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+VIEW|OnlineStoreCatiaMagicViews::messageSchemaDetails|true|UML3 Message Schema Detail View
+VIS|OnlineStoreCatiaMagicViews::messageSchemaDetails|SymbolicVisualization|SysMLv2:UML3 Message Schema Detail View|UML3 Message Schema Detail View|definition=UML3 Message Schema Detail View
+VISTYPE|OnlineStoreCatiaMagicViews::messageSchemaDetails|SysMLv2:UML3 Message Schema Detail View
+VISDEF|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Message Schema Detail View|SymbolicVisualization:UML3 Message Schema Detail View
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|false|true|6
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|commandMenu|commandDefButton|command def|true|null|template:ItemDefinitionImpl::command
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|commandMenu|commandUsageButton|command|false|null|template:ItemUsageImpl::command
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|domainEventMenu|domainEventDefButton|domain event def|true|null|template:ItemDefinitionImpl::domainEvent
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|domainEventMenu|domainEventUsageButton|domain event|false|null|template:ItemUsageImpl::domainEvent
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|queryMessageMenu|queryMessageDefButton|query message def|true|null|template:ItemDefinitionImpl::queryMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|queryMessageMenu|queryMessageUsageButton|query message|false|null|template:ItemUsageImpl::queryMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|replyMenu|replyDefButton|reply def|true|null|template:ItemDefinitionImpl::reply
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|replyMenu|replyUsageButton|reply|false|null|template:ItemUsageImpl::reply
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|documentMessageMenu|documentMessageDefButton|document message def|true|null|template:ItemDefinitionImpl::documentMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|documentMessageMenu|documentMessageUsageButton|document message|false|null|template:ItemUsageImpl::documentMessage
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|messageTypeMenu|messageTypeDefButton|message type def|true|null|template:ItemDefinitionImpl::messageType
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Messages|messageTypeMenu|messageTypeUsageButton|message type|false|null|template:ItemUsageImpl::messageType
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|false|true|4
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|topicMenu|topicDefButton|topic def|true|null|template:PartDefinitionImpl::topic
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|topicMenu|topicUsageButton|topic|false|null|template:PartUsageImpl::topic
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|queueMenu|queueDefButton|queue def|true|null|template:PartDefinitionImpl::queue
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|queueMenu|queueUsageButton|queue|false|null|template:PartUsageImpl::queue
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|channelMenu|channelDefButton|channel def|true|null|template:PartDefinitionImpl::channel
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|channelMenu|channelUsageButton|channel|false|null|template:PartUsageImpl::channel
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|brokerMenu|brokerDefButton|broker def|true|null|template:PartDefinitionImpl::broker
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Channels|brokerMenu|brokerUsageButton|broker|false|null|template:PartUsageImpl::broker
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Message Flows|false|true|4
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Message Flows||publishesButton|publishes|false|PATH|template:FlowUsageImpl::publishes
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Message Flows||subscribesButton|subscribes|false|PATH|template:FlowUsageImpl::subscribes
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Message Flows||sendsButton|sends|false|PATH|template:FlowUsageImpl::sends
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|UML3 Message Flows||handlesButton|handles|false|PATH|template:FlowUsageImpl::handles
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections|false|false|3
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections||selectionButton|null|false|null|code:SELECTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections||completeCoverageModeButton|null|false|null|code:GROUP_SELECTION_MODE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections|selectionMenu|selectSiblingButton|null|true|null|code:SELECT_SIBLING
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections|selectionMenu|selectOfTheSameTypeButton|null|false|null|code:SELECT_SAME_TYPE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections|selectionMenu|selectConnectedButton|null|false|null|code:SELECT_CONNECTED_DIRECTLY
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections|selectionMenu|selectConnectedRecursivelyButton|null|false|null|code:SELECT_CONNECTED_RECURSIVELY
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Selections|selectionMenu|selectAllButton|null|false|null|code:SELECTALL
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Tools|false|false|3
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Tools||stickyButton|null|false|null|code:STICKY
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Tools||pusherButton|null|false|null|code:PUSHER_ACTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Tools||magnetButton|null|false|null|code:MAGNET_ACTION
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|true|true|6
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|noteMenu|noteButton|null|false|null|code:ADD_NOTE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|noteMenu|noteAnchorButton|null|false|null|code:ADD_NOTE_ANCHOR
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|textBoxMenu|textBoxButton|null|false|null|code:ADD_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|textBoxMenu|textBoxHtmlButton|null|false|null|code:ADD_HTML_TEXT_BOX
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|separatorMenu|horizontalSeparatorButton|null|true|null|code:ADD_SEPARATOR
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|separatorMenu|verticalSeparatorButton|null|false|null|code:ADD_SEPARATOR_VERTICAL
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|separatorMenu|rectangularSeparatorButton|null|false|null|code:ADD_RECTANGULAR_SHAPE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common||docButton|null|false|null|code:ADD_DOC
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common||commentButton|null|false|null|code:ADD_COMMENT
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|imageMenu|imageButton|null|false|null|code:ADD_IMAGE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Common|imageMenu|imageAttributeDefButton|null|false|null|code:ADD_IMAGE_ATTRIBUTE_DEF
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|false|true|8
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|partsMenu|partUsageButton|null|true|null|code:ADD_PART
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|partsMenu|partDefButton|null|false|null|code:ADD_PART_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|portsMenu|portUsageButton|null|true|null|code:ADD_PORT
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|portsMenu|portDefButton|null|false|null|code:ADD_PORT_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|itemsButton|itemUsageButton|null|true|null|code:ADD_ITEM
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|itemsButton|itemDefButton|null|false|null|code:ADD_ITEM_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|attributesMenu|attributeUsageButton|null|true|null|code:ADD_ATTRIBUTE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|attributesMenu|attributeDefButton|null|false|null|code:ADD_ATTRIBUTE_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|timesliceUsageButton|null|true|null|code:ADD_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|snapshotUsageButton|null|false|null|code:ADD_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anyTimesliceUsageButton|null|false|null|code:ADD_ANY_TIMESLICE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes|timeslicesAndSnapshotsMenu|anySnapshotUsageButton|null|false|null|code:ADD_ANY_SNAPSHOT
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes||refButton|null|false|null|code:ADD_REF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes||enumDefButton|null|false|null|code:ADD_ENUM_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Items/Ports/Attributes||metadataDefButton|null|false|null|code:ADD_METADATA_DEF
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|false|true|8
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|connectionMenu|connectionButton|null|true|null|code:ADD_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|connectionMenu|naryConnectionButton|null|false|null|code:ADD_NRY_CONNECTION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|connectionMenu|connectionDefButton|null|false|null|code:ADD_CONNECTION_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|derivationMenu|derivationButton|derivation|true|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|derivationMenu|naryDerivationButton|n-ary derivation|false|null|template:ConnectionUsageImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|derivationMenu|derivationDefButton|derivation def|false|null|template:ConnectionDefinitionImpl::derivation
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors||bindButton|null|false|null|code:ADD_BIND
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|allocationMenu|allocationButton|null|true|null|code:ADD_ALLOCATION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|allocationMenu|allocationDefButton|null|false|null|code:ADD_ALLOCATION_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|flowMenu|flowButton|null|true|null|code:ADD_FLOW
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|flowMenu|flowDefButton|null|false|null|code:ADD_FLOW_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|interfaceMenu|interfaceButton|null|true|null|code:ADD_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|interfaceMenu|naryInterfaceButton|null|false|null|code:ADD_NRY_INTERFACE
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors|interfaceMenu|interfaceDefButton|null|false|null|code:ADD_INTERFACE_DEF
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors||successionButton|null|false|null|code:ADD_SUCCESSION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Connectors||successionFlowButton|null|false|null|code:ADD_SUCCESSION_FLOW
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Specializations|true|true|5
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Specializations||subclassificationButton|null|false|null|code:ADD_SUBCLASSIFICATION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Specializations||featureTypingButton|null|false|null|code:ADD_FEATURE_TYPING
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Specializations||subsettingButton|null|false|null|code:ADD_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Specializations||referenceSubsettingButton|null|false|null|code:ADD_REFERENCE_SUBSETTING
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Specializations||redefinitionButton|null|false|null|code:ADD_REDEFINITION
+CAT|OnlineStoreCatiaMagicViews::messageSchemaDetails|Other Relationships|true|true|3
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Other Relationships||dependencyButton|null|false|null|code:ADD_DEPENDENCY
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Other Relationships||annotationButton|null|false|null|code:ADD_ANNOTATION
+BTN|OnlineStoreCatiaMagicViews::messageSchemaDetails|Other Relationships||featureMembershipButton|null|false|null|code:ADD_FEATURE_MEMBERSHIP
+RESET|DialogService
+DLG|SysMLViewCreationDialog|Create View|false|2
+DLGITEM|SysMLViewCreationDialog|Symbolic Views|General View|template:ViewUsageImpl::
+DLGITEM|SysMLViewCreationDialog|Symbolic Views|Interconnection View|template:ViewUsageImpl::
+DLGITEM|SysMLViewCreationDialog|Symbolic Views|Action Flow View|template:ViewUsageImpl::
+DLGITEM|SysMLViewCreationDialog|Symbolic Views|State Transition View|template:ViewUsageImpl::
+DLGITEM|SysMLViewCreationDialog|Tabular Views|Generic Table|template:ViewUsageImpl::
+DLGITEM|SysMLViewCreationDialog|Tabular Views|Requirements Table|template:ViewUsageImpl::
+DLG|UML3ViewCreationDialog|Create View|true|3
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Package Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Class Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Component Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Deployment Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Entity Relationship Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Message Schema View|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Class Detail Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Deployment Detail Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Entity Relationship Detail Diagram|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|UML3 Views|UML3 Message Schema Detail View|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|Symbolic Views|General View|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|Symbolic Views|Interconnection View|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|Symbolic Views|Action Flow View|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|Symbolic Views|State Transition View|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|Tabular Views|Generic Table|template:ViewUsageImpl::
+DLGITEM|UML3ViewCreationDialog|Tabular Views|Requirements Table|template:ViewUsageImpl::
+DLGACTIVE|UML3ViewCreationDialog
+RESULT|OK|10

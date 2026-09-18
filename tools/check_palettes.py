@@ -124,7 +124,60 @@ def check(verify_text: str, expectations: dict | None = None) -> dict:
             "results": results, "dialog": dialog_result}
 
 
+# Negative controls: each mutates a recorded, passing read-back (tests/cameo/palettes-recorded.txt) in one way and
+# must make the check fail with the named problem. They prove the check can fail, without CATIA Magic.
+_CLS = r"OnlineStoreCatiaMagicViews::domainClasses"
+CONTROLS = [
+    ("unregistered view definition",
+     rf"(?m)^(VIS\|{_CLS}\|[^|]*\|[^|]*\|)UML3 Class Diagram", r"\1General View", "visualization 'General View'"),
+    ("missing category",
+     rf"(?m)^CAT\|{_CLS}\|UML3 Classifiers\|[^\n]*\n", "", "category 'UML3 Classifiers' missing"),
+    ("button loses its keyword",
+     rf"(?m)^(BTN\|{_CLS}\|UML3 Classifiers\|classMenu\|classDefButton\|[^\n]*template:ItemDefinitionImpl::)classType$",
+     r"\1", "button 'class def' copies ItemDefinitionImpl []"),
+    ("button copies the wrong element kind",
+     rf"(?m)^(BTN\|{_CLS}\|UML3 Classifiers\|classMenu\|classDefButton\|[^\n]*template:)ItemDefinitionImpl",
+     r"\1PartDefinitionImpl", "copies PartDefinitionImpl"),
+    ("unresolved template",
+     rf"(?m)^(BTN\|{_CLS}\|UML3 Classifiers\|classMenu\|classDefButton\|[^\n]*)template:ItemDefinitionImpl::classType$",
+     r"\1template:null", "has no template element"),
+    ("category that should have been removed",
+     rf"(?m)^(CAT\|{_CLS}\|UML3 Classifiers\|[^\n]*\n)", r"\1CAT|" + _CLS.replace("\\", "") + "|Actions|false|true|3\n",
+     "category 'Actions' should have been removed"),
+    ("wrong active Create View dialog",
+     r"(?m)^DLGACTIVE\|UML3ViewCreationDialog$", "DLGACTIVE|SysMLViewCreationDialog", "active Create View dialog"),
+    ("definition-and-usage menu focuses the other form",
+     rf"(?m)^(BTN\|{_CLS}\|UML3 Classifiers\|classMenu\|classDefButton\|class def\|)true\|", r"\1false|",
+     "button 'class def' in menu 'classMenu' is not the focused one"),
+    ("menu button outside its menu",
+     rf"(?m)^(BTN\|{_CLS}\|UML3 Classifiers\|)classMenu(\|classUsageButton\|)", r"\1\2",
+     "button 'class' is not in a menu"),
+]
+
+
+def run_controls(recorded: str, spec: dict | None = None) -> list[dict]:
+    """The recorded read-back must pass, and every control must fail with its expected problem."""
+    base = check(recorded, spec)
+    out = [{"control": "recorded read-back passes", "passed": base["passed"],
+            "problems": [p for r in base["results"] for p in r["problems"]][:3]}]
+    for name, pattern, replacement, expected in CONTROLS:
+        mutated, n = re.subn(pattern, replacement, recorded)
+        if n == 0:
+            out.append({"control": name, "passed": False, "problems": ["the mutation matched nothing in the recording"]})
+            continue
+        rep = check(mutated, spec)
+        problems = [p for r in rep["results"] for p in r["problems"]] + list((rep["dialog"] or {}).get("problems", []))
+        out.append({"control": name, "passed": not rep["passed"] and any(expected in p for p in problems),
+                    "expected": expected, "problems": problems[:3]})
+    return out
+
+
 def main() -> int:
+    if len(sys.argv) >= 3 and sys.argv[1] == "--controls":
+        results = run_controls(Path(sys.argv[2]).read_text(encoding="utf-8"))
+        for r in results:
+            print(f"{'PASS' if r['passed'] else 'FAIL'}  {r['control']}  {'; '.join(r['problems'][:1])}")
+        return 0 if all(r["passed"] for r in results) else 1
     if len(sys.argv) < 2:
         print(__doc__)
         return 2

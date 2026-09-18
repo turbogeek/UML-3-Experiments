@@ -360,6 +360,11 @@ def main() -> int:
                   "--report", str(LOGS / "diagram-kinds.json")])
         cust_cases.append({"case": "diagram kinds", "passed": dk.returncode == 0,
                            "errors": [l for l in dk.stdout.splitlines() if not l.startswith("SUMMARY")][:10]})
+        # the palette check can fail: each negative control mutates a recorded CATIA Magic read-back once
+        pc = run([sys.executable, str(ROOT / "tools" / "check_palettes.py"), "--controls",
+                  str(ROOT / "tests" / "cameo" / "palettes-recorded.txt")])
+        cust_cases.append({"case": "palette negative controls", "passed": pc.returncode == 0,
+                           "errors": [l for l in pc.stdout.splitlines() if l.startswith("FAIL")][:10]})
         dk_dir = ROOT / "tests" / "diagram-kinds"
         for entry in (dk_dir / "expected.txt").read_text(encoding="utf-8").splitlines():
             if not entry.strip() or entry.startswith("#"):
