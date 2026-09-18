@@ -1,32 +1,44 @@
 {
   "experiment": "E20 short aliases for UML3 keywords, and the usage form of a keyword",
   "recorded": "2026-09-17, before the run",
-  "setup": "A UML3 keyword is the short name of its metadata definition ('metadata def <classType> classType'), and SysML v2 allows one short name per element, so a shorter spelling has to be an alias. The probe declares 'alias cls for classType' and applies '#cls' to a definition and to a usage, next to the spelled-out '#classType'.",
+  "setup": "At the time of the run a UML3 keyword was the short name of its metadata definition ('metadata def <classType> ClassMetadata'), and SysML v2 allows one short name per element, so a shorter spelling seemed to need an alias. The probe as run wrote the keyword three ways: '#classType' (short name), '#ClassMetadata' (declared name) and '#cls' through 'alias cls for ClassMetadata', on definitions ByShortName, ByDeclaredName and ByAlias and on a usage.",
   "predictions": [
     {
       "id": "P1",
       "claim": "The probe loads with 0 builder errors: an alias is a namespace member, so '#cls' resolves like '#classType'",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "The probe loaded with 0 builder errors."
     },
     {
       "id": "P2",
       "claim": "The validation engine reports no ERROR for the probe package",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "Validation engine: package UML3ProbeKeywordNames, 44 elements checked, 0 failures."
     },
     {
       "id": "P3",
       "claim": "The keyword has the same effect through the alias: AliasedClass specializes UML3Core::Class, exactly as SpelledClass does",
-      "confidence": "medium"
+      "confidence": "medium",
+      "observed": "confirmed",
+      "observation": "K1-K3 PASS: ByShortName, ByDeclaredName and ByAlias all specialize UML3Core::Class."
     },
     {
       "id": "P4",
       "claim": "A keyword on a usage works the same way: aliasedClassUsage subsets UML3Core::classes",
-      "confidence": "high"
+      "confidence": "high",
+      "observed": "confirmed",
+      "observation": "K4 PASS: the keyword on the usage byShortNameUsage implies its subsetting of UML3Core::classes."
     },
     {
       "id": "P5",
       "claim": "tools/check_names.py accepts the alias spelling (it resolves metadata names through the index), or reports it, which would mean the checker needs to follow aliases",
-      "confidence": "low"
+      "confidence": "low",
+      "observed": "second branch: the checker needs to follow aliases",
+      "observation": "Not recorded at the time of the run. Checked 2026-09-18 with the updated probe: tools/check_names.py reports KEYWORD \"metadata/keyword 'classAlias' is not visible\" for '#classAlias', so it does not follow aliases and gives a false finding for a valid SysML v2 spelling. UML3 does not use aliases for keywords, so this is a known checker limitation rather than a library problem."
     }
-  ]
+  ],
+  "note": "Two corrections, 2026-09-18. (1) The predictions P3 and P4 name AliasedClass, SpelledClass and aliasedClassUsage from an earlier draft of the probe; the run used ByShortName, ByDeclaredName, ByAlias and byShortNameUsage, checked as cases K1-K4. (2) The keyword re-slotting (E21) first rewrote this record and the probe mechanically, turning the declared-name case into a second short-name case; the setup above and the probe were restored, and the probe was updated to the current names ('#cls' is now the declared name). The raw output of the run was only printed to the session, not written to a log file; the results below are copied from that session.",
+  "conclusion": "Every name of a metadata definition, and an alias of it, can be written as the keyword with the same effect. Aliases were not adopted for short spellings, because an alias exists to deconflict imported names; E21 then put the keyword in the short-name slot and a terse id in the declared name."
 }

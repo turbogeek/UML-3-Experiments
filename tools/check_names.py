@@ -73,6 +73,7 @@ class Tok:
     kind: str  # ident | sym | string | number | other
     text: str
     line: int
+    quoted: bool = False  # a quoted name ('enum'): never a keyword, whatever its text
 
 
 def tokenize(text: str) -> list[Tok]:
@@ -92,7 +93,7 @@ def tokenize(text: str) -> list[Tok]:
         elif kind in ("ws", "blocknote", "note"):
             pass
         elif kind == "qname":
-            toks.append(Tok("ident", val[1:-1], line))
+            toks.append(Tok("ident", val[1:-1], line, quoted=True))
         elif kind in ("ident", "sym", "string", "number"):
             toks.append(Tok(kind, val, line))
         else:
@@ -731,23 +732,47 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
     # A reserved word cannot be a declared name: 'enum first { ... }' is rejected by CATIA Magic and by the
     # ANTLR validator ("extraneous input 'first'"), because 'first' belongs to the succession syntax. The
     # indexer simply does not read such a token as a name, so without this check the file looks clean (E12).
+    # The declaration may start with prefixes and keywords ('abstract ref #templateParameter item subject : T'), so
+    # the scan starts at a statement start and walks over prefixes, construct words and '#keyword' applications up
+    # to the word that a name terminator follows. That word is a declared name unless it is itself a construct
+    # word with no construct word before it, as in the unnamed 'in ref = x' or 'part;'. (E22: a role named
+    # 'subject' passed the old check, which started only at a construct word that opened the statement.)
     k = 0
     while k < len(toks):
-        if toks[k].kind == "ident" and toks[k].text in DECL_KEYWORDS and _at_statement_start(toks, k):
-            j = k + 1
-            while j < len(toks) and toks[j].kind == "ident" and toks[j].text in DECL_SKIP:
-                j += 1
+        if ((toks[k].kind == "ident" and toks[k].text in DECL_SKIP) or toks[k].text == "#") \
+                and _at_statement_start(toks, k):
+            j = k
+            while j < len(toks):
+                nxt = toks[j + 1].text if j + 1 < len(toks) else ""
+                if (toks[j].kind == "ident" and not toks[j].quoted and toks[j].text in DECL_SKIP
+                        and nxt not in NAME_TERMINATORS):
+                    j += 1
+                elif toks[j].text == "#" and j + 1 < len(toks) and toks[j + 1].kind == "ident":
+                    _, j = parse_qualified(toks, j + 1)
+                else:
+                    break
             if j + 2 < len(toks) and toks[j].text == "<" and toks[j + 1].kind == "ident" and toks[j + 2].text == ">":
                 j += 3
-            if (j < len(toks) and toks[j].kind == "ident" and toks[j].text in NOT_A_NAME
+            prev = toks[j - 1].text if j >= 1 else ""
+            if (j < len(toks) and toks[j].kind == "ident" and not toks[j].quoted and toks[j].text in NOT_A_NAME
                     and toks[j].text not in SOFT_NAMES
-                    and j + 1 < len(toks) and toks[j + 1].text in ("{", ";", ":", ":>", "[", "=")):
+                    and j + 1 < len(toks) and toks[j + 1].text in NAME_TERMINATORS
+                    and (toks[j].text not in DECL_SKIP or prev in NAMING_WORDS)):
                 findings.append(Finding("LINT", toks[j].line,
                                         f"'{toks[j].text}' is a reserved word and cannot be a declared name"))
-            k = j
+            k = max(j, k + 1)
             continue
         k += 1
     return findings
+
+
+# What may follow a declared name, and the construct words after which a declared name comes (a direction such as
+# 'in' can be followed by a construct word instead: 'in ref = x' declares no name).
+NAME_TERMINATORS = ("{", ";", ":", ":>", "[", "=")
+NAMING_WORDS = {"part", "item", "attribute", "port", "action", "calc", "connection", "allocation", "occurrence",
+                "state", "constraint", "requirement", "flow", "interface", "view", "viewpoint", "rendering",
+                "concern", "case", "analysis", "verification", "metadata", "enum", "def", "snapshot", "timeslice",
+                "event", "message", "ref"}
 
 
 # Member prefix ordering from the SysML textual BNF (sysml-validator's ANTLR grammar is more
