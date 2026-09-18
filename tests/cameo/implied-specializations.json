@@ -557,6 +557,32 @@
         "navigableEnds"
       ],
       "expected": false
+    },
+    {
+      "id": "T01",
+      "why": "E21/P4: '#cls item def' (terse id, the declared name) implies the same specialization as #classType",
+      "subject": [
+        "OnlineStoreDomain",
+        "StoreSettings"
+      ],
+      "general": [
+        "UML3Core",
+        "Class"
+      ],
+      "expected": true
+    },
+    {
+      "id": "T02",
+      "why": "E21/P4 control: #cls implies Class, not ActiveClass",
+      "subject": [
+        "OnlineStoreDomain",
+        "StoreSettings"
+      ],
+      "general": [
+        "UML3Core",
+        "ActiveClass"
+      ],
+      "expected": false
     }
   ],
   "inheritsFeature": [

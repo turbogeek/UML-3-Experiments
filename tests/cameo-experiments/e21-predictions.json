@@ -9,35 +9,45 @@
       "claim": "With the keyword in the short-name slot, all 19 keyword-label cases render «#keyword» again, including the 10 that regressed",
       "expected": true,
       "confidence": "high",
-      "why": "the label falls back to the declared name only when there is no short name (X02), so a present short name is what is shown"
+      "why": "the label falls back to the declared name only when there is no short name (X02), so a present short name is what is shown",
+      "observed": "confirmed",
+      "observation": "2026-09-17 22:33 run: 19/19 keyword-label cases pass again, e.g. X01 «#static», X02/X03 «#classType» «#final», X04 «#classType» «#singleton», X05 «#template». The 10 cases that had shown «#stc», «#cls», «#sgl», «#tpl», «#tplParam», «#cmp» «#bnd», «#prv», «#req», «#svc» «#idem», «#pk» now show the keyword."
     },
     {
       "id": "P2",
       "claim": "All 17 files load and the validation engine reports 0 failures with terse declared names (cls, dt, pk, execEnv, ...)",
       "expected": true,
       "confidence": "high",
-      "why": "the pre-flip run already loaded and validated cleanly with the names in the other order; a name slot carries no semantics (E20)"
+      "why": "the pre-flip run already loaded and validated cleanly with the names in the other order; a name slot carries no semantics (E20)",
+      "observed": "confirmed",
+      "observation": "17/17 files load and the validation engine flags none of the 19 packages with terse declared names (cls, dt, pk, execEnv, ...)."
     },
     {
       "id": "P3",
       "claim": "10/10 views keep their UML3 palette and all 45 templated buttons resolve, with verifyPalettes now reporting each template's keyword by short name ('classType', 'layer', 'provided', 'publishes')",
       "expected": true,
       "confidence": "high",
-      "why": "the templates are unchanged; only the reported spelling moves from the declared to the short name"
+      "why": "the templates are unchanged; only the reported spelling moves from the declared to the short name",
+      "observed": "confirmed",
+      "observation": "10/10 views keep their UML3 palette with DSLService.isDSLValid() true; every templated button reports its keyword by short name ('classType', 'layer', 'provided', 'publishes') and matches palette-expectations.json."
     },
     {
       "id": "P4",
       "claim": "Writing the terse id ('#cls item def X') is equivalent to writing the keyword ('#classType item def X'): same implied specialization",
       "expected": true,
       "confidence": "high",
-      "why": "E20 showed the short name, the declared name and an alias all resolve to the same metadata def (K1-K4 PASS)"
+      "why": "E20 showed the short name, the declared name and an alias all resolve to the same metadata def (K1-K4 PASS)",
+      "observed": "pending",
+      "observation": "Not exercised by the 22:33 run: no model element was written with a terse id. Made a permanent regression instead of a one-off probe: examples/01 now writes StoreSettings as '#cls #sgl item def', and the expectations T01/T02 (implied specialization) and X20/X21 (label) were recorded before the next run."
     },
     {
       "id": "P5",
       "claim": "The diagram-kind read-back still finds 8/8 kinds although UML3DiagramKinds names the keywords by short name ('classType meta KerML::Type')",
       "expected": true,
       "confidence": "medium",
-      "why": "name resolution does not care which slot holds a name, but the read-back compares the tool's names with the checker's, and the checker reads the source text"
+      "why": "name resolution does not care which slot holds a name, but the read-back compares the tool's names with the checker's, and the checker reads the source text",
+      "observed": "confirmed",
+      "observation": "The diagram-kind read-back finds 8/8 kinds (class diagram: 12 shown, 18 created, 2 views) with the model naming keywords by short name."
     }
   ],
   "conclusion": null

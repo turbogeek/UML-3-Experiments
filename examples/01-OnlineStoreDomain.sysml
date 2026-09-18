@@ -14,7 +14,8 @@ package OnlineStoreDomain {
 	- Classes: Customer, Product, OrderLine and Order (#classType) with #id, #static, private, optional,
 	  ordered, reference and composite features, and #query, #operation and #constructor operations.
 	- Interfaces: PaymentGateway and Auditable (#interfaceType), realized by StripeGateway (#final).
-	- Other class keywords: StoreSettings (#singleton), PaymentDeclined (#exceptionType).
+	- Other class keywords: StoreSettings (#singleton, written with the terse ids #cls #sgl), PaymentDeclined
+	  (#exceptionType).
 	- Generalization set: PaymentMethod, specialized by CardPayment and WalletPayment (@GeneralizationSet).
 	- Associations: Places (#association with @navigable ends), Review (association class) and Contains
 	  (#composition).
@@ -258,12 +259,14 @@ package OnlineStoreDomain {
 		calc :>> lastModified;
 	}
 
-	#classType #singleton item def StoreSettings {
+	#cls #sgl item def StoreSettings {
 		doc
 		/*
 		The configuration of the store; there is a single instance at runtime.
 
-		#singleton (UML3Core::singleton) records the one-instance constraint next to #classType.
+		#singleton (UML3Core::singleton) records the one-instance constraint next to #classType. Both are
+		written with their terse ids here: '#cls #sgl' is the same as '#classType #singleton', and a diagram
+		still shows «#classType» «#singleton», because a tool labels a shape with the keyword (E21).
 		*/
 		attribute defaultCurrency : CurrencyCode { doc /* The currency the store uses by default. */ }
 	}

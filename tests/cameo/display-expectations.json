@@ -152,6 +152,22 @@
       "expected": false,
       "why": "control: unmarked end",
       "confidence": "high"
+    },
+    {
+      "id": "X20",
+      "subject": "OnlineStoreDomain::StoreSettings",
+      "contains": "\u00ab#classType\u00bb",
+      "expected": true,
+      "why": "E21: StoreSettings is written '#cls #sgl'; the label reads the metadata def's short name, not the spelling used",
+      "confidence": "high"
+    },
+    {
+      "id": "X21",
+      "subject": "OnlineStoreDomain::StoreSettings",
+      "contains": "\u00ab#cls\u00bb",
+      "expected": false,
+      "why": "E21 control: the terse id is the declared name and never appears in a label",
+      "confidence": "high"
     }
   ]
 }
