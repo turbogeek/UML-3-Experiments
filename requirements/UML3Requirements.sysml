@@ -18,7 +18,8 @@ package UML3Requirements {
 	  UML3DataModelingRequirements (DATA), UML3MessagingRequirements (MSG), UML3SecurityRequirements (SEC),
 	  UML3TestingRequirements (TEST), UML3DevOpsRequirements (OPS), UML3GenerationRequirements (GEN),
 	  UML3ReportRequirements (RPT), UML3LanguageRequirements (LANG), UML3AIRequirements (AI),
-	  UML3SysMLInteropRequirements (SYS), each in its own file of requirements/.
+	  UML3SysMLInteropRequirements (SYS), UML3RequirementModelingRequirements (REQ), each in its own file of
+	  requirements/.
 	- UML3Actors (00-Actors.sysml): the roles and the use case subject; each area package has a nested UseCases package
 	  whose use cases trace the requirements they need.
 	References: SysML 7.21; SysML 7.25; SysML 7.27; docs/REQUIREMENTS-GUIDE.md.

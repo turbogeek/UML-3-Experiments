@@ -28,6 +28,7 @@ them and generates [UML3-Requirements.md](UML3-Requirements.md).
 | LANG | UML3LanguageRequirements | Legacy and new languages and formats: import and export (IDL, UML 2.x XMI, database catalogs, source code), reverse engineering, mapping rules per language, coexistence of hand-written and generated code | Pure generation (GEN) |
 | AI | UML3AIRequirements | AI-assisted modeling (drafting, review, explanation, validation loops), modeling AI/ML systems (models, datasets, pipelines, agents, prompts), provenance and review of AI-produced model content, guardrails | |
 | SYS | UML3SysMLInteropRequirements | Using UML3 inside SysML v2 system models and with other KerML-based languages: shared elements, allocation of software to hardware, shared requirements and verification, SysML v2 API and services | |
+| REQ | UML3RequirementModelingRequirements | Stating the requirements of a software system in a UML3 model with native SysML v2 requirements: typed subjects, requirement kinds, measurable conditions, parameters, decomposition, derivation, refinement, satisfaction, allocation, verification objectives, requirement metadata and priority, requirement views and coverage queries, interchange | Stakeholder validation (VAL), checking the model itself (VER), requirements shared with a system model (SYS) |
 
 ## Requirement form
 
