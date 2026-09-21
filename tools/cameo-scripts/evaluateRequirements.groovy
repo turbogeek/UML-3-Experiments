@@ -52,6 +52,47 @@ def verdictOf = { List values ->
 }
 def describe = { List values -> values == null ? "null" : values.collect { (it == null ? "null" : it.getClass().getSimpleName()) + ":" + clean(it) }.join("; ") }
 
+// The evaluator returns a requirement as a StructuredValue (an instance of the requirement), not a Boolean. The
+// verdict is the value of its 'result' feature (RequirementCheck is a constraint check whose result is Boolean).
+// dumpValue lists the zero-argument getters of a value and their results, so an unknown value API can be read
+// from the TRY lines; resultOf looks for the Boolean of a feature named 'result' or of the value itself.
+def getters = { Object v ->
+    v == null ? [] : v.getClass().getMethods().findAll {
+        it.getParameterCount() == 0 && it.getReturnType() != void.class && it.getDeclaringClass() != Object.class &&
+            (it.getName().startsWith("get") || it.getName().startsWith("is") || it.getName().startsWith("has"))
+    }.sort { it.getName() }
+}
+def dumpValue = { Object v ->
+    getters(v).collect { m ->
+        String r
+        try { def x = m.invoke(v); r = x instanceof Collection ? ("[" + x.take(6).collect { clean(it) }.join(", ") + (x.size() > 6 ? ", ..." : "") + "]") : clean(x) }
+        catch (Throwable t) { r = "threw " + clean(t.getCause() ?: t) }
+        m.getName() + "=" + r
+    }.join("; ")
+}
+def resultOf
+resultOf = { Object v, int depth ->
+    if (v == null || depth > 3) return null
+    if (v instanceof Boolean) return v
+    // a value tree: children by feature; try the common accessor shapes
+    for (m in ["getChildren", "getValues", "getFeatureValues", "getSubValues", "getOwnedValues"]) {
+        def kids = call0(v, m)
+        if (kids instanceof Map) kids = kids.entrySet().collect { it }
+        if (kids instanceof Collection) {
+            for (k in kids) {
+                def kv = k instanceof Map.Entry ? k.getValue() : k
+                def kf = k instanceof Map.Entry ? k.getKey() : (call0(k, "getFeature") ?: call0(k, "getDefinition"))
+                String kname = kf == null ? clean(call0(kv, "getName")) : clean(nameOf(kf) ?: kf)
+                if (kname == "result" || kname.endsWith(": result") || kname.endsWith("::result")) {
+                    def b = verdictOf(kv instanceof Collection ? new ArrayList(kv) : [kv])
+                    if (b != null) return b
+                }
+            }
+        }
+    }
+    return null
+}
+
 def cl = RootNamespaces.getClassLoader()
 Class evaluatorClass = null, mleClass = null
 try { evaluatorClass = Class.forName("com.dassault_systemes.modeler.kerml.evaluation.Evaluator", true, cl) } catch (Throwable t) { }
@@ -74,6 +115,13 @@ req.readLines("UTF-8").findAll { it.trim() && !it.startsWith("#") }.each { line 
             List errors = call0(ev, "getErrors") ?: []
             out.append("TRY|" + id + "|evaluator|" + describe(values) + "|" + errors.collect { clean(it) }.join("; ") + "\n")
             verdict = verdictOf(values)
+            if (verdict == null) {
+                for (v in (values ?: [])) {
+                    out.append("VALUE|" + id + "|" + v.getClass().getName() + "|" + dumpValue(v) + "\n")
+                    verdict = resultOf(v, 0)
+                    if (verdict != null) break
+                }
+            }
             if (verdict != null) { used = "evaluator"; detail = describe(values) }
             else detail = "evaluator gave no Boolean; errors: " + errors.collect { clean(it) }.join("; ")
         } catch (Throwable t) {
