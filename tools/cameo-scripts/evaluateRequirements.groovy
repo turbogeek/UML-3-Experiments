@@ -70,10 +70,33 @@ def dumpValue = { Object v ->
         m.getName() + "=" + r
     }.join("; ")
 }
+// CATIA Magic's StructuredValue (kerml.evaluation.values): getFeatureValuesKeys() lists the features, and
+// getFeatureValueWrappers() holds one FeatureValueWrapper per feature in the same order (E22 P5 attempt 2).
+def wrapperValues = { Object w ->
+    for (m in ["getValues", "getValue", "getFeatureValues", "getValueList"]) {
+        def x = call0(w, m)
+        if (x instanceof Collection) return new ArrayList(x)
+        if (x != null) return [x]
+    }
+    return []
+}
+def keyed = { Object v ->
+    def keys = call0(v, "getFeatureValuesKeys")
+    def wrappers = call0(v, "getFeatureValueWrappers")
+    if (!(keys instanceof Collection) || !(wrappers instanceof Collection)) return []
+    List k = new ArrayList(keys), w = new ArrayList(wrappers)
+    (0..<Math.min(k.size(), w.size())).collect { i -> [name: clean(nameOf(k[i]) ?: k[i]), key: k[i], wrapper: w[i]] }
+}
 def resultOf
 resultOf = { Object v, int depth ->
     if (v == null || depth > 3) return null
     if (v instanceof Boolean) return v
+    for (e in keyed(v)) {
+        if (e.name == "result") {
+            def b = verdictOf(wrapperValues(e.wrapper))
+            if (b != null) return b
+        }
+    }
     // a value tree: children by feature; try the common accessor shapes
     for (m in ["getChildren", "getValues", "getFeatureValues", "getSubValues", "getOwnedValues"]) {
         def kids = call0(v, m)
@@ -118,6 +141,9 @@ req.readLines("UTF-8").findAll { it.trim() && !it.startsWith("#") }.each { line 
             if (verdict == null) {
                 for (v in (values ?: [])) {
                     out.append("VALUE|" + id + "|" + v.getClass().getName() + "|" + dumpValue(v) + "\n")
+                    def entries = keyed(v)
+                    out.append("KEYS|" + id + "|" + entries.collect { it.name + "=" + describe(wrapperValues(it.wrapper)).take(80) }.join(", ") + "\n")
+                    if (entries) out.append("WRAPPER|" + id + "|" + entries[0].wrapper.getClass().getName() + "|" + dumpValue(entries[0].wrapper) + "\n")
                     verdict = resultOf(v, 0)
                     if (verdict != null) break
                 }
