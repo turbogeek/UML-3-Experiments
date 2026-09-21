@@ -80,7 +80,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 |---|---|---|
 | Syntax | `sysml-validator` (ANTLR) | library and examples pass |
 | UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, library elements, views and examples verified |
-| Names, lint, keyword applicability | `tools/check_names.py` | library, examples and requirements pass; 23 negative tests fail as expected, including keyword rules inherited through imports and reserved words used as names |
+| Names, lint, keyword applicability | `tools/check_names.py` | library, examples and requirements pass; 26 negative tests fail as expected, including keyword rules inherited through imports, reserved words used as names and dependency ends that do not resolve |
 | Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 14 rules proven to fire; clean control stays clean |
 | Keyword reference | `tools/check_keywords.py`, suite `keywords` | `docs/UML3-Keywords.md` regenerated from the libraries: 74 keywords, 59 with a terse id; the suite fails if a keyword is added without it |
 | Documentation | `tools/check_docs.py` | library, examples and requirements: 0 findings on rules D01–D07; one fixture per rule plus a clean control; documentation-only rewrites proven model-identical (`tools/compare_model_tokens.py`) |

@@ -10,6 +10,8 @@ standard library plus project files and verifies, per file:
   KEYWORD     prefix / body metadata                     (#kw   @Meta)
   QUALIFIED   A::B::C in value expressions (e.g. Enum::literal), reported only when the
               missing member belongs to a package or enum def (complete member lists)
+  DEPENDENCY  the ends of a dependency (dependency from a to b::c): simple names and the heads of
+              qualified names are visible (the rest of a qualified name is checked as QUALIFIED)
   FUNCTION    functions invoked with the arrow notation (x->exists {...}) are visible, i.e. their
               library package (ControlFunctions, SequenceFunctions, ...) is imported
   LINT        constraints the ANTLR validator accepts but CATIA Magic / Pilot reject:
@@ -681,6 +683,35 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
         if t.kind == "ident" and t.text == "import":
             while i < len(toks) and toks[i].text != ";":
                 i += 1
+            continue
+        # Dependency ends ('[#kw] dependency [name from] a, b to c, P::d;'): a simple name must be visible and the
+        # head of a qualified name too; its members are checked as QUALIFIED below. Without this a trace or a
+        # refinement to a misspelled or missing element passed every local check.
+        if t.kind == "ident" and t.text == "dependency" and not t.quoted:
+            k = i + 1
+            while k < len(toks) and toks[k].text not in ("from", "to", ";", "{"):
+                k += 1
+            j = k + 1 if k < len(toks) and toks[k].text == "from" else i + 1
+            while j < len(toks) and toks[j].text not in (";", "{"):
+                if toks[j].kind == "ident" and not (toks[j].text == "to" and not toks[j].quoted):
+                    qn, nxt = parse_qualified(toks, j)
+                    head = qn.split("::")[0]
+                    chained = nxt < len(toks) and toks[nxt].text == "."
+                    if chained:
+                        pass   # a feature chain is not resolvable without semantics
+                    elif "::" in qn:
+                        if find_scope_in_file(fm, head) or visible_scopes.get(head) or idx.roots.get(head) or head in visible:
+                            resolve_qualified(qn, toks[j].line, "QUALIFIED", closed_only=True)
+                        else:
+                            findings.append(Finding("DEPENDENCY", toks[j].line, f"'{head}' (in dependency end '{qn}') is not visible"))
+                    elif qn not in visible:
+                        findings.append(Finding("DEPENDENCY", toks[j].line, f"dependency end '{qn}' is not visible"))
+                    j = nxt
+                    while chained and j < len(toks) and toks[j].text not in (",", ";", "{") and toks[j].text != "to":
+                        j += 1
+                    continue
+                j += 1
+            i = j
             continue
         ref_start = None
         code = None

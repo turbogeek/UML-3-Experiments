@@ -5,7 +5,7 @@ Suites (each result is recorded in logs/test-report.json):
   syntax-positive     ANTLR sysml-validator on library/ and examples/        -> must PASS
   names-positive      check_names.py on library/ and examples/               -> must PASS
   negative            each tests/negative/*.sysml must FAIL with its EXPECT code
-                      (SYNTAX via the validator, IMPORT/TYPE/KEYWORD/QUALIFIED/LINT via check_names)
+                      (SYNTAX via the validator, IMPORT/TYPE/KEYWORD/QUALIFIED/DEPENDENCY/LINT via check_names)
   checker-calibration check_names.py on the official OMG models              -> must PASS
                       (guards the checker against false positives)
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
@@ -48,7 +48,7 @@ JAR = Path(os.environ.get("SYSML_VALIDATOR_JAR",
                           ROOT.parent / "sysml-validator" / "validator-cli" / "target" / "sysml-validator.jar"))
 CHECKER = ROOT / "tools" / "check_names.py"
 LOGS = ROOT / "logs"
-EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|FUNCTION|LINT|APPLICABILITY)")
+EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|DEPENDENCY|FUNCTION|LINT|APPLICABILITY)")
 
 
 def run(cmd: list[str], timeout: int = 600) -> subprocess.CompletedProcess:
