@@ -126,7 +126,7 @@ package UML3SysMLInteropRequirements {
 		/*
 		SysUML design elements shall satisfy SysML v2 requirements with the native satisfy relationship, so that
 		systems and software engineering share one set of requirements and SysML v2 tools compute satisfaction
-		without UML3-specific relationships.
+		without SysUML-specific relationships.
 		*/
 		@Rationale { text = "Requirements flow from the system to its software; if software uses its own trace relationships, the coverage reports of the system model cannot see what the software satisfies."; }
 		@StatusInfo { status = StatusKind::open; }
@@ -152,7 +152,7 @@ package UML3SysMLInteropRequirements {
 		/*
 		SysUML models shall be storable, versioned and queryable through the Systems Modeling API and Services, and
 		a query for a SysUML concept, for example all elements that specialize UML3Data::Entity, shall be
-		expressible as a standard API query without UML3-specific services.
+		expressible as a standard API query without SysUML-specific services.
 		*/
 		@Rationale { text = "System models are increasingly managed in API-based repositories, and software content is shared with the system only if generic API clients can find it by concept."; }
 		@StatusInfo { status = StatusKind::open; }

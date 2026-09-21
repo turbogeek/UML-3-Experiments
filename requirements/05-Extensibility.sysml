@@ -1,7 +1,7 @@
 package UML3ExtensibilityRequirements {
 	doc
 	/*
-	EXT: requirements on extending UML3: user-defined semantic keywords, valued metadata, applicability
+	EXT: requirements on extending SysUML: user-defined semantic keywords, valued metadata, applicability
 	declarations, extension libraries built on SysUML, checking of extended models, versioning of extensions
 	and the migration of UML 2.x profiles.
 

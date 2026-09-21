@@ -1,7 +1,7 @@
 package UML3DataTypeRequirements {
 	doc
 	/*
-	DT: requirements on the value types of UML3: sized numbers and exact decimals, facets that restrict
+	DT: requirements on the value types of SysUML: sized numbers and exact decimals, facets that restrict
 	value spaces, text formats, temporal and binary values, enumerations, collections, maps, optional
 	values, quantities with units and the basic types of OMG IDL.
 

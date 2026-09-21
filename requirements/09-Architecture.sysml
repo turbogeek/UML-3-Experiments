@@ -1,7 +1,7 @@
 package UML3ArchitectureRequirements {
 	doc
 	/*
-	ARCH: requirements on modeling software architecture and deployment with UML3: components and services,
+	ARCH: requirements on modeling software architecture and deployment with SysUML: components and services,
 	ports and interface contracts, connectors, layers, boundaries and styles, architecture decisions, technology
 	choices, deployment topology, allocation of software to nodes, and quality attributes of components.
 

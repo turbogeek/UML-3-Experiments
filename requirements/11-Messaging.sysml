@@ -1,7 +1,7 @@
 package UML3MessagingRequirements {
 	doc
 	/*
-	MSG: requirements on modeling messaging with UML3: message schemas and kinds, channels and brokers,
+	MSG: requirements on modeling messaging with SysUML: message schemas and kinds, channels and brokers,
 	producers and consumers, delivery semantics, serialization and schema compatibility, interactions, and
 	synchronous and asynchronous API contracts, including DDS messaging with IDL-defined types.
 
@@ -150,7 +150,7 @@ package UML3MessagingRequirements {
 		doc
 		/*
 		Interactions between services, brokers and consumers shall be modeled with native SysML v2 occurrence
-		definitions, lifelines, event occurrences and messages typed by SysUML message types, without UML3-specific
+		definitions, lifelines, event occurrences and messages typed by SysUML message types, without SysUML-specific
 		interaction constructs, and shall be selectable for sequence diagrams.
 		Verified by: tests/cameo/view-predictions.json; tools/run_tests.py suite cameo; tools/run_tests.py suite traceability.
 		*/

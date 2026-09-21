@@ -1,0 +1,11 @@
+{
+  "description": "Positive control for tests/refinements/clean.sysml: the answers check_refinements.py must report per external item and implementation, and the notes.",
+  "answers": {
+    "EXT-1": {"SysUML": ["UML3-STR-001"], "UML3": []},
+    "EXT-2": {"SysUML": [], "UML3": ["UML3-IMPL-002"]},
+    "EXT-3": {"SysUML": ["UML3-IMPL-005"], "UML3": ["UML3-IMPL-005"]},
+    "EXT-4": {"SysUML": ["UML3-BHV-001"], "UML3": []},
+    "EXT-4.1": {"SysUML": [], "UML3": []}
+  },
+  "notes": {"EXT-4": ["QuestionPosition"]}
+}

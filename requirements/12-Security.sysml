@@ -1,7 +1,7 @@
 package UML3SecurityRequirements {
 	doc
 	/*
-	SEC: requirements on modeling the security of software with UML3: assets, threats and mitigations, trust
+	SEC: requirements on modeling the security of software with SysUML: assets, threats and mitigations, trust
 	boundaries, data classification and privacy, authentication and authorization, secrets and keys, secure
 	communication, traceability of security to verification, compliance, and secure generation defaults.
 

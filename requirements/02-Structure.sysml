@@ -1,12 +1,12 @@
 package UML3StructureRequirements {
 	doc
 	/*
-	STR: requirements on the structural constructs of UML3: classes, interfaces and their realization,
+	STR: requirements on the structural constructs of SysUML: classes, interfaces and their realization,
 	attributes and operations, associations and ownership, generalization sets, templates, packages and
 	visibility, instances and class constraints.
 
 	Contents:
-	- Classifiers: classConcept, activeClassConcept, interfaceRealization.
+	- Classifiers: classConcept, activeClassConcept, interfaceRealization, dataTypeConcept.
 	- Features: attributeProperties, operationFeatures, leafElements.
 	- Relationships: associationEnds, associationClassesAreClasses, ownershipAndAggregation,
 	  generalizationSets.
@@ -215,6 +215,21 @@ package UML3StructureRequirements {
 		@VerificationMethod { kind = VerificationMethodKind::test; }
 	}
 
+	requirement <'UML3-STR-015'> dataTypeConcept {
+		doc
+		/*
+		SysUML shall provide a data type concept, distinct from the class concept, whose instances are values
+		without identity: two values of a data type are equal when their attribute values are equal. The concept
+		shall apply to attribute definitions and usages only, so that the content of messages, data streams and
+		stored records can be modeled apart from objects that have identity and behavior.
+		Verified by: tools/run_tests.py suite traceability; tools/run_tests.py suite cameo-probes; E05; E15.
+		*/
+		@Rationale { text = "UML separates classes, whose instances have identity, from data types, whose instances are values, and software keeps the same split between classes and structs or records. Values can be copied, compared and serialized into messages and streams without deciding how identity and references are encoded, so a design has to say which of the two it means."; }
+		@StatusInfo { status = StatusKind::done; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+	}
+
 	package UseCases {
 		doc
 		/*
@@ -233,8 +248,8 @@ package UML3StructureRequirements {
 			doc
 			/*
 			A software developer designs the classes of a software component in detail: classes and active
-			classes, interfaces and their realizations, attributes, operations, associations and ownership,
-			templates and packages, ready for review and implementation.
+			classes, data types, interfaces and their realizations, attributes, operations, associations and
+			ownership, templates and packages, ready for review and implementation.
 			*/
 			subject environment : UML3Environment;
 			actor developer : SoftwareDeveloper;
@@ -287,7 +302,7 @@ package UML3StructureRequirements {
 		}
 
 		#traces dependency from DesignClassStructure to 'UML3-STR-001', 'UML3-STR-002', 'UML3-STR-003', 'UML3-STR-004',
-			'UML3-STR-005', 'UML3-STR-007', 'UML3-STR-009', 'UML3-STR-011', 'UML3-STR-012',
+			'UML3-STR-005', 'UML3-STR-007', 'UML3-STR-009', 'UML3-STR-011', 'UML3-STR-012', 'UML3-STR-015',
 			UML3CoreRequirements::'UML3-CORE-003';
 		#traces dependency from AnalyzeDomainClasses to 'UML3-STR-001', 'UML3-STR-007', 'UML3-STR-008', 'UML3-STR-009',
 			'UML3-STR-010', 'UML3-STR-014';
@@ -331,5 +346,8 @@ package UML3StructureRequirements {
 		#realizes dependency from SysML::OccurrenceDefinition to 'UML3-STR-013';
 		#realizes dependency from SysML::FeatureValue to 'UML3-STR-013';
 		#realizes dependency from SysML::AssertConstraintUsage to 'UML3-STR-014';
+		#realizes dependency from UML3Core::DataType to 'UML3-STR-015';
+		#realizes dependency from UML3Core::dataType to 'UML3-STR-015';
+		#realizes dependency from UML3Core::DataTypeKind to 'UML3-STR-015';
 	}
 }

@@ -128,19 +128,19 @@ def enclosing_package(toks, idx) -> str | None:
     return None
 
 
-def main() -> int:
-    ap = argparse.ArgumentParser()
-    ap.add_argument("--write", action="store_true")
-    ap.add_argument("--report")
-    ap.add_argument("--stdlib", default=str(RELEASE / "sysml.library"))
-    args = ap.parse_args()
+class ToolError(Exception):
+    """The requirements cannot be analyzed at all (exit code 2)."""
+
+
+def analyze(stdlib: str) -> tuple[dict, dict, dict, list]:
+    """Parses and checks requirements/*.sysml; returns (requirements by id, use cases by name, requirement ids
+    traced per use case, findings). Other tools reuse it, e.g. tools/check_refinements.py."""
     files = sorted(REQ_DIR.glob("*.sysml"))
     if not files:
-        print("TOOL ERROR: no requirements/*.sysml", file=sys.stderr)
-        return 2
+        raise ToolError("no requirements/*.sysml")
 
     idx = cn.Index()
-    for f in cn.collect([args.stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library"), str(REQ_DIR)], (".sysml",)):
+    for f in cn.collect([stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library"), str(REQ_DIR)], (".sysml",)):
         idx.add(cn.index_file(f))
     idx.finalize()
     run_tests = (ROOT / "tools" / "run_tests.py").read_text(encoding="utf-8")
@@ -282,12 +282,27 @@ def main() -> int:
         r["realizedBy"] = sorted(set(realizes.get(rid, [])))
         if usecases and not r["usecases"]:
             add("COVERAGE", ROOT / r["file"], r["line"], f"{rid}: not traced by any use case", "warning")
+    return reqs, usecases, uc_reqs, findings
+
+
+def main() -> int:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--write", action="store_true")
+    ap.add_argument("--report")
+    ap.add_argument("--stdlib", default=str(RELEASE / "sysml.library"))
+    args = ap.parse_args()
+    try:
+        reqs, usecases, uc_reqs, findings = analyze(args.stdlib)
+    except ToolError as e:
+        print(f"TOOL ERROR: {e}", file=sys.stderr)
+        return 2
 
     markdown = render(reqs, usecases, uc_reqs)
     if args.write:
         DOC.write_text(markdown, encoding="utf-8")
     elif not DOC.exists() or DOC.read_text(encoding="utf-8") != markdown:
-        add("DOC", DOC, 0, "docs/UML3-Requirements.md is not up to date (run with --write)")
+        findings.append({"code": "DOC", "severity": "error", "file": DOC.name, "line": 0,
+                         "message": "docs/UML3-Requirements.md is not up to date (run with --write)"})
 
     errors = [x for x in findings if x["severity"] == "error"]
     warnings = [x for x in findings if x["severity"] == "warning"]

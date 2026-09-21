@@ -11,6 +11,8 @@ Suites (each result is recorded in logs/test-report.json):
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   keywords            tools/check_keywords.py: docs/UML3-Keywords.md matches the libraries (keyword, terse id, base)
+  refinements         tools/check_refinements.py fixtures (answers to an external requirement set): expected
+                      finding codes and exit codes, and the answers of the clean case
   dogfood             DogFoodUML3/: the effort modeled in SysUML; syntax, names, design rules and documentation
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization,
@@ -275,6 +277,35 @@ def main() -> int:
         "summary": next((l for l in rq.stdout.splitlines() if l.startswith("SUMMARY")), rq.stderr.strip()[-300:]),
         "errors": [x for x in rq_rep.get("findings", []) if x["severity"] == "error"],
         "warnings": [x for x in rq_rep.get("findings", []) if x["severity"] == "warning"]}
+
+    # 4b3b. tools/check_refinements.py (answers to an external requirement set): each tests/refinements case yields
+    #       exactly its expected finding codes and exit code, and the clean case reports the answers and notes of
+    #       clean-answers.json (a positive control on content, not only on the absence of findings)
+    ref_dir = ROOT / "tests" / "refinements"
+    ref_cases = []
+    for entry in (ref_dir / "expected.txt").read_text(encoding="utf-8").splitlines():
+        if not entry.strip() or entry.startswith("#"):
+            continue
+        case, external, codes, exit_code = entry.split("|")
+        rep_path = LOGS / "refinements-fixture.json"
+        rep_path.unlink(missing_ok=True)
+        rf = run([sys.executable, str(ROOT / "tools" / "check_refinements.py"), "--external", str(ref_dir / external),
+                  "--refinements", str(ref_dir / case), "--report", str(rep_path)])
+        rep = json.loads(rep_path.read_text(encoding="utf-8")) if rf.returncode != 2 and rep_path.exists() else None
+        observed = sorted({x["code"] for x in rep["findings"]}) if rep else ["TOOL_ERROR"]
+        expected = sorted(c for c in codes.split(",") if c.strip())
+        result = {"case": f"{case} / {external}", "expected": expected, "observed": observed,
+                  "exit": rf.returncode, "passed": observed == expected and rf.returncode == int(exit_code)}
+        if case == "clean.sysml" and external == "external.sysml":
+            want = json.loads((ref_dir / "clean-answers.json").read_text(encoding="utf-8"))
+            got = {iid: {impl: sorted({a["requirement"] for a in rep["items"][iid]["answers"] if impl in a["appliesTo"]})
+                         for impl in ("SysUML", "UML3")} for iid in want["answers"] if rep and iid in rep["items"]}
+            notes = {iid: rep["items"][iid]["notes"] for iid in want["notes"] if rep and iid in rep["items"]}
+            result["contentMatches"] = got == want["answers"] and notes == want["notes"]
+            result["passed"] = result["passed"] and result["contentMatches"]
+        ref_cases.append(result)
+    report["suites"]["refinements"] = {"passed": bool(ref_cases) and all(c["passed"] for c in ref_cases),
+                                       "cases": ref_cases}
 
     # 4b4. DogFoodUML3, the effort modeled in SysUML (UML3-CORE-014): ANTLR syntax, names against the libraries
     #      and the requirements it traces to, the design rules and the documentation rules

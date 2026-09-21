@@ -1,0 +1,13 @@
+# tools/check_refinements.py fixtures, run by tools/run_tests.py suite refinements.
+# case file|external set file|expected finding codes (comma-separated; TOOL_ERROR for exit code 2)|expected exit code
+clean.sysml|external.sysml||0
+wrong-group.sysml|external.sysml|GROUP|1
+no-group.sysml|external.sysml|GROUP|1
+unknown-source.sysml|external.sysml|RESOLVE|1
+unknown-target.sysml|external.sysml|RESOLVE|1
+wrong-qualifier.sysml|external.sysml|RESOLVE|1
+uncovered-mandatory.sysml|external.sysml|COVERAGE|1
+uncovered-optional.sysml|external.sysml|COVERAGE|0
+deviation-only.sysml|external.sysml||0
+no-dependencies.sysml|external.sysml|TOOL_ERROR|2
+clean.sysml|external-bad.sysml|FORM|1

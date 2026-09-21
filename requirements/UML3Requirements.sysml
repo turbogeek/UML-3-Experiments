@@ -21,6 +21,7 @@ package UML3Requirements {
 	Contents:
 	- Priority, PriorityKind: requirement priority (mandatory or optional).
 	- AppliesTo, ImplementationKind: the implementations a requirement applies to (SysUML when absent).
+	- Deviation: marks a dependency from a requirement to a requirement that it answers but departs from.
 	- Area packages: UML3CoreRequirements (CORE), UML3StructureRequirements (STR), UML3DataTypeRequirements (DT),
 	  UML3BehaviorRequirements (BHV), UML3ExtensibilityRequirements (EXT), UML3VerificationRequirements (VER),
 	  UML3ValidationRequirements (VAL), UML3ViewRequirements (VIEW), UML3ArchitectureRequirements (ARCH),
@@ -78,7 +79,8 @@ package UML3Requirements {
 		doc
 		/*
 		The implementations a requirement applies to. A requirement without it applies to SysUML, which is what the
-		requirements describe unless they say otherwise.
+		requirements describe unless they say otherwise. On a package of refinement and deviation dependencies, it
+		states the implementations that the requirements they come from apply to (tools/check_refinements.py).
 
 		Usage: @AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
 		Rationale: SysUML and UML3 share their concepts but differ in syntax, library base and tooling; saying which
@@ -88,5 +90,21 @@ package UML3Requirements {
 		attribute implementations : ImplementationKind[1..2] {
 			doc /* One or both implementations. */
 		}
+	}
+
+	metadata def <deviation> Deviation {
+		doc
+		/*
+		Marks a dependency from a requirement of this project to a requirement that it answers but departs from,
+		such as an external requirement that asks for something else. It is the counterpart of the standard
+		refinement (#refinement), whose sources state their targets more precisely: the source of a deviation
+		answers the target without stating it more precisely.
+
+		Usage: #deviation dependency from UML3ImplementationRequirements::'UML3-IMPL-010' to 'X-1';
+		Rationale: a departure marked as a refinement would overstate the coverage of the target, and a departure
+		left out would hide the answer, so coverage reports need a mark of their own for it.
+		References: SysML 7.27.
+		*/
+		:>> annotatedElement : SysML::Dependency;
 	}
 }

@@ -1,7 +1,7 @@
 package UML3DataModelingRequirements {
 	doc
 	/*
-	DATA: requirements on data modeling with UML3: conceptual, logical and physical data models, keys and
+	DATA: requirements on data modeling with SysUML: conceptual, logical and physical data models, keys and
 	constraints, relationships and cardinality, mapping between levels, schema evolution, data governance,
 	non-relational models and lineage.
 

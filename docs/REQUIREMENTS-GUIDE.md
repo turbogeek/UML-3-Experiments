@@ -82,6 +82,30 @@ The actors (`part def`, one per role) and the use case subject `UML3Environment`
 
 Every requirement should be traced by at least one use case; the checker reports untraced requirements.
 
+## Answering external requirements
+
+Requirements from outside the project, such as those of a request for proposals, are modeled as an external
+requirement set: requirement and concern usages with short names, and `@Priority` on the requirements. Requirements
+of this project answer them with dependencies, kept in packages that state with `@AppliesTo` which implementations
+their source requirements apply to:
+
+```sysml
+package UML3Answers {
+	doc /* Answers by requirements that apply to UML3. */
+	@AppliesTo { implementations = ImplementationKind::uml3; }
+	#refinement dependency from UML3ImplementationRequirements::'UML3-IMPL-002' to 'X-6.5.1';
+}
+```
+
+* `#refinement` (SysML v2 ModelingMetadata): the requirement states the external requirement more precisely.
+* `#deviation` (UML3Requirements): the requirement answers the external requirement differently; a named
+  `comment ... about` both says how.
+
+`tools/check_refinements.py` checks that every source is a requirement of `requirements/` and every target an
+external item, that each package's `@AppliesTo` equals that of its source requirements, and that every mandatory
+external requirement is refined or deviated from. It renders the coverage matrix with a column per implementation
+and follows each refinement to the elements that realize it and the parts that satisfy it or are allocated it.
+
 ## Checks (tools/check_requirements.py, suite `requirements`)
 
 | Check | Rule |
@@ -92,3 +116,4 @@ Every requirement should be traced by at least one use case; the checker reports
 | Use cases | Every use case has a doc, a subject, an actor and an objective, and traces at least one existing requirement |
 | Coverage | A requirement that no use case traces is reported (warning) |
 | Documentation | `tools/check_docs.py` rules D01-D06 apply to all files in `requirements/` |
+| External answers | `tools/check_refinements.py` (suite `refinements` for its fixtures): sources and targets resolve, each package's `@AppliesTo` matches its sources, mandatory external requirements are answered |

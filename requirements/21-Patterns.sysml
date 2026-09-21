@@ -1,7 +1,7 @@
 package UML3PatternRequirements {
 	doc
 	/*
-	PAT: requirements on design, architecture and integration patterns in UML3: pattern definitions with typed
+	PAT: requirements on design, architecture and integration patterns in SysUML: pattern definitions with typed
 	roles, role relationships, documentation sections, the concerns a pattern addresses and the requirements its
 	solution must meet; pattern instances at type and instance level with their role bindings, composition and
 	observations; conformance checks; relationships between patterns, catalogs and anti-patterns; views, tool
@@ -215,7 +215,7 @@ package UML3PatternRequirements {
 		/*
 		Structural conformance rules of a pattern, such as a role player owning an operation, shall be expressible
 		as requirements over metaobjects of the reflective KerML library, so that a SysML v2 tool can evaluate
-		them without UML3-specific checkers.
+		them without SysUML-specific checkers.
 		*/
 		@Rationale { text = "Checker rules are tied to one tool; constraints in the model travel with it. CATIA Magic's evaluation engine evaluates such a requirement correctly, true for the Observer probe and false for a missing operation (E22 P5); the pattern library still has to provide them."; }
 		@StatusInfo { status = StatusKind::open; }

@@ -9,7 +9,7 @@ package UML3ImplementationRequirements {
 	trip between the two. Graphics follow the SysML v2 graphical notation as it evolves.
 
 	Contents:
-	- The two implementations: twoImplementations, uml3Language.
+	- The two implementations: twoImplementations, uml3Language, uml3Behaviors.
 	- Compatibility: conceptAlignment, keywordCorrespondence, losslessRoundTrip, notationOnlyConstructs.
 	- Verification and order of work: roundTripRegression, capabilityRegressionCorpus, pilotImplementation.
 	- Graphics: graphicalNotation.
@@ -169,6 +169,21 @@ package UML3ImplementationRequirements {
 		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
 	}
 
+	requirement <'UML3-IMPL-011'> uml3Behaviors {
+		doc
+		/*
+		UML3 shall provide activities, state machines, interactions and use cases through the SysML v2 action,
+		state, occurrence and use case constructs and their library definitions, instead of defining counterparts
+		of its own, so that a behavior has one meaning in UML3, SysUML and SysML v2. Whether UML3 includes these
+		constructs in its own notation or uses them in models that mix UML3 and SysML v2 is still to be decided.
+		*/
+		@Rationale { text = "SysUML already models behaviors with the native SysML v2 constructs (UML3-CORE-004, UML3-BHV-001), so UML3 behaviors of its own would need a second semantics and would break the lossless round trip of UML3-IMPL-005. UML3 extends KerML rather than SysML v2, so how it reaches the SysML v2 behavior constructs has to be decided."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::inspect; }
+		@AppliesTo { implementations = ImplementationKind::uml3; }
+	}
+
 	package UseCases {
 		doc
 		/*
@@ -242,7 +257,7 @@ package UML3ImplementationRequirements {
 		#traces dependency from MoveModelsBetweenImplementations to 'UML3-IMPL-003', 'UML3-IMPL-004', 'UML3-IMPL-005',
 			'UML3-IMPL-006', 'UML3-IMPL-007';
 		#traces dependency from DefineUML3Language to 'UML3-IMPL-002', 'UML3-IMPL-003', 'UML3-IMPL-008',
-			'UML3-IMPL-009';
+			'UML3-IMPL-009', 'UML3-IMPL-011';
 		#traces dependency from PresentUMLInSysMLv2Tools to 'UML3-IMPL-010';
 	}
 }

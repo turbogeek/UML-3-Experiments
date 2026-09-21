@@ -1,7 +1,7 @@
 package UML3AIRequirements {
 	doc
 	/*
-	AI: requirements on artificial intelligence with and in UML3: AI assistants that draft, check, review and
+	AI: requirements on artificial intelligence with and in SysUML: AI assistants that draft, check, review and
 	explain SysUML models under human control, the machine-readable feedback that validation loops need, the
 	provenance, review and guardrails for AI-produced model content, and the modeling of machine-learning and
 	agent systems as SysUML and SysML v2 elements.
