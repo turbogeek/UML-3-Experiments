@@ -10,7 +10,8 @@ Documentation checker for UML3 SysML v2 files (rules in docs/DOC-CONVENTIONS.md)
                        subject/actor/stakeholder usages, enum literals and named control nodes (merge, join, fork,
                        decide; a 'comment about' explains them)
   D06  a package doc without a "Contents:" section summarizing the package's elements
-  D07  an element named in 'comment ... about ...' that does not resolve from the comment's namespace
+  D07  an element named in 'comment ... about ...' that does not resolve from the comment's namespace, searching the
+       files checked together and the libraries (imports are not followed; name other files' elements qualified)
   D05  unresolvable citation in comment text: 'KerML n.n', 'SysML n.n' (clause numbers of the specification PDFs,
        extracted with pdftotext), 'UML 2.5.1 Name' (a UML concept of traceability/uml2-to-uml3.json),
        'UML3Xxx::Name' (an element of library/), 'Enn' (an experiment in tests/ or docs/DESIGN.md)
@@ -154,7 +155,13 @@ def main() -> int:
 
     report = {"profile": args.profile, "files": []}
     total = 0
-    for f in cn.collect(args.files, (".sysml",)):
+    files = cn.collect(args.files, (".sysml",))
+    # D07 resolves across all files checked together: a model split over several files is still one model
+    run_index = cn.Index()
+    for f in files:
+        run_index.add(cn.index_file(f))
+    run_index.finalize()
+    for f in files:
         text = f.read_text(encoding="utf-8")
         findings, bodies = comment_findings(f, lex(text))
         # D05 citations
@@ -217,9 +224,6 @@ def main() -> int:
                     collect(ch)
 
         collect(fm.root)
-        local = cn.Index()
-        local.add(fm)
-        local.finalize()
 
         def enclosing(line_no: int) -> list[str]:
             spans = [(sc.body[-1].line - sc.body[0].line, sc.qname) for sc in scopes
@@ -230,7 +234,7 @@ def main() -> int:
         def about_resolves(name: str, chain: list[str]) -> bool:
             for base in chain:
                 q = f"{base}::{name}" if base else name
-                for index in (local, idx):
+                for index in (run_index, idx):
                     if index.lookup(q) is not None:
                         return True
                     owner, _, simple = q.rpartition("::")

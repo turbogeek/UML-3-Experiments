@@ -9,3 +9,4 @@ d05-citation.sysml|D05
 d06-no-contents.sysml|D06
 d07-about-missing.sysml|D07
 d04-template-exempt.sysml|
+d07-crossfile|
