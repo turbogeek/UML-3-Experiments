@@ -1,0 +1,9 @@
+{
+  "description": "Experiment E22 prediction P5, recorded 2026-09-21 before the run: CATIA Magic's evaluation engine evaluates the pattern requirements that the pattern instances satisfy. V01 and V03 are the probe's own requirements, V02 and V04 are controls that must be false (tests/cameo-experiments/e22c-pattern-evaluation-controls.sysml). Run with cameo_check.py --library-only --probes e22-pattern-observer.sysml e22c-pattern-evaluation-controls.sysml --evaluations tests/cameo-experiments/e22-evaluations.json --undo. Confidence: medium for the instance-level cases V01/V02 (the satisfy usages are owned by definitions, so the engine must build an instance of the definition), low for the model-level cases V03/V04 (the constraint navigates the reflective KerML library, and run 2 reported a validateFeatureTypeConformance warning on the metaobject-typed subject).",
+  "cases": [
+    {"id": "V01", "path": ["UML3ProbePatternObserver", "StoreConfiguration", "notified"], "expected": true, "why": "instance level: the configuration binds two observers, and the requirement asks for at least one"},
+    {"id": "V02", "path": ["UML3ProbePatternEvaluationControls", "ControlConfiguration", "tooFew"], "expected": false, "why": "control: at least three observers, but two are bound"},
+    {"id": "V03", "path": ["UML3ProbePatternObserver", "OrderObservation", "subjectConforms"], "expected": true, "why": "model level: OrderService, the player of the observable role, owns notifyObservers"},
+    {"id": "V04", "path": ["UML3ProbePatternEvaluationControls", "ControlObservation", "noNotifyAll"], "expected": false, "why": "control: OrderService owns no feature named notifyAll"}
+  ]
+}

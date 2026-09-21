@@ -46,6 +46,12 @@
       "date": "2026-09-21",
       "log": "logs/cameo-e22.log",
       "result": "P1 not met: CATIA Magic rejected e22-pattern-observer.sysml with one semantic error, line 50 \"Name resolution error: couldn't resolve reference to Element 'exists'\". The probe used the arrow invocation ->exists without importing ControlFunctions, which defines it; the official examples import ControlFunctions::* where they use ->forAll. The failed load was cancelled, so e22b could not resolve its import and every hypothesis reported 'not found'. The libraries loaded and validated with 0 failures. This is a defect of the probe, not of the basis: the construct is native. Neither the ANTLR validator nor check_names looked at names inside expressions; check_names now has rule FUNCTION with negative test n25, and calibration on 251 OMG models stays at 0 false positives. The probe now imports ControlFunctions::*."
+    },
+    {
+      "run": 2,
+      "date": "2026-09-21",
+      "log": "logs/cameo-e22-run2.log",
+      "result": "P1 met: both probes load with 0 builder errors (AS PREDICTED OK). P2 met for errors: the validation engine flags none of the 10 packages; UML3ProbePatternObserver (643 elements) has one WARNING, validateFeatureTypeConformance on subjectType, 'Feature type must conform to the type of its value's result', i.e. on the metaobject-typed subject of the model-level requirement bound to 'OrderService meta KerML::Type'. P3 met: G01 and G02 true (the roles subset UML3Core::templateParameters), control N01 false. P4 met: e22b loads and validates with 0 results (22 elements), and the misbound observable role conforms to both Subject (G07) and EmailNotifier (G08) while EmailNotifier itself does not specialize Subject (N03): a non-conforming binding intersects the types silently. Also G03-G06 and G09 true. 12/12 hypotheses; undo clean."
     }
   ],
   "conclusion": null

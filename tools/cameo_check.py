@@ -136,6 +136,8 @@ def main() -> int:
     ap.add_argument("--display", action="store_true",
                     help="check keyword labels against tests/cameo/display-expectations.json (needs examples loaded)")
     ap.add_argument("--hypotheses", help="hypotheses JSON to verify (default tests/cameo/implied-specializations.json)")
+    ap.add_argument("--evaluations", help="JSON of satisfy requirement usages or assert constraints to evaluate with "
+                                          "CATIA Magic's evaluation engine, each with its expected verdict")
     ap.add_argument("files", nargs="*")
     args = ap.parse_args()
     LOGS.mkdir(parents=True, exist_ok=True)
@@ -451,6 +453,33 @@ def main() -> int:
         if "ProjectViewCreationConfig" not in names:
             names.append("ProjectViewCreationConfig")
         extra.write_text("\n".join(names) + "\n", encoding="utf-8")
+
+    # Requirement and constraint evaluation: each case is a satisfy requirement usage or an assert constraint whose
+    # verdict CATIA Magic's evaluation engine computes (evaluateRequirements.groovy); a case passes when the
+    # verdict equals the expected one. Controls that must be false keep a true result from being an artifact.
+    if args.evaluations and not failed:
+        spec = json.loads(Path(args.evaluations).read_text(encoding="utf-8"))
+        (HARNESS_SCRIPTS / "uml3-evaluate-request.txt").write_text(
+            "\n".join(f"{c['id']}|{'::'.join(c['path'])}|{str(c['expected']).lower()}" for c in spec["cases"]) + "\n",
+            encoding="utf-8")
+        _, ev = call(args.port, "/run-script", {"scriptName": "evaluateRequirements.groovy"}, timeout=900)
+        text = ev.get("result") or ev.get("error") or ""
+        (LOGS / "evaluations.txt").write_text(text, encoding="utf-8")
+        observed = {f[1]: f for f in (ln.split("|") for ln in text.splitlines()) if f[0] == "EVAL" and len(f) >= 5}
+        rows = []
+        for c in spec["cases"]:
+            o = observed.get(c["id"])
+            got = o[2] if o else "missing"
+            rows.append({"id": c["id"], "expected": str(c["expected"]).lower(), "observed": got,
+                         "strategy": o[3] if o else None, "detail": o[4] if o else text[:200],
+                         "passed": got == str(c["expected"]).lower()})
+        ev_ok = bool(rows) and all(r["passed"] for r in rows)
+        report["evaluations"] = {"passed": ev_ok, "results": rows}
+        print(f"{'PASS' if ev_ok else 'FAIL'}  requirement evaluation ({sum(r['passed'] for r in rows)}/{len(rows)} verdicts)")
+        for r in rows:
+            if not r["passed"]:
+                print(f"    {r['id']}: expected {r['expected']}, observed {r['observed']} ({r['strategy']}): {r['detail']}")
+        failed = failed or not ev_ok
 
     if args.undo:
         # When UML3 packages were already loaded before this run (e.g. a model the user is reviewing), undo exactly
