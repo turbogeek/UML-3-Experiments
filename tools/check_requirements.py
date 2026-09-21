@@ -1,5 +1,5 @@
 """
-Checks the UML3 requirements and use cases in requirements/ (rules in docs/REQUIREMENTS-GUIDE.md) and renders
+Checks the SysUML and UML3 requirements and use cases in requirements/ (rules in docs/REQUIREMENTS-GUIDE.md) and renders
 docs/UML3-Requirements.md.
 
   FORM         requirement id 'UML3-<AREA>-nnn', unique, area matches its package; statement contains "shall";
@@ -57,6 +57,7 @@ AREAS = [  # code, package, title
     ("SYS", "UML3SysMLInteropRequirements", "SysML v2 and KerML interoperation"),
     ("REQ", "UML3RequirementModelingRequirements", "Requirement modeling"),
     ("PAT", "UML3PatternRequirements", "Patterns"),
+    ("IMPL", "UML3ImplementationRequirements", "Implementations: SysUML and UML3"),
 ]
 AREA_BY_PACKAGE = {p: c for c, p, _ in AREAS}
 ID_RE = re.compile(r"^UML3-([A-Z]+)-(\d{3})$")
@@ -194,6 +195,12 @@ def main() -> int:
             r["priority"] = mm.group(1) if mm else None
             mm = re.search(r"@ VerificationMethod \{ kind = (.*?) ; \}", src)
             r["verification"] = re.findall(r"VerificationMethodKind : : (\w+)", mm.group(1)) if mm else []
+            # the implementations the requirement binds; without @AppliesTo it is a SysUML requirement
+            mm = re.search(r"@ AppliesTo \{ implementations = (.*?) ; \}", src)
+            kinds = re.findall(r"ImplementationKind : : (\w+)", mm.group(1)) if mm else []
+            r["appliesTo"] = [{"sysUML": "SysUML", "uml3": "UML3"}.get(k, k) for k in kinds] or ["SysUML"]
+            if mm and not kinds:
+                add("FORM", f, line, f"{rid}: @AppliesTo names no ImplementationKind")
             for field in ("rationale", "status", "priority"):
                 if not r[field]:
                     add("FORM", f, line, f"{rid}: missing {field}")
@@ -299,35 +306,44 @@ def cell(s: str | None) -> str:
 
 
 def render(reqs: dict, usecases: dict, uc_reqs: dict) -> str:
-    out = ["# UML3 requirements", "",
+    out = ["# SysUML and UML3 requirements", "",
            "Generated from `requirements/*.sysml` by `tools/check_requirements.py --write`; do not edit. Rules: "
-           "[REQUIREMENTS-GUIDE.md](REQUIREMENTS-GUIDE.md).", ""]
+           "[REQUIREMENTS-GUIDE.md](REQUIREMENTS-GUIDE.md).", "",
+           "Two implementations share these requirements: **SysUML** models software in SysML v2 with libraries and "
+           "semantic keywords (the implementation in use), and **UML3** extends KerML with its own textual syntax and "
+           "grammar (the next step). A requirement applies to SysUML unless its *Applies to* column says otherwise.", ""]
     by_area: dict[str, list[dict]] = defaultdict(list)
     for r in reqs.values():
         m = ID_RE.match(r["id"])
         by_area[m.group(1) if m else "?"].append(r)
-    out += ["## Summary", "", "| Area | Requirements | done | tbc | open | tbd | mandatory | optional |", "|---|---|---|---|---|---|---|---|"]
+    out += ["## Summary", "", "| Area | Requirements | done | tbc | open | tbd | mandatory | optional | SysUML | UML3 |",
+            "|---|---|---|---|---|---|---|---|---|---|"]
     for code, _, title in AREAS:
         rs = by_area.get(code, [])
         c = Counter(r["status"] for r in rs)
         p = Counter(r["priority"] for r in rs)
+        a = Counter(k for r in rs for k in r["appliesTo"])
         out.append(f"| [{code}](#{code.lower()}) {title} | {len(rs)} | {c['done']} | {c['tbc']} | {c['open']} | {c['tbd']} | "
-                   f"{p['mandatory']} | {p['optional']} |")
+                   f"{p['mandatory']} | {p['optional']} | {a['SysUML']} | {a['UML3']} |")
     total = Counter(r["status"] for r in reqs.values())
-    out += [f"| **Total** | **{len(reqs)}** | {total['done']} | {total['tbc']} | {total['open']} | {total['tbd']} | | |", ""]
+    applies = Counter(k for r in reqs.values() for k in r["appliesTo"])
+    out += [f"| **Total** | **{len(reqs)}** | {total['done']} | {total['tbc']} | {total['open']} | {total['tbd']} | | | "
+            f"{applies['SysUML']} | {applies['UML3']} |", ""]
     for code, pkg, title in AREAS:
         rs = sorted(by_area.get(code, []), key=lambda r: r["id"])
         if not rs:
             continue
         out += [f"## {code}", "", f"**{title}** (`{pkg}`)", "",
-                "| ID | Requirement | Priority | Status | Verification | Realized by | Use cases |", "|---|---|---|---|---|---|---|"]
+                "| ID | Requirement | Applies to | Priority | Status | Verification | Realized by | Use cases |",
+                "|---|---|---|---|---|---|---|---|"]
         for r in rs:
             statement = re.sub(r"\s*Verified by:.*$", "", r["statement"], flags=re.S).replace("\n", " ")
             text = f"**{r['name']}**: {cell(statement)}<br>*Rationale:* {cell(r['rationale'])}"
             if r.get("evidence"):
                 text += f"<br>*Verified by:* {cell('; '.join(r['evidence']))}"
-            out.append(f"| {r['id']} | {text} | {r['priority']} | {r['status']} | {', '.join(r['verification'])} | "
-                       f"{cell(', '.join('`' + x + '`' for x in r['realizedBy']))} | {cell(', '.join(r['usecases']))} |")
+            out.append(f"| {r['id']} | {text} | {', '.join(r['appliesTo'])} | {r['priority']} | {r['status']} | "
+                       f"{', '.join(r['verification'])} | {cell(', '.join('`' + x + '`' for x in r['realizedBy']))} | "
+                       f"{cell(', '.join(r['usecases']))} |")
         out.append("")
     if usecases:
         out += ["## Use cases", "", "| Use case | Actors | Objective | Requirements |", "|---|---|---|---|"]

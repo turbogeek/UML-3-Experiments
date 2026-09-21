@@ -1,7 +1,7 @@
 package UML3ReportRequirements {
 	doc
 	/*
-	RPT: requirements on documents and reports generated from UML3 models: reference documents, documents
+	RPT: requirements on documents and reports generated from SysUML models: reference documents, documents
 	composed of views, publication formats, requirement and traceability reports and their consistency with
 	their sources, metrics, and verification, review and change reports.
 	Diagrams and tables as views are in UML3ViewRequirements (VIEW).
@@ -23,7 +23,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-001'> modelReferenceDocument {
 		doc
 		/*
-		UML3 shall generate a reference document from any UML3 model, including the UML3 libraries: each package
+		SysUML shall generate a reference document from any SysUML model, including the SysUML libraries: each package
 		with its summary of contents, and each definition with its documentation, keywords, features,
 		specializations and relationships, and the requirements and use cases of the model.
 		*/
@@ -36,7 +36,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-002'> viewBasedDocuments {
 		doc
 		/*
-		A document shall be definable in a UML3 model as a view whose ordered subviews are its sections, with their
+		A document shall be definable in a SysUML model as a view whose ordered subviews are its sections, with their
 		diagrams, tables and text, and shall be rendered from that view, so that the structure of a document is
 		model content.
 		*/
@@ -61,7 +61,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-004'> requirementsReport {
 		doc
 		/*
-		UML3 shall publish its own requirements as a report generated from its requirement model that lists each
+		SysUML shall publish its own requirements as a report generated from its requirement model that lists each
 		requirement with its statement, rationale, priority, status, verification method and evidence, the
 		elements that realize it and the use cases that trace it, and that summarizes each area by status and
 		priority.
@@ -76,8 +76,8 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-005'> traceabilityReport {
 		doc
 		/*
-		UML3 shall publish its traceability as reports generated from the trace sources: the traceability from
-		UML 2.x concepts to UML3 with a summary by status, and the traces from requirements to the elements that
+		SysUML shall publish its traceability as reports generated from the trace sources: the traceability from
+		UML 2.x concepts to SysUML with a summary by status, and the traces from requirements to the elements that
 		realize them and the use cases that need them. Each report shall present every trace of its source.
 		Verified by: tools/run_tests.py suite traceability; tools/run_tests.py suite requirements; docs/UML2-to-UML3-Traceability.md.
 		*/
@@ -103,7 +103,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-007'> modelMetrics {
 		doc
 		/*
-		UML3 shall report metrics of a model: the number of elements per UML3 keyword and per package, the share
+		SysUML shall report metrics of a model: the number of elements per SysUML keyword and per package, the share
 		of elements that have documentation, the design rule findings per rule, and the change of each metric
 		between two versions of the model.
 		*/
@@ -116,7 +116,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-008'> reviewReport {
 		doc
 		/*
-		UML3 shall generate a review report for a version of a model with its review findings and their status,
+		SysUML shall generate a review report for a version of a model with its review findings and their status,
 		its verification errors and warnings, and its requirements that are not done.
 		*/
 		@Rationale { text = "A review ends with a decision on one version; collecting the findings, check results and open requirements in one report gives the reviewer what the decision needs."; }
@@ -128,7 +128,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-009'> changeReport {
 		doc
 		/*
-		UML3 shall generate a change report between two versions of a model that lists the added, removed and
+		SysUML shall generate a change report between two versions of a model that lists the added, removed and
 		changed elements by package and keyword, including changes of applied keywords, metadata values and
 		documentation.
 		*/
@@ -141,7 +141,7 @@ package UML3ReportRequirements {
 	requirement <'UML3-RPT-010'> verificationReport {
 		doc
 		/*
-		UML3 shall generate a readable verification report from the machine-readable results of a verification
+		SysUML shall generate a readable verification report from the machine-readable results of a verification
 		run, with the result of each suite and check, the numbers of cases and findings, the failures, and the
 		time of the run.
 		*/
@@ -168,7 +168,7 @@ package UML3ReportRequirements {
 		use case def PublishModelDocumentation {
 			doc
 			/*
-			A technical writer generates the reference documentation of a UML3 model or library, composes
+			A technical writer generates the reference documentation of a SysUML model or library, composes
 			documents from views and publishes them in the formats that their readers need.
 			*/
 			subject environment : UML3Environment;

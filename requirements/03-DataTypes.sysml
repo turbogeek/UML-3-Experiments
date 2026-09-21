@@ -28,7 +28,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-001'> sizedNumbers {
 		doc
 		/*
-		UML3 shall provide signed and unsigned integer types of 8, 16, 32 and 64 bits and IEEE 754 binary32 and
+		SysUML shall provide signed and unsigned integer types of 8, 16, 32 and 64 bits and IEEE 754 binary32 and
 		binary64 floating-point types. Each type shall specialize the closest ScalarValues type and shall state
 		its bit width and, for integer types, its signedness.
 		Verified by: library/UML3Types.sysml; tools/run_tests.py suite idl-import; tools/run_tests.py suite cameo.
@@ -42,7 +42,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-002'> exactDecimals {
 		doc
 		/*
-		UML3 shall provide an exact decimal type, distinct from binary floating point, whose precision and
+		SysUML shall provide an exact decimal type, distinct from binary floating point, whose precision and
 		scale can be stated on a specialized type or on a single usage, and a monetary amount type based on it.
 		Verified by: library/UML3Types.sysml; tools/run_tests.py suite idl-import.
 		*/
@@ -55,7 +55,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-003'> valueFacets {
 		doc
 		/*
-		UML3 shall provide facets that record restrictions on the value space of a value type or of a single
+		SysUML shall provide facets that record restrictions on the value space of a value type or of a single
 		attribute usage: inclusive lower and upper bounds, minimum and maximum length, precision and scale, a
 		pattern, bit width and signedness.
 		Verified by: tools/run_tests.py suite idl-import; tools/run_tests.py suite cameo; examples/01-OnlineStoreDomain.sysml.
@@ -69,7 +69,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-004'> checkableValueSpaces {
 		doc
 		/*
-		UML3 shall define the value space of each value type and the meaning of each facet precisely enough for
+		SysUML shall define the value space of each value type and the meaning of each facet precisely enough for
 		a tool to decide whether a value conforms. The definition shall cover the regular-expression language
 		of patterns, exclusive bounds, the limits of 64-bit integers and the IEEE 754 special values of
 		floating-point types.
@@ -83,7 +83,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-005'> textFormats {
 		doc
 		/*
-		UML3 shall provide text types for universally unique identifiers, URIs, e-mail addresses, ISO 4217
+		SysUML shall provide text types for universally unique identifiers, URIs, e-mail addresses, ISO 4217
 		currency codes and JSON documents. Each shall state its lexical form in a machine-readable way, as a
 		pattern or as a named format that validators and schema generators recognize.
 		*/
@@ -96,7 +96,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-006'> temporalLexicalForms {
 		doc
 		/*
-		UML3 shall provide types for calendar dates, times of day, instants with a UTC offset and durations,
+		SysUML shall provide types for calendar dates, times of day, instants with a UTC offset and durations,
 		each with a defined ISO 8601 or RFC 3339 lexical form.
 		Verified by: library/UML3Types.sysml; examples/01-OnlineStoreDomain.sysml.
 		*/
@@ -109,8 +109,8 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-007'> timeZonesAndTimeLibrary {
 		doc
 		/*
-		UML3 shall distinguish local dates and times, instants with a UTC offset and date-times in a named time
-		zone. UML3 temporal types shall be convertible to the time instants and durations of the SysML v2 Time
+		SysUML shall distinguish local dates and times, instants with a UTC offset and date-times in a named time
+		zone. SysUML temporal types shall be convertible to the time instants and durations of the SysML v2 Time
 		and ISQ libraries, and a model shall be able to use both without name conflicts.
 		*/
 		@Rationale { text = "Scheduling, billing and audit logic fail when local and zoned times are confused, and software in a SysML v2 system model must exchange time values with physical time analysis."; }
@@ -122,7 +122,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-008'> binaryAndCharacterEncodings {
 		doc
 		/*
-		UML3 shall represent binary content as a sequence of octets distinct from text. UML3 shall state the
+		SysUML shall represent binary content as a sequence of octets distinct from text. SysUML shall state the
 		character encoding of text types and the text encoding, such as base64, used when binary content is
 		carried as text.
 		*/
@@ -135,7 +135,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-009'> enumerationLiteralValues {
 		doc
 		/*
-		UML3 shall express enumerations as native enumeration definitions and shall allow each literal to carry
+		SysUML shall express enumerations as native enumeration definitions and shall allow each literal to carry
 		an explicit value, such as an integer code or a stored text, that importers, exporters and generators
 		preserve.
 		*/
@@ -148,7 +148,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-010'> multiplicityCollections {
 		doc
 		/*
-		UML3 shall express optional values, sets, ordered sets, bags and lists through the multiplicity,
+		SysUML shall express optional values, sets, ordered sets, bags and lists through the multiplicity,
 		ordering and uniqueness of features instead of collection types. A bounded collection shall use the
 		upper bound of its multiplicity, and a fixed-size array shall record its dimensions.
 		Verified by: tools/run_tests.py suite idl-import; tools/run_tests.py suite traceability; examples/01-OnlineStoreDomain.sysml.
@@ -162,7 +162,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-011'> absentVersusNull {
 		doc
 		/*
-		UML3 shall define whether and how a model distinguishes a value that is absent from a value that is
+		SysUML shall define whether and how a model distinguishes a value that is absent from a value that is
 		present and null, for the target formats that make this distinction.
 		*/
 		@Rationale { text = "KerML treats null as an empty sequence of values, so a multiplicity of 0..1 cannot tell a missing JSON property from an explicit null, which some APIs and update protocols rely on."; }
@@ -174,7 +174,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-012'> typedMaps {
 		doc
 		/*
-		UML3 shall express maps whose entries associate a key of one type with a value of another type, with
+		SysUML shall express maps whose entries associate a key of one type with a value of another type, with
 		at most one entry for each key, and shall relate them to the Map data type of the KerML Collections
 		library.
 		*/
@@ -187,7 +187,7 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-013'> quantitiesAndUnits {
 		doc
 		/*
-		UML3 shall use the quantities and units of the SysML v2 ISQ and SI libraries instead of defining its
+		SysUML shall use the quantities and units of the SysML v2 ISQ and SI libraries instead of defining its
 		own. A quantity-valued attribute shall be able to state the unit and the sized numeric type that
 		represent its value in software.
 		*/
@@ -200,8 +200,8 @@ package UML3DataTypeRequirements {
 	requirement <'UML3-DT-014'> idlBasicTypes {
 		doc
 		/*
-		UML3 shall provide the OMG IDL 4.2 basic types that its other value types do not cover, namely octet,
-		wide character, wide string, long double and any, and shall map every IDL basic type to a UML3 or
+		SysUML shall provide the OMG IDL 4.2 basic types that its other value types do not cover, namely octet,
+		wide character, wide string, long double and any, and shall map every IDL basic type to a SysUML or
 		ScalarValues type.
 		Verified by: tools/run_tests.py suite idl-import; tools/run_tests.py suite idl-corpus; docs/IDL-MAPPING.md.
 		*/
@@ -214,7 +214,7 @@ package UML3DataTypeRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how data modelers, integration engineers and systems engineers use the UML3 value types.
+		UseCases: how data modelers, integration engineers and systems engineers use the SysUML value types.
 
 		Contents:
 		- DefineSoftwareValueTypes: a data modeler defines the value types of a domain.
@@ -228,7 +228,7 @@ package UML3DataTypeRequirements {
 			doc
 			/*
 			A data modeler defines the value types of a domain: sized numbers, exact amounts, constrained text
-			and identifiers, temporal values, enumerations with codes, collections and maps, reusing the UML3
+			and identifiers, temporal values, enumerations with codes, collections and maps, reusing the SysUML
 			types and restricting them with facets.
 			*/
 			subject environment : UML3Environment;
@@ -277,7 +277,7 @@ package UML3DataTypeRequirements {
 	package Realization {
 		doc
 		/*
-		Realization: the UML3 and SysML v2 library elements that realize the done and tbc DT requirements.
+		Realization: the SysUML and SysML v2 library elements that realize the done and tbc DT requirements.
 
 		Contents:
 		- #realizes dependencies from library elements to DT requirements.

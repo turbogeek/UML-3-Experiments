@@ -12,7 +12,7 @@ package UML3ValidationRequirements {
 	- Scenarios: scenarioModels, scenarioUseCaseLinks, scenarioSimulation.
 	- Reviews: reviewRecords, acceptanceStatus.
 	- UseCases: how product owners, architects and reviewers validate a design with its stakeholders.
-	- Realization: the SysML v2 and UML3 elements that realize the done requirements.
+	- Realization: the SysML v2 and SysUML elements that realize the done requirements.
 	References: docs/REQUIREMENTS-GUIDE.md; docs/UML2-to-UML3-Traceability.md; SysML 7.21; SysML 7.25.
 	*/
 
@@ -24,12 +24,12 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-001'> useCaseModel {
 		doc
 		/*
-		UML3 shall model how actors use a software system with native SysML v2 use case definitions and usages,
+		SysUML shall model how actors use a software system with native SysML v2 use case definitions and usages,
 		each with its subject, its actors and an objective that states what the actors obtain, and shall add no
-		UML3 keyword for use cases.
+		SysUML keyword for use cases.
 		Verified by: tools/run_tests.py suite traceability; tools/run_tests.py suite cameo; tools/run_tests.py suite requirements.
 		*/
-		@Rationale { text = "SysML v2 use cases already have subjects, actors and objectives and can be included and specialized; a UML3 copy would create a second way to say the same thing."; }
+		@Rationale { text = "SysML v2 use cases already have subjects, actors and objectives and can be included and specialized; a SysUML copy would create a second way to say the same thing."; }
 		@StatusInfo { status = StatusKind::done; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -38,7 +38,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-002'> useCaseRequirementTraces {
 		doc
 		/*
-		A use case shall trace the requirements it needs, and UML3 tooling shall report use cases without a
+		A use case shall trace the requirements it needs, and SysUML tooling shall report use cases without a
 		subject, an actor, an objective or a traced requirement, and requirements that no use case traces.
 		Verified by: tools/run_tests.py suite requirements.
 		*/
@@ -51,7 +51,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-003'> useCaseComposition {
 		doc
 		/*
-		UML3 shall express the common and optional parts of use cases with native included use cases, an optional
+		SysUML shall express the common and optional parts of use cases with native included use cases, an optional
 		part being an inclusion with multiplicity 0..1 or a guarded succession, and shall not add an extend
 		relationship.
 		Verified by: tools/run_tests.py suite traceability; tools/run_tests.py suite cameo.
@@ -65,7 +65,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-004'> stakeholderConcerns {
 		doc
 		/*
-		UML3 shall model the stakeholders of a software system and their concerns with native SysML v2
+		SysUML shall model the stakeholders of a software system and their concerns with native SysML v2
 		stakeholders and concern definitions, and shall relate each concern to the requirements and use cases
 		that address it.
 		*/
@@ -78,7 +78,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-005'> concernCoverage {
 		doc
 		/*
-		UML3 tooling shall report the stakeholder concerns that no requirement, use case or viewpoint addresses.
+		SysUML tooling shall report the stakeholder concerns that no requirement, use case or viewpoint addresses.
 		*/
 		@Rationale { text = "An unaddressed concern is a gap that stakeholders otherwise find late, in acceptance, when it is expensive to close."; }
 		@StatusInfo { status = StatusKind::open; }
@@ -89,7 +89,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-006'> acceptanceCriteria {
 		doc
 		/*
-		UML3 shall let a product owner state the acceptance criteria of a requirement or use case as constraints
+		SysUML shall let a product owner state the acceptance criteria of a requirement or use case as constraints
 		that evaluate to true or false for a design or a test result, and each criterion shall be linked to the
 		requirement or use case it belongs to.
 		*/
@@ -128,7 +128,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-009'> scenarioSimulation {
 		doc
 		/*
-		UML3 shall define execution semantics for scenarios that are sufficient for a tool to simulate a scenario
+		SysUML shall define execution semantics for scenarios that are sufficient for a tool to simulate a scenario
 		against the design, sending and accepting its messages, taking its state transitions and performing its
 		actions, and to report the messages, states and results the simulation produced.
 		*/
@@ -141,7 +141,7 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-010'> reviewRecords {
 		doc
 		/*
-		UML3 shall record review findings as model content attached to the reviewed elements, each with its
+		SysUML shall record review findings as model content attached to the reviewed elements, each with its
 		text, severity, reviewer, decision and status and the version of the model that was reviewed.
 		*/
 		@Rationale { text = "Findings kept outside the model lose their link to the elements they concern and cannot be checked again when those elements change."; }
@@ -153,8 +153,8 @@ package UML3ValidationRequirements {
 	requirement <'UML3-VAL-011'> acceptanceStatus {
 		doc
 		/*
-		UML3 shall record whether the stakeholders have accepted each requirement and use case, separately from
-		its implementation status, and UML3 tooling shall report the accepted, rejected and pending ones.
+		SysUML shall record whether the stakeholders have accepted each requirement and use case, separately from
+		its implementation status, and SysUML tooling shall report the accepted, rejected and pending ones.
 		*/
 		@Rationale { text = "Implemented is not the same as accepted: a done requirement can still be the wrong one, and only stakeholder acceptance closes validation."; }
 		@StatusInfo { status = StatusKind::open; }
@@ -233,11 +233,11 @@ package UML3ValidationRequirements {
 	package Realization {
 		doc
 		/*
-		Realization: the SysML v2 and UML3 elements that realize the done and tbc VAL requirements.
+		Realization: the SysML v2 and SysUML elements that realize the done and tbc VAL requirements.
 
 		Contents:
 		- #realizes dependencies to VAL requirements. A requirement met by a native SysML v2 construct used as-is
-		  is realized by the SysML metaclass, as in the UML 2.x to UML3 traceability.
+		  is realized by the SysML metaclass, as in the UML 2.x to SysUML traceability.
 		*/
 		#realizes dependency from SysML::UseCaseDefinition to 'UML3-VAL-001';
 		#realizes dependency from SysML::UseCaseUsage to 'UML3-VAL-001';

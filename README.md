@@ -8,9 +8,16 @@ The approach uses only the extension mechanisms SysML v2 already standardizes:
 * **Semantic metadata keywords** (`#entity`, `#service`, `#primaryKey`...), the SysML v2 replacement for UML stereotypes. A keyword makes the element really specialize its library base (KerML 9.2.16), so models stay queryable and CATIA Magic shows the keyword as a `«#keyword»` label.
 * **Plain metadata** for values such as `@Facets`, `@Index`, `@QualityOfService` and `@foreignKey { onDelete }`.
 
-The KerML/SysML grammar is not changed, so UML3 models are ordinary SysML v2.
+The KerML/SysML grammar is not changed, so these models are ordinary SysML v2.
 
-**Design principle: UML3 is not a copy of UML 2.x.** Where SysML v2 or KerML already has the concept, the native element is **used as-is, without a UML3 label**. Examples: `action def` for activities and behaviors, `state def` for state machines, `use case def`, `individual`/`snapshot` for instance specifications. UML3 adds library elements and keywords only where SysML v2 has no equivalent or where a KerML capability improves on UML. Every UML 2.x concept is traced to its UML3 realization in [`docs/UML2-to-UML3-Traceability.md`](docs/UML2-to-UML3-Traceability.md), which is generated from `traceability/uml2-to-uml3.json` and verified by the tests.
+**Two implementations: SysUML and UML3.** What this repository builds is **SysUML**: UML-level software
+modeling in SysML v2 with the mechanisms above. **UML3** names the next step: a language that extends and subsets
+KerML as SysML v2 does, with its own textual syntax, grammar and standard library. Both are to realize one concept
+hierarchy, so that a model moves between them by a lossless round trip. UML3 work starts only after SysUML is
+refined further and a capability regression corpus exists (requirements area IMPL, issue I-39). The libraries
+keep their `UML3*` package names for now.
+
+**Design principle: SysUML is not a copy of UML 2.x.** Where SysML v2 or KerML already has the concept, the native element is **used as-is, without a SysUML label**. Examples: `action def` for activities and behaviors, `state def` for state machines, `use case def`, `individual`/`snapshot` for instance specifications. SysUML adds library elements and keywords only where SysML v2 has no equivalent or where a KerML capability improves on UML. Every UML 2.x concept is traced to its SysUML realization in [`docs/UML2-to-UML3-Traceability.md`](docs/UML2-to-UML3-Traceability.md), which is generated from `traceability/uml2-to-uml3.json` and verified by the tests.
 
 ```sysml
 package Shop {
@@ -35,7 +42,7 @@ package Shop {
 | `library/UML3Types.sysml` | Sized and formatted software types (`Int8`–`UInt64`, `Float32/64`, `Decimal`, `Money`, `Uuid`, `EmailAddress`, `Timestamp`, `Bytes`...), `@Facets` (range, length, precision, pattern), `MapEntry`; collection kinds via native multiplicity |
 | `library/UML3Components.sysml` | Components, subsystems, services; `#provided` / `#required` (conjugated) ports bound to interface contracts; assembly and delegation connectors; layers, boundaries, technology tags; artifacts, nodes, devices, execution environments, deployment, manifestation, communication paths |
 | `library/UML3Messaging.sysml` | Message schemas with a standard header (`#command`, `#domainEvent`, `#queryMessage`, `#reply`, `#documentMessage`); topics, queues, brokers; producer / consumer / request-reply ports; serialization format and QoS (delivery, ordering, partitioning, retention, DLQ); `#publishes`, `#subscribes`, `#sends`, `#handles`, `#idempotent`; interactions (sequence diagrams) using native messages |
-| `library/UML3Views.sysml` | UML diagram kinds as SysML v2 views: `ClassDiagram`, `PackageDiagram`, `ComponentDiagram`, `DeploymentDiagram`, `EntityRelationshipDiagram`, `MessageSchemaView`, `SequenceDiagram`, `ClassTable`, plus detail forms with full compartments (`ClassDetailDiagram`, `DeploymentDetailDiagram`, `EntityRelationshipDetailDiagram`, `MessageSchemaDetailView`); they filter on UML3 keywords and keyword categories and hide leaked library elements |
+| `library/UML3Views.sysml` | UML diagram kinds as SysML v2 views: `ClassDiagram`, `PackageDiagram`, `ComponentDiagram`, `DeploymentDiagram`, `EntityRelationshipDiagram`, `MessageSchemaView`, `SequenceDiagram`, `ClassTable`, plus detail forms with full compartments (`ClassDetailDiagram`, `DeploymentDetailDiagram`, `EntityRelationshipDetailDiagram`, `MessageSchemaDetailView`); they filter on SysUML keywords and keyword categories and hide leaked library elements |
 | `library/UML3Data.sysml` | Logical models (`#entity`, `#aggregateRoot`, `#valueObject`, `#relationship` with cardinality); keys and constraints (`#primaryKey`, `#foreignKey` + referential actions, `#unique`, `#indexed`, `@Index`); physical schemas (`#database`, `#table`, `#column` + `@Column`, `#dbView`); governance (`#audited`, `#transient`, `@Sensitivity`); logical-to-physical `#mapsTo` |
 | `library/UML3IDL.sysml` + `tools/idl/` | OMG IDL 4.2 **import and export** (Groovy, inside CATIA Magic or on the command line): modules, structs, typedefs, sequences, arrays, bounded strings, fixed, enums, unions (`#union`, `@Discriminator`, `@Case`), exceptions, interfaces with operations, `oneway` and `raises`, constants and common annotations. IDL basic types `Octet`, `WChar`, `WString`, `LongDouble`, `Any`. Mapping: [`docs/IDL-MAPPING.md`](docs/IDL-MAPPING.md). **Code generation** from IDL or from the model: Java per the OMG IDL4 to Java 1.0 mapping and Rust ([`docs/IDL-CODEGEN.md`](docs/IDL-CODEGEN.md)) |
 
@@ -44,12 +51,12 @@ package Shop {
 ### Documentation and requirements
 
 * **Documentation is part of the model.** Every library and example element owns a `doc` (what it is, usage, rationale, references), every package summarizes its contents, and explanations spanning several elements are named `comment ... about` annotations, so tools and diagrams show them. There are no banners or star decoration. Rules and checker: [`docs/DOC-CONVENTIONS.md`](docs/DOC-CONVENTIONS.md), `tools/check_docs.py` (citations are checked against the KerML and SysML v2 clause headings).
-* **UML3 palettes in CATIA Magic.** `customization/catia-magic/` turns each UML3 diagram kind into a CATIA Magic view with its own palette, so a class drawn from the palette is a `#classType item def` from the start; it also adds the UML3 diagram kinds to the Create View menu. See [`docs/CATIA-MAGIC-CUSTOMIZATION.md`](docs/CATIA-MAGIC-CUSTOMIZATION.md).
+* **SysUML palettes in CATIA Magic.** `customization/catia-magic/` turns each SysUML diagram kind into a CATIA Magic view with its own palette, so a class drawn from the palette is a `#classType item def` from the start; it also adds the diagram kinds to the Create View menu (category UML3 Views). See [`docs/CATIA-MAGIC-CUSTOMIZATION.md`](docs/CATIA-MAGIC-CUSTOMIZATION.md).
 * **The diagram kinds are modeled once.** `library/UML3DiagramKinds.sysml` records, per diagram kind, which keywords a view shows, which a palette creates and which view definitions render it, as metaobjects rather than strings. `tools/check_diagram_kinds.py` compares that model with the view filters and the palettes, so the three cannot drift apart.
-* **Requirements and use cases for UML3** are written in SysML v2 in `requirements/`: 291 numbered "shall" requirements in 21 areas (core, structure, data types, behavior, extensibility, verification, validation, views, architecture, data, messaging, security, testing, DevOps, generation, reports, languages, AI, SysML v2 interoperation, requirement modeling, patterns), each with rationale, status, priority, verification method, evidence and realizing elements, plus 68 use cases with actors. Status today: 67 done, 47 implemented with verification incomplete (tbc), 161 open, 16 to be decided. Guide: [`docs/REQUIREMENTS-GUIDE.md`](docs/REQUIREMENTS-GUIDE.md); generated catalog: [`docs/UML3-Requirements.md`](docs/UML3-Requirements.md).
+* **Requirements and use cases for SysUML and UML3** are written in SysML v2 in `requirements/`: 302 numbered "shall" requirements in 22 areas (core, structure, data types, behavior, extensibility, verification, validation, views, architecture, data, messaging, security, testing, DevOps, generation, reports, languages, AI, SysML v2 interoperation, requirement modeling, patterns, implementations), each with rationale, status, priority, verification method, evidence and realizing elements, plus 73 use cases with actors. Status today: 67 done, 48 implemented with verification incomplete (tbc), 171 open, 16 to be decided. Each requirement says which implementation it binds; 9 bind UML3, all in area IMPL. Guide: [`docs/REQUIREMENTS-GUIDE.md`](docs/REQUIREMENTS-GUIDE.md); generated catalog: [`docs/UML3-Requirements.md`](docs/UML3-Requirements.md).
 
-* **Patterns.** [`docs/PATTERNS.md`](docs/PATTERNS.md) maps the OMG Structured Patterns Metamodel Standard (SPMS 1.4) and UML 2.5.1 collaborations onto UML3: a pattern is a definition whose role features have types and multiplicities, applied at type or instance level, with its solution stated as native SysML v2 requirements that each application satisfies. Experiment E22 writes the Observer pattern with existing keywords only; the requirements are the PAT area.
-* **OntoUML (research).** [`docs/ONTOUML.md`](docs/ONTOUML.md) assesses OntoUML and UFO as aids for domain and data modeling in UML3: standardization status, what SysML v2 already provides, and eight ranked opportunities awaiting a decision.
+* **Patterns.** [`docs/PATTERNS.md`](docs/PATTERNS.md) maps the OMG Structured Patterns Metamodel Standard (SPMS 1.4) and UML 2.5.1 collaborations onto SysUML: a pattern is a definition whose role features have types and multiplicities, applied at type or instance level, with its solution stated as native SysML v2 requirements that each application satisfies. Experiment E22 writes the Observer pattern with existing keywords only; the requirements are the PAT area.
+* **OntoUML (research).** [`docs/ONTOUML.md`](docs/ONTOUML.md) assesses OntoUML and UFO as aids for domain and data modeling in SysUML: standardization status, what SysML v2 already provides, and eight ranked opportunities awaiting a decision.
 
 ### Keyword naming rules
 * Keywords are lowerCamelCase.
@@ -72,12 +79,13 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Suite | Tool | Current result |
 |---|---|---|
 | Syntax | `sysml-validator` (ANTLR) | library and examples pass |
-| UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, UML3 elements, views and examples verified |
+| UML 2.x traceability | `tools/check_traceability.py` | 91 concepts: 49 NATIVE, 15 NATIVE+UML3, 14 UML3, 8 PARTIAL, 5 NOT_ADOPTED; all cited metaclasses, library elements, views and examples verified |
 | Names, lint, keyword applicability | `tools/check_names.py` | library, examples and requirements pass; 23 negative tests fail as expected, including keyword rules inherited through imports and reserved words used as names |
 | Design rules | `tools/check_rules.py` | examples: 0 errors (5 true R12 warnings); each of 14 rules proven to fire; clean control stays clean |
 | Keyword reference | `tools/check_keywords.py`, suite `keywords` | `docs/UML3-Keywords.md` regenerated from the libraries: 74 keywords, 59 with a terse id; the suite fails if a keyword is added without it |
 | Documentation | `tools/check_docs.py` | library, examples and requirements: 0 findings on rules D01–D07; one fixture per rule plus a clean control; documentation-only rewrites proven model-identical (`tools/compare_model_tokens.py`) |
-| Requirements and use cases | `tools/check_requirements.py` | 247 requirements, 59 use cases: form, evidence, realization and traces resolve; every requirement is traced by a use case |
+| Requirements and use cases | `tools/check_requirements.py` | 302 requirements, 73 use cases: form, evidence, realization and traces resolve; every requirement is traced by a use case |
+| Dogfood model | `sysml-validator`, `check_names.py`, `check_rules.py`, `check_docs.py`, suite `dogfood` | `DogFoodUML3/`, the effort modeled in SysUML: 4 files pass syntax, names, keyword applicability, design rules and documentation rules |
 | Checker calibration | `check_names.py` on 251 official OMG models | 0 false positives |
 | Load, link, validate | CATIA Magic via REST harness (`tools/cameo_check.py`) | 17/17 files load (8 libraries, 6 examples, 3 customization); validation engine reports 0 failures on 22 packages, including the IDL imports; 8 probes flagged exactly as predicted (2026-09-17) |
 | View contents (expose + filter) | CATIA Magic `exposedElement` | 12/12 views match predicted includes and excludes |
@@ -85,7 +93,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | Patterns and requirement evaluation (E22) | `cameo_check.py --evaluations`, suite `cameo-patterns` | Observer pattern in native SysML v2: loads and validates, 12/12 implied relationships, 4/4 evaluation verdicts of CATIA Magic's engine (model-level conformance included, false controls false) |
 | UML3 palettes (CATIA Magic customization) | `verifyPalettes.groovy`, `tools/check_palettes.py`, suite `catia-customization` | 29 definition-and-usage menus, focused per diagram kind (definition first on class, entity-relationship and message schema palettes, usage first on component and deployment palettes); 10/10 views (six compact, four detail) get their UML3 palette; 90 distinct templated buttons (168 across the ten views) copy the expected element kind and keyword, and each menu shows the predicted button; UML3 Create View dialog active; 9 negative controls, rerun by every suite run against a recorded read-back |
 | Diagram kinds (model vs filters vs palettes) | `tools/check_diagram_kinds.py`, `probeDiagramKinds.groovy` | 8 kinds, 62 keyword entries, 12 filters and 6 palettes agree, and every definition-and-usage menu focuses its kind's `defaultForm`; 9 drift fixtures fail the check; CATIA Magic evaluates the same model |
-| Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that UML3 catches |
+| Misapplied-keyword probes | CATIA Magic | recorded behaviour; Cameo misses 2 of 5 cases that `check_names.py` catches |
 | Keyword labels | CATIA Magic label functions | 21/21: shapes show the keyword, never the terse id, also for an element written `#cls #sgl` (E21) |
 | IDL import/export | `tools/idl/`, `run_tests.py` suite `idl-import` and `cameo_check.py --idl` | fixture imports as expected, 5 unsupported constructs rejected with clear messages; in CATIA Magic: 0 build errors, 0 validation failures, export from the model identical to the canonical original |
 | IDL corpora (701 third-party files, `external/idl` submodules) | `tools/idl_corpus_check.py` | 394 imported with stable round trips, 0 crashes; generated Java compiles for 304, generated Rust compiles for 266; per-file baseline |
@@ -102,15 +110,16 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 * **Views as diagrams:** the test run creates, lays out and exports each view's diagram, then undoes it. CATIA Magic does not draw exposed dependencies (I-33), and diagrams created without the layouter stack all shapes at one spot (E14).
 * Validator issues found: the ANTLR `sysml-validator` does not resolve names, reverses the `direction`/`abstract` prefix order, and rejects `def`-prefixed names that have a multiplicity. Details are in `docs/DESIGN.md`.
 * **IDL v1 scope:** valuetypes, maps, anonymous nested sequences, shift operators in constants, types nested in interfaces, and IDL CCM constructs are rejected on import. Export writes canonical IDL (qualified names, resolved constants), not the original text.
-* **Open design issues** found while documenting and writing the requirements are listed as I-01 to I-38 in (I-35 addressed and I-36 closed on 2026-09-17) [`docs/DESIGN.md`](docs/DESIGN.md); they are maintainer decisions and none is fixed yet.
+* **Open design issues** found while documenting and writing the requirements are listed as I-01 to I-39 in [`docs/DESIGN.md`](docs/DESIGN.md) (I-35 addressed and I-36 closed on 2026-09-17); they are maintainer decisions and the others are not fixed yet.
 * The OMG Pilot Implementation check (`tools/pilot-check/`) is not operational, because the local Pilot build is broken.
 
 ## Layout
 
 | Path | Contents |
 |---|---|
-| `library/` | The seven UML3 libraries |
-| `requirements/` | UML3 requirements (19 area files), actors and use cases, in SysML v2 |
+| `library/` | The eight SysUML libraries (packages `UML3*`) |
+| `requirements/` | SysUML and UML3 requirements (22 area files), actors and use cases, in SysML v2 |
+| `DogFoodUML3/` | The effort itself modeled in SysUML: the two implementations, the verification toolchain and what they satisfy (UML3-CORE-014) |
 | `examples/` | Online-store models using every keyword |
 | `tests/negative/` | Models that must fail locally (`EXPECT:` header) |
 | `tests/cameo/` | Cameo hypotheses: implied specializations, label expectations |

@@ -324,6 +324,20 @@ Local checks run without CATIA Magic against a stub of the vendor library's name
 visualization, categories, buttons and the keyword of every button's template through the DSL service, and
 `tools/check_palettes.py` compares that with `tests/cameo/palette-expectations.json` (9 negative controls, run by the suite against `tests/cameo/palettes-recorded.txt`).
 
+## Two implementations: SysUML and UML3 (2026-09-21)
+
+What this repository builds is now called **SysUML**: UML-level software modeling in SysML v2, with SysML v2
+libraries and semantic keywords and no extension of SysML v2. **UML3** names the next step, a language that
+extends and subsets KerML as SysML v2 does, with its own textual syntax, grammar and standard library. The two
+must stay 100% compatible through a lossless round-trip transformation, which is possible because both realize the
+same specialization hierarchy by different means: a UML3 keyword would imply a library specialization the way the
+SysML v2 keyword `part def` implies `Parts::Part`, and a SysUML semantic keyword implies it through its `baseType`.
+SysUML's `Class` specializes the SysML v2 `Item`, a KerML `Object`; a UML3 `Class` that specializes `Object`
+directly sits at the same point of the KerML hierarchy. Graphics follow the SysML v2 graphical notation, which is
+what vendors implement, as an extension of it; whether UML 2.5.1 symbols are retained is open (UML3-IMPL-010).
+The requirements say which implementation they bind (`@AppliesTo`, area IMPL), and the library packages keep their
+`UML3*` names for now. The effort itself is modeled in SysUML in `DogFoodUML3/` (UML3-CORE-014).
+
 ## Patterns and requirement evaluation (E22)
 
 [PATTERNS.md](PATTERNS.md) maps the OMG Structured Patterns Metamodel Standard onto UML3. E22 tested the mapping in
@@ -430,6 +444,9 @@ In the kernel, `Item :> Object :> Occurrence`, `Performance :> Occurrence`, `Obj
    `defaultForm`: the definition on type models (class, entity-relationship, message schema), the usage on
    configurations (component, deployment), because connectors connect usages. See
    [CATIA-MAGIC-CUSTOMIZATION.md](CATIA-MAGIC-CUSTOMIZATION.md#definition-and-usage-buttons).
+11. **Two implementations (2026-09-21).** SysUML (SysML v2 libraries, in use) and UML3 (KerML-based language with a
+   grammar, next) share one concept hierarchy and a lossless round trip; UML3 work starts after SysUML is refined
+   and a capability regression corpus exists (UML3-IMPL-008, issue I-39).
 
 ## Harness safety incident and guard (E07)
 
@@ -519,6 +536,7 @@ the maintainers; none is fixed yet.
 | I-34 | UML3Views | Detail views repeat the filters of their compact views instead of inheriting them, so a filter change must be made twice; they do not inherit because the rendering would be inherited too (E14) |
 | I-35 | customization | **Addressed 2026-09-17** by `library/UML3DiagramKinds.sysml` and `tools/check_diagram_kinds.py` (E18): the keywords of each diagram kind are modeled once and the view filters and palettes are checked against them. What remains: the palettes themselves are still written by hand rather than generated from the model, and only CATIA Magic has a customization |
 | I-36 | customization | **Closed 2026-09-17**: the messaging palette has `#publishes`, `#subscribes`, `#sends` and `#handles` buttons, whose templates own two parts with UML3Messaging ports (a flow with undirected ends has no related features), and the four detail views carry palettes after all, because `UML3DetailStyleSheet` restores the compartments a rendered view hides (E19) |
+| I-39 | implementations | To do, deliberately later: the UML3 grammar (an extension of the KerML textual notation) and the round-trip transformation between UML3 and SysUML (UML3-IMPL-002 to -007). It starts only after SysUML is refined further and a capability regression corpus exists that the round trip can be proven against (UML3-IMPL-008) |
 | I-37 | patterns | UML3 has no pattern construct yet (the UML 2.5.1 Collaboration row is PARTIAL). [PATTERNS.md](PATTERNS.md) shows that SPMS 1.4 and collaborations map onto native SysML v2 with existing keywords (E22, run pending in CATIA Magic) and lists what is missing: a `#pattern` keyword with section, observation and relationship metadata, conformance rules for role bindings, catalogs, pattern views and SPMS interchange (requirements PAT-001 to PAT-025) |
 | I-38 | research | OntoUML as a modeling aid: [ONTOUML.md](ONTOUML.md) finds that UFO is at ISO draft stage (DIS 21838-5) while OntoUML itself is not standardized, that relators fit SysML v2 connection definitions closely, and that OntoUML meta-types must be plain metadata with checker rules rather than semantic keywords. Decision needed: which of the eight ranked opportunities become requirements (the brief recommends relators, meta-type metadata for data models and the OntoUML 2 checks first) |
 

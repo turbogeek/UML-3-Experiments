@@ -2,9 +2,9 @@ package UML3AIRequirements {
 	doc
 	/*
 	AI: requirements on artificial intelligence with and in UML3: AI assistants that draft, check, review and
-	explain UML3 models under human control, the machine-readable feedback that validation loops need, the
+	explain SysUML models under human control, the machine-readable feedback that validation loops need, the
 	provenance, review and guardrails for AI-produced model content, and the modeling of machine-learning and
-	agent systems as UML3 and SysML v2 elements.
+	agent systems as SysUML and SysML v2 elements.
 
 	Contents:
 	- AI-assisted modeling: sameChecksForAIContent, machineReadableDiagnostics, draftingTracedToSource,
@@ -25,7 +25,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-001'> sameChecksForAIContent {
 		doc
 		/*
-		Model content that an AI assistant drafts or changes shall be checked with the same UML3 conformance
+		Model content that an AI assistant drafts or changes shall be checked with the same SysUML conformance
 		checks as content written by people: syntax, name resolution, keyword applicability, documentation and
 		design rules. The checks shall run on the textual notation without the user interface of a modeling tool,
 		so that the assistant can run them before it proposes the content.
@@ -40,7 +40,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-002'> machineReadableDiagnostics {
 		doc
 		/*
-		UML3 checkers, importers and generators shall report their results in a documented machine-readable form,
+		SysUML checkers, importers and generators shall report their results in a documented machine-readable form,
 		with a finding or result code, the file and line or the model element concerned, and a message for each
 		finding, and shall state overall success or failure, so that an AI assistant can repair a model in an
 		automated validation loop.
@@ -55,7 +55,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-003'> draftingTracedToSource {
 		doc
 		/*
-		When an AI assistant drafts UML3 model content from natural-language sources such as requirements,
+		When an AI assistant drafts SysUML model content from natural-language sources such as requirements,
 		interview notes or documentation, each drafted element shall be traced to the source passage it was
 		derived from, and content without a source shall be marked as a proposal of the assistant.
 		*/
@@ -68,7 +68,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-004'> modelReviewAndExplanation {
 		doc
 		/*
-		An AI assistant that reviews or explains a UML3 model shall base each finding or explanation on identified
+		An AI assistant that reviews or explains a SysUML model shall base each finding or explanation on identified
 		model elements, their documentation, rule codes or requirements, and shall cite them, so that a person
 		can check each statement against the model.
 		*/
@@ -81,7 +81,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-005'> aiProvenanceMetadata {
 		doc
 		/*
-		UML3 shall define metadata that records, for a model element, that its content was created or changed by
+		SysUML shall define metadata that records, for a model element, that its content was created or changed by
 		an AI assistant, which assistant and model version did so, when and in response to which request, and the
 		human review status of the content (unreviewed, accepted, changed or rejected) with its reviewer.
 		*/
@@ -95,7 +95,7 @@ package UML3AIRequirements {
 		doc
 		/*
 		A model baseline, a release or a set of generated artifacts shall not include AI-produced content whose
-		review status is unreviewed or rejected, and UML3 tooling shall report such content before the baseline
+		review status is unreviewed or rejected, and SysUML tooling shall report such content before the baseline
 		is created.
 		*/
 		@Rationale { text = "A guardrail at the baseline keeps unreviewed AI output out of released designs and generated code without slowing down drafting and exploration."; }
@@ -122,7 +122,7 @@ package UML3AIRequirements {
 		doc
 		/*
 		Model content whose data classification or project policy forbids disclosure shall not be sent to an AI
-		service outside the permitted trust boundary, and UML3 tooling shall report each element it withheld from
+		service outside the permitted trust boundary, and SysUML tooling shall report each element it withheld from
 		the assistant.
 		*/
 		@Rationale { text = "Models describe personal data, security controls and proprietary designs; sending them to external AI services can breach confidentiality, privacy law and export control."; }
@@ -134,7 +134,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-009'> mlComponentModeling {
 		doc
 		/*
-		UML3 shall provide library concepts for machine-learning systems: trained models with their version,
+		SysUML shall provide library concepts for machine-learning systems: trained models with their version,
 		framework, inputs, outputs and intended use; datasets with their origin, license, version and data
 		classification; training, evaluation and inference pipelines; and evaluation results with their metrics
 		and the datasets they were measured on.
@@ -148,7 +148,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-010'> agentSystemModeling {
 		doc
 		/*
-		UML3 shall provide library concepts for AI agent systems: agents, the language models they use, prompts
+		SysUML shall provide library concepts for AI agent systems: agents, the language models they use, prompts
 		and prompt templates, the tools and services an agent may call with its permissions, memory and knowledge
 		sources, and the guardrail policies that constrain the agent.
 		*/
@@ -173,7 +173,7 @@ package UML3AIRequirements {
 	requirement <'UML3-AI-012'> mlReproducibility {
 		doc
 		/*
-		For each trained model UML3 shall record what is needed to reproduce it: the versions of the training
+		For each trained model SysUML shall record what is needed to reproduce it: the versions of the training
 		code, the datasets and the base model, the hyperparameters, the random seeds and the training environment.
 		*/
 		@Rationale { text = "A model that cannot be retrained to the same result cannot be debugged, audited or safely updated, and its data and settings are not visible in the code."; }
@@ -185,7 +185,7 @@ package UML3AIRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how people and AI assistants work together on UML3 models, and how AI systems are modeled.
+		UseCases: how people and AI assistants work together on SysUML models, and how AI systems are modeled.
 
 		Contents:
 		- DraftModelWithAIAssistant: an AI assistant drafts and checks model content for a software developer.
@@ -198,8 +198,8 @@ package UML3AIRequirements {
 		use case def DraftModelWithAIAssistant {
 			doc
 			/*
-			A software developer asks an AI assistant to draft UML3 model content from requirements text. The
-			assistant drafts the content, runs the UML3 checks, repairs the findings in a bounded number of cycles
+			A software developer asks an AI assistant to draft SysUML model content from requirements text. The
+			assistant drafts the content, runs the SysUML checks, repairs the findings in a bounded number of cycles
 			and proposes the result, which enters the model only after the developer has reviewed it.
 			*/
 			subject environment : UML3Environment;
@@ -254,7 +254,7 @@ package UML3AIRequirements {
 		Realization: the elements that realize the done AI requirements.
 
 		Contents:
-		- #realizes dependencies to AI requirements. The UML3 checkers and tools are not modeled as elements of
+		- #realizes dependencies to AI requirements. The SysUML checkers and tools are not modeled as elements of
 		  their own, so a tool capability is realized by UML3Environment, the element that represents them.
 		*/
 		#realizes dependency from UML3Actors::UML3Environment to 'UML3-AI-002';

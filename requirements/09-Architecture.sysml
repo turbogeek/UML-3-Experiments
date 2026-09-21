@@ -28,7 +28,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-001'> componentKinds {
 		doc
 		/*
-		UML3 shall provide components, subsystems and services as encapsulated, replaceable units whose behavior is
+		SysUML shall provide components, subsystems and services as encapsulated, replaceable units whose behavior is
 		reachable only through their ports. Marking a definition as a component, subsystem or service shall make it
 		specialize the corresponding library base, so that tools can query all components of a model.
 		Verified by: tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo; tools/run_tests.py suite traceability.
@@ -44,7 +44,7 @@ package UML3ArchitectureRequirements {
 		/*
 		A component port shall provide or require an interface contract. A port definition shall name the interface
 		type it exposes, a provided port shall be typed by that port definition and a required port by its conjugate.
-		UML3 tooling shall report a provided port that is conjugated and a required port that is not.
+		SysUML tooling shall report a provided port that is conjugated and a required port that is not.
 		Verified by: tests/rules/r07-port-conjugation.sysml; tools/run_tests.py suite rules-tests; tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo.
 		*/
 		@Rationale { text = "Provided and required interfaces are how components are composed and substituted; conjugation gives them a native SysML v2 meaning instead of a label."; }
@@ -56,7 +56,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-003'> assemblyAndDelegationConnectors {
 		doc
 		/*
-		UML3 shall distinguish assembly connectors, which connect a required port of one part to a provided port of
+		SysUML shall distinguish assembly connectors, which connect a required port of one part to a provided port of
 		another, from delegation connectors, which connect a port of a component to a port of one of its internal
 		parts, and tools shall be able to query each kind.
 		Verified by: examples/02-OnlineStoreArchitecture.sysml; tools/run_tests.py suite cameo.
@@ -70,7 +70,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-004'> unconnectedRequiredPorts {
 		doc
 		/*
-		UML3 tooling shall report a required port of a part that is not connected within the definition that owns
+		SysUML tooling shall report a required port of a part that is not connected within the definition that owns
 		the part.
 		Verified by: tests/rules/r08-required-port-unconnected.sysml; tools/run_tests.py suite rules-tests; tools/run_tests.py suite rules-examples.
 		*/
@@ -83,7 +83,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-005'> connectorContractConformance {
 		doc
 		/*
-		UML3 tooling shall report an assembly connector whose ends are not one required and one provided port, or
+		SysUML tooling shall report an assembly connector whose ends are not one required and one provided port, or
 		whose provided contract does not conform to the required contract, and a delegation connector that connects
 		ports of different direction or incompatible contracts.
 		*/
@@ -96,7 +96,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-006'> layersAndBoundaries {
 		doc
 		/*
-		UML3 shall let a package or component be declared an architectural layer with a level, and shall let an
+		SysUML shall let a package or component be declared an architectural layer with a level, and shall let an
 		element be marked as a boundary element (adapter, gateway or facade) through which other layers or systems
 		reach it.
 		Verified by: examples/02-OnlineStoreArchitecture.sysml; tests/cameo/display-expectations.json; tools/run_tests.py suite cameo.
@@ -110,7 +110,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-007'> architectureStyles {
 		doc
 		/*
-		UML3 shall let a system, subsystem or package declare the architecture styles it follows (at least layered,
+		SysUML shall let a system, subsystem or package declare the architecture styles it follows (at least layered,
 		hexagonal, microservices, event-driven, client-server and pipes and filters) independently of layering, and
 		shall define for each style constraints that tooling can check, for example no dependency from a lower layer
 		to a higher layer and no access to a hexagon core except through its boundary elements.
@@ -124,7 +124,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-008'> architectureDecisions {
 		doc
 		/*
-		UML3 shall provide architecture decision records as model elements with context, decision, status (proposed,
+		SysUML shall provide architecture decision records as model elements with context, decision, status (proposed,
 		accepted, deprecated, superseded), consequences and considered alternatives. A decision shall be linkable to
 		the model elements it affects and to the decision that supersedes it.
 		*/
@@ -150,7 +150,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-010'> deploymentTopology {
 		doc
 		/*
-		UML3 shall provide nodes, devices, execution environments, artifacts and communication paths between nodes,
+		SysUML shall provide nodes, devices, execution environments, artifacts and communication paths between nodes,
 		so that a model can describe the topology on which software runs, and tools shall be able to select each
 		kind for deployment views.
 		Verified by: tests/cameo/view-predictions.json; tools/run_tests.py suite cameo; tools/run_tests.py suite traceability.
@@ -177,12 +177,12 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-012'> allocationConsistency {
 		doc
 		/*
-		UML3 tooling shall report a deployment whose source is not an artifact or component or whose target is not a
+		SysUML tooling shall report a deployment whose source is not an artifact or component or whose target is not a
 		node, and a manifestation whose source is not a component or whose target is not an artifact. Tooling shall
 		derive, for each component, the nodes it runs on through the artifacts that manifest it, and shall report a
 		component of a deployed system that runs on no node.
 		*/
-		@Rationale { text = "UML 2.x constrains deployment targets and deployed artifacts; UML3 uses general allocations, so these constraints must be restored by rules for deployment views and analyses to be trustworthy."; }
+		@Rationale { text = "UML 2.x constrains deployment targets and deployed artifacts; SysUML uses general allocations, so these constraints must be restored by rules for deployment views and analyses to be trustworthy."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -191,7 +191,7 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-013'> containerAndCloudDeployment {
 		doc
 		/*
-		UML3 shall provide container images, container instances, orchestrated workloads with replica counts and
+		SysUML shall provide container images, container instances, orchestrated workloads with replica counts and
 		scaling limits, and managed cloud services (for example serverless functions, managed databases, load
 		balancers and API gateways), and shall let a deployment state its region and availability zone.
 		*/
@@ -204,9 +204,9 @@ package UML3ArchitectureRequirements {
 	requirement <'UML3-ARCH-014'> qualityAttributeRequirements {
 		doc
 		/*
-		UML3 shall let quality attributes of components, services, connectors and deployments (at least latency,
+		SysUML shall let quality attributes of components, services, connectors and deployments (at least latency,
 		throughput, availability, scalability, recovery time and recovery point) be stated as native SysML v2
-		requirements with measurable attributes and satisfied by those elements, using a UML3 library of standard
+		requirements with measurable attributes and satisfied by those elements, using a SysUML library of standard
 		quality attribute requirement definitions.
 		*/
 		@Rationale { text = "Architecture is driven by quality attributes; stating them as measurable requirements on the elements that must meet them makes trade-offs traceable and checkable."; }
@@ -218,7 +218,7 @@ package UML3ArchitectureRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how software architects, DevOps engineers and reviewers use UML3 for architecture and deployment.
+		UseCases: how software architects, DevOps engineers and reviewers use SysUML for architecture and deployment.
 
 		Contents:
 		- DesignComponentArchitecture: an architect structures a system into components, contracts and layers.
@@ -261,7 +261,7 @@ package UML3ArchitectureRequirements {
 		use case def ReviewArchitectureConsistency {
 			doc
 			/*
-			A reviewer runs the UML3 architecture checks on a model: contract conformance of connectors, unconnected
+			A reviewer runs the SysUML architecture checks on a model: contract conformance of connectors, unconnected
 			required ports, style constraints and deployment allocations, and inspects the decisions and quality
 			attribute requirements behind the design.
 			*/

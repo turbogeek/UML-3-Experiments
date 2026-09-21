@@ -1,7 +1,7 @@
 package UML3GenerationRequirements {
 	doc
 	/*
-	GEN: requirements on generating implementation artifacts from UML3 models: source code in several
+	GEN: requirements on generating implementation artifacts from SysUML models: source code in several
 	programming languages, database schemas, message schemas and API contracts, and the properties that make
 	generated artifacts trustworthy (published mappings, compilable output, diagnostics, and deterministic,
 	traceable regeneration that keeps hand-written code).
@@ -27,7 +27,7 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-001'> generationFromModel {
 		doc
 		/*
-		UML3 generators shall take a UML3 model as their input, read from the textual notation or through the API
+		SysUML generators shall take a SysUML model as their input, read from the textual notation or through the API
 		of the modeling tool that holds the model. Generation shall not require the design to be restated first in
 		an interface definition language or in source code.
 		Verified by: tools/run_tests.py suite cameo; tools/run_tests.py suite idl-codegen; tools/idl/UML3IdlCore.groovy.
@@ -41,10 +41,10 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-002'> languageMappingSpecifications {
 		doc
 		/*
-		For each generation target, UML3 shall publish a mapping specification that gives, for each supported
+		For each generation target, SysUML shall publish a mapping specification that gives, for each supported
 		model construct, the generated construct and the naming rules, and that lists the constructs the target
 		does not map or maps with loss of information. Where a standard language mapping exists, such as the OMG
-		IDL4 to Java Language Mapping 1.0, the UML3 mapping shall conform to it and shall document each deviation
+		IDL4 to Java Language Mapping 1.0, the SysUML mapping shall conform to it and shall document each deviation
 		with its reason.
 		Verified by: docs/IDL-CODEGEN.md; docs/IDL-MAPPING.md; tools/run_tests.py suite idl-codegen.
 		*/
@@ -57,7 +57,7 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-003'> javaAndRustGeneration {
 		doc
 		/*
-		UML3 shall generate Java and Rust source code for structured data types, type aliases, sequences and
+		SysUML shall generate Java and Rust source code for structured data types, type aliases, sequences and
 		arrays, enumerations, discriminated unions, exceptions, interfaces with attributes and operations, and
 		constants.
 		Verified by: tools/run_tests.py suite idl-codegen; tools/run_tests.py suite idl-corpus.
@@ -71,12 +71,12 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-004'> classAndComponentGeneration {
 		doc
 		/*
-		UML3 shall generate source code for the structural concepts beyond interface contracts: classes and
+		SysUML shall generate source code for the structural concepts beyond interface contracts: classes and
 		active classes, realizations of interfaces, attributes and operations with their visibility, associations
 		with navigability and multiplicity, generalization sets, templates, entities and value objects,
 		components and services with their provided and required ports, and message types.
 		*/
-		@Rationale { text = "Interface contracts are a small part of a software design; without class, association and component generation the object-oriented design in UML3 still has to be coded by hand."; }
+		@Rationale { text = "Interface contracts are a small part of a software design; without class, association and component generation the object-oriented design in SysUML still has to be coded by hand."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -85,10 +85,10 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-005'> additionalLanguageTargets {
 		doc
 		/*
-		UML3 shall define code generation for C++, C#, Python and TypeScript, following an OMG language mapping
+		SysUML shall define code generation for C++, C#, Python and TypeScript, following an OMG language mapping
 		where one exists for the target language.
 		*/
-		@Rationale { text = "These languages dominate embedded, desktop, data and web software; each additional mapping widens where UML3 models can drive the implementation."; }
+		@Rationale { text = "These languages dominate embedded, desktop, data and web software; each additional mapping widens where SysUML models can drive the implementation."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -152,7 +152,7 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-010'> handWrittenCodePreservation {
 		doc
 		/*
-		Regeneration shall never overwrite or delete hand-written code. UML3 generation shall keep generated and
+		Regeneration shall never overwrite or delete hand-written code. SysUML generation shall keep generated and
 		hand-written code apart, either by a generation gap (generated base types that hand-written types extend)
 		or by protected regions whose content survives regeneration.
 		*/
@@ -191,7 +191,7 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-013'> databaseSchemaGeneration {
 		doc
 		/*
-		UML3 shall generate SQL data definition statements from UML3Data physical models: databases, tables,
+		SysUML shall generate SQL data definition statements from UML3Data physical models: databases, tables,
 		columns with their SQL types and defaults, primary, foreign and unique keys with referential actions,
 		indexes and views. The generated statements shall be accepted by the target database engine.
 		*/
@@ -204,7 +204,7 @@ package UML3GenerationRequirements {
 	requirement <'UML3-GEN-014'> interfaceContractGeneration {
 		doc
 		/*
-		UML3 shall generate JSON Schema, Avro and Protocol Buffers schemas for message types and data types
+		SysUML shall generate JSON Schema, Avro and Protocol Buffers schemas for message types and data types
 		according to their serialization format, OpenAPI documents for request-reply service contracts, and
 		AsyncAPI documents for channels with their message types and quality of service. Each generated document
 		shall be valid according to the specification of its format.
@@ -218,7 +218,7 @@ package UML3GenerationRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how practitioners generate implementation artifacts from UML3 models.
+		UseCases: how practitioners generate implementation artifacts from SysUML models.
 
 		Contents:
 		- GenerateImplementationCode: a software developer generates, completes and regenerates code.
@@ -232,7 +232,7 @@ package UML3GenerationRequirements {
 			doc
 			/*
 			A software developer generates source code for the data types, interfaces, classes and components of a
-			UML3 model, compiles it, completes it by hand and regenerates it after the model changes.
+			SysUML model, compiles it, completes it by hand and regenerates it after the model changes.
 			*/
 			subject environment : UML3Environment;
 			actor developer : SoftwareDeveloper;
@@ -258,7 +258,7 @@ package UML3GenerationRequirements {
 		use case def AdaptGenerationToConventions {
 			doc
 			/*
-			A tool vendor implements a UML3 generator from the published mappings, and a software architect selects
+			A tool vendor implements a SysUML generator from the published mappings, and a software architect selects
 			the mapping options and templates that match the conventions of the project.
 			*/
 			subject environment : UML3Environment;
@@ -283,7 +283,7 @@ package UML3GenerationRequirements {
 		Realization: the library elements that realize the done GEN requirements.
 
 		Contents:
-		- #realizes dependencies from UML3 library elements to GEN requirements. The Java and Rust generators
+		- #realizes dependencies from SysUML library elements to GEN requirements. The Java and Rust generators
 		  (tools/idl) implement the mapping over the UML3Core keywords and the UML3IDL metadata named here.
 		*/
 		#realizes dependency from UML3IDL to 'UML3-GEN-002';

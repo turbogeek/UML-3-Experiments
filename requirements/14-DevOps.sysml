@@ -1,7 +1,7 @@
 package UML3DevOpsRequirements {
 	doc
 	/*
-	OPS: requirements on using UML3 models in delivery and operations: pipelines, artifact provenance,
+	OPS: requirements on using SysUML models in delivery and operations: pipelines, artifact provenance,
 	environments and configuration, infrastructure as code, release versioning, observability, service level
 	objectives, runbooks, rollout strategies and automated model checks in pipelines.
 
@@ -24,11 +24,11 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-001'> deliveryPipelines {
 		doc
 		/*
-		UML3 shall let a model describe a delivery pipeline as stages and jobs with their triggers, the artifacts
+		SysUML shall let a model describe a delivery pipeline as stages and jobs with their triggers, the artifacts
 		each job consumes and produces, the quality gates between stages and the environments it deploys to, and
 		shall link each pipeline to the components it builds.
 		*/
-		@Rationale { text = "Pipelines decide how model and code reach production; whether UML3 models pipelines with native actions or only links model elements to pipeline-as-code files is still to be decided."; }
+		@Rationale { text = "Pipelines decide how model and code reach production; whether SysUML models pipelines with native actions or only links model elements to pipeline-as-code files is still to be decided."; }
 		@StatusInfo { status = StatusKind::tbd; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::demo; }
@@ -50,7 +50,7 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-003'> deploymentEnvironments {
 		doc
 		/*
-		UML3 shall let a model define deployment environments (for example development, test, staging and
+		SysUML shall let a model define deployment environments (for example development, test, staging and
 		production) and state for each environment the deployment topology and configuration that differ from a
 		shared architecture, without copying the architecture for each environment.
 		*/
@@ -64,7 +64,7 @@ package UML3DevOpsRequirements {
 		doc
 		/*
 		Components shall be able to declare their configuration parameters with type, default value, allowed values
-		and whether the parameter is a secret, and environments shall bind values to them. UML3 tooling shall report
+		and whether the parameter is a secret, and environments shall bind values to them. SysUML tooling shall report
 		a required parameter without a value in an environment and a value bound to an undeclared parameter.
 		*/
 		@Rationale { text = "Misconfiguration is a leading cause of failed deployments; declared and checked parameters find it before deployment."; }
@@ -76,7 +76,7 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-005'> infrastructureAsCode {
 		doc
 		/*
-		UML3 shall define how nodes, execution environments, containers and deployments correspond to
+		SysUML shall define how nodes, execution environments, containers and deployments correspond to
 		infrastructure-as-code definitions (for example Kubernetes manifests, Helm charts or Terraform modules), so
 		that such definitions can be generated from the model or linked to it, and differences between the model
 		and linked definitions can be reported.
@@ -90,7 +90,7 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-006'> releaseVersioning {
 		doc
 		/*
-		Models and generated artifacts shall carry versions, and a release shall record which model version, UML3
+		Models and generated artifacts shall carry versions, and a release shall record which model version, SysUML
 		library versions and generator versions produced which artifact versions.
 		*/
 		@Rationale { text = "A release must be reproducible from its model; without recorded versions nobody can tell which model a running artifact was generated from."; }
@@ -115,7 +115,7 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-008'> serviceLevelObjectives {
 		doc
 		/*
-		UML3 shall let a service declare service level indicators with the telemetry they are computed from, and
+		SysUML shall let a service declare service level indicators with the telemetry they are computed from, and
 		service level objectives with target, time window and error budget, each traceable to the quality attribute
 		requirement it makes operational.
 		*/
@@ -128,7 +128,7 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-009'> operationalRunbooks {
 		doc
 		/*
-		UML3 shall let components, alerts and service level objectives be linked to the operational procedures that
+		SysUML shall let components, alerts and service level objectives be linked to the operational procedures that
 		apply to them, at least startup, shutdown, scaling, failover, backup, restore and incident response.
 		*/
 		@Rationale { text = "Operators need the right procedure for the failing element at once; links from the model make missing procedures visible before an incident."; }
@@ -140,7 +140,7 @@ package UML3DevOpsRequirements {
 	requirement <'UML3-OPS-010'> headlessModelChecks {
 		doc
 		/*
-		UML3 model checks shall run without a graphical modeling tool, shall return an exit status that distinguishes
+		SysUML model checks shall run without a graphical modeling tool, shall return an exit status that distinguishes
 		passed checks, findings and tool errors, and shall write machine-readable reports, so that a delivery
 		pipeline can gate on the model.
 		Verified by: tools/run_tests.py; tools/run_tests.py suite negative; tools/run_tests.py suite rules-tests; tools/run_tests.py suite requirements.
@@ -166,7 +166,7 @@ package UML3DevOpsRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how DevOps engineers, software architects and product owners use UML3 in delivery and operations.
+		UseCases: how DevOps engineers, software architects and product owners use SysUML in delivery and operations.
 
 		Contents:
 		- AutomateModelDrivenDelivery: a DevOps engineer builds, checks and releases software from the model.

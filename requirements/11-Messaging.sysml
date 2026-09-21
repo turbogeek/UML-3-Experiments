@@ -28,9 +28,9 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-001'> messageSchemas {
 		doc
 		/*
-		UML3 shall provide message types whose payload is declared as attributes and which all inherit a standard
+		SysUML shall provide message types whose payload is declared as attributes and which all inherit a standard
 		header with message identifier, correlation identifier, causation identifier, sending time, content type and
-		schema version. UML3 tooling shall warn about a message type that declares no payload.
+		schema version. SysUML tooling shall warn about a message type that declares no payload.
 		Verified by: tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo; tests/rules/r09-message-without-payload.sysml; tools/run_tests.py suite rules-tests.
 		*/
 		@Rationale { text = "A common envelope makes messages traceable and correlatable across services; inheriting it from the library keeps every message consistent."; }
@@ -42,7 +42,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-002'> messageKinds {
 		doc
 		/*
-		UML3 shall distinguish commands, domain events, query messages, replies and document messages as kinds of
+		SysUML shall distinguish commands, domain events, query messages, replies and document messages as kinds of
 		message type, and marking a message type with a kind shall make it specialize that kind, so that tools can
 		select all messages of a kind.
 		Verified by: tests/cameo/implied-specializations.json; tests/cameo/view-predictions.json; tools/run_tests.py suite cameo.
@@ -56,7 +56,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-003'> channelsAndBrokers {
 		doc
 		/*
-		UML3 shall provide publish-subscribe topics, point-to-point queues and the message brokers that host them,
+		SysUML shall provide publish-subscribe topics, point-to-point queues and the message brokers that host them,
 		with the name of each channel and the partition count of topics.
 		Verified by: examples/03-OnlineStoreMessaging.sysml; tests/cameo/view-predictions.json; tools/run_tests.py suite cameo.
 		*/
@@ -69,7 +69,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-004'> endpointsAndFlows {
 		doc
 		/*
-		UML3 shall provide producer, consumer and request-reply ports narrowed to the message types they carry, and
+		SysUML shall provide producer, consumer and request-reply ports narrowed to the message types they carry, and
 		shall let native flows between them be marked as publishing, subscribing, sending or handling, so that tools
 		can select the flows of each role.
 		Verified by: tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo.
@@ -83,7 +83,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-005'> flowConformance {
 		doc
 		/*
-		UML3 tooling shall report a message flow whose message type is not carried by the ports it connects, a
+		SysUML tooling shall report a message flow whose message type is not carried by the ports it connects, a
 		publishing or subscribing flow that does not end at a channel, and a message type that is published but
 		that no consumer subscribes to or handles.
 		*/
@@ -98,7 +98,7 @@ package UML3MessagingRequirements {
 		/*
 		Channels and endpoints shall be able to declare their delivery guarantee (at most once, at least once or
 		exactly once), ordering guarantee and partition key, retention period, maximum number of retries and
-		dead-letter channel. UML3 tooling shall warn about a topic or queue that declares none of them.
+		dead-letter channel. SysUML tooling shall warn about a topic or queue that declares none of them.
 		Verified by: tests/rules/r10-topic-without-qos.sysml; tools/run_tests.py suite rules-tests; examples/03-OnlineStoreMessaging.sysml; tools/run_tests.py suite cameo.
 		*/
 		@Rationale { text = "Delivery semantics decide whether consumers must deduplicate, reorder or retry; they are design decisions and must not be left to broker defaults."; }
@@ -137,7 +137,7 @@ package UML3MessagingRequirements {
 		doc
 		/*
 		A message type shall declare its version and a compatibility mode (backward, forward, full or none), and
-		UML3 tooling shall report the changes between two versions of a message type that break the declared
+		SysUML tooling shall report the changes between two versions of a message type that break the declared
 		compatibility, for example a removed field or a new required field.
 		*/
 		@Rationale { text = "Producers and consumers are deployed independently; a schema change that breaks compatibility must be found before release, not in production."; }
@@ -150,7 +150,7 @@ package UML3MessagingRequirements {
 		doc
 		/*
 		Interactions between services, brokers and consumers shall be modeled with native SysML v2 occurrence
-		definitions, lifelines, event occurrences and messages typed by UML3 message types, without UML3-specific
+		definitions, lifelines, event occurrences and messages typed by SysUML message types, without UML3-specific
 		interaction constructs, and shall be selectable for sequence diagrams.
 		Verified by: tests/cameo/view-predictions.json; tools/run_tests.py suite cameo; tools/run_tests.py suite traceability.
 		*/
@@ -163,7 +163,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-011'> synchronousApiContracts {
 		doc
 		/*
-		UML3 shall let a provided port describe a synchronous API contract: its resources or remote procedures,
+		SysUML shall let a provided port describe a synchronous API contract: its resources or remote procedures,
 		operations with HTTP method and path or procedure name, request, response and error message types, status
 		codes and timeouts, complete enough to derive OpenAPI and gRPC service descriptions.
 		*/
@@ -176,7 +176,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-012'> asynchronousApiContracts {
 		doc
 		/*
-		UML3 shall let a service state its asynchronous contract independently of its wiring: the channels it sends
+		SysUML shall let a service state its asynchronous contract independently of its wiring: the channels it sends
 		to and receives from, the message types on each, reply channels and correlation for asynchronous
 		request-reply, and protocol bindings (for example Kafka, AMQP or MQTT), complete enough to derive an
 		AsyncAPI document.
@@ -190,12 +190,12 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-013'> ddsTopics {
 		doc
 		/*
-		UML3 shall support DDS messaging: a DDS topic shall be typed by a data type defined in or imported from OMG
+		SysUML shall support DDS messaging: a DDS topic shall be typed by a data type defined in or imported from OMG
 		IDL, the key of a topic shall be the identifier features of that type, CDR shall be a serialization format,
 		and DDS quality of service policies (at least reliability, durability, history, deadline and liveliness)
 		shall be declarable on topics, data writers and data readers.
 		*/
-		@Rationale { text = "DDS is the OMG messaging middleware for IDL-described data; UML3 imports IDL structs as data types, while message types must be item definitions, so an IDL type cannot be a topic type without a wrapper."; }
+		@Rationale { text = "DDS is the OMG messaging middleware for IDL-described data; SysUML imports IDL structs as data types, while message types must be item definitions, so an IDL type cannot be a topic type without a wrapper."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -204,7 +204,7 @@ package UML3MessagingRequirements {
 	requirement <'UML3-MSG-014'> integrationPatterns {
 		doc
 		/*
-		UML3 shall provide the common enterprise integration patterns as components with defined message behavior:
+		SysUML shall provide the common enterprise integration patterns as components with defined message behavior:
 		at least content-based router, message filter, message translator, splitter, aggregator and claim check.
 		*/
 		@Rationale { text = "Integration flows are built from a small set of well-known patterns; naming them in the model makes flows understandable and generatable for integration frameworks."; }
@@ -216,7 +216,7 @@ package UML3MessagingRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how integration engineers, software developers and systems engineers use UML3 messaging.
+		UseCases: how integration engineers, software developers and systems engineers use SysUML messaging.
 
 		Contents:
 		- DesignEventDrivenIntegration: an integration engineer designs messages, channels, flows and scenarios.

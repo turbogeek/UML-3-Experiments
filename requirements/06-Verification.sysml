@@ -1,18 +1,18 @@
 package UML3VerificationRequirements {
 	doc
 	/*
-	VER: requirements on verifying UML3 models and the UML3 tooling: standard well-formedness, name resolution,
+	VER: requirements on verifying SysUML models and the SysUML tooling: standard well-formedness, name resolution,
 	design rules and completeness, consistency of diagrams with their views, coverage of requirements by
-	verification, the findings that checks report, and the regression and conformance testing of UML3 itself.
-	Testing the software that a UML3 model describes is in UML3TestingRequirements (TEST).
+	verification, the findings that checks report, and the regression and conformance testing of SysUML itself.
+	Testing the software that a SysUML model describes is in UML3TestingRequirements (TEST).
 
 	Contents:
 	- Checks on a model: standardWellFormedness, nameResolution, designRules, portableDesignRules,
 	  completenessChecks, viewDiagramConsistency, requirementVerificationCoverage.
 	- Findings: findingDiagnostics, acceptedFindings.
-	- Verification of UML3 and its tools: checkEffectiveness, requirementEvidence, toolingRegression,
+	- Verification of SysUML and its tools: checkEffectiveness, requirementEvidence, toolingRegression,
 	  implementationBaselines, conformanceTests.
-	- UseCases: how architects, language maintainers and tool vendors verify UML3 models and tools.
+	- UseCases: how architects, language maintainers and tool vendors verify SysUML models and tools.
 	- Realization: the library elements that realize the done requirements.
 	References: docs/REQUIREMENTS-GUIDE.md; docs/DESIGN.md; SysML 7.24.
 	*/
@@ -28,12 +28,12 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-001'> standardWellFormedness {
 		doc
 		/*
-		Verification of a UML3 model shall include every well-formedness check that KerML and SysML v2 define:
-		syntax, name resolution, typing and the validation constraints of the specifications. UML3 checks shall
+		Verification of a SysUML model shall include every well-formedness check that KerML and SysML v2 define:
+		syntax, name resolution, typing and the validation constraints of the specifications. SysUML checks shall
 		add to these checks and shall not replace any of them.
 		Verified by: tools/run_tests.py suite negative; tools/run_tests.py suite cameo; tools/run_tests.py suite cameo-probes.
 		*/
-		@Rationale { text = "A UML3 model is a SysML v2 model first; a verification that knows only UML3 rules would pass models that no conforming tool can load."; }
+		@Rationale { text = "A SysUML model is a SysML v2 model first; a verification that knows only SysUML rules would pass models that no conforming tool can load."; }
 		@StatusInfo { status = StatusKind::done; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -42,8 +42,8 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-002'> nameResolution {
 		doc
 		/*
-		Verification shall resolve every name in a UML3 model (imports, types, specializations, redefinitions,
-		keywords, feature chains and qualified names in expressions) against the model, the UML3 libraries and
+		Verification shall resolve every name in a SysUML model (imports, types, specializations, redefinitions,
+		keywords, feature chains and qualified names in expressions) against the model, the SysUML libraries and
 		the SysML v2 standard library, and shall report each name that does not resolve, with its location.
 		Verified by: tools/run_tests.py suite negative; tools/run_tests.py suite checker-calibration; tools/run_tests.py suite cameo.
 		*/
@@ -56,13 +56,13 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-003'> designRules {
 		doc
 		/*
-		UML3 shall define design rules that report models that are valid SysML v2 but inconsistent as software
+		SysUML shall define design rules that report models that are valid SysML v2 but inconsistent as software
 		designs, for example a table without a primary key, a realization that does not redefine every abstract
 		operation of its interface, or a provided port that is conjugated. Each rule shall have a stable
 		identifier, a severity (error or warning) and a statement of the condition it reports.
 		Verified by: tools/run_tests.py suite rules-tests; tools/run_tests.py suite rules-examples; tools/run_tests.py suite rules-library.
 		*/
-		@Rationale { text = "SysML v2 validation cannot know what a UML3 keyword promises, such as a key on every table; severities let errors stop a model while warnings only inform."; }
+		@Rationale { text = "SysML v2 validation cannot know what a SysUML keyword promises, such as a key on every table; severities let errors stop a model while warnings only inform."; }
 		@StatusInfo { status = StatusKind::done; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -71,11 +71,11 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-004'> portableDesignRules {
 		doc
 		/*
-		UML3 design rules shall be part of the UML3 definition in a machine-readable form that any conforming tool
-		can evaluate, for example as constraint definitions in a UML3 library, and not only as code of one
+		SysUML design rules shall be part of the SysUML definition in a machine-readable form that any conforming tool
+		can evaluate, for example as constraint definitions in a SysUML library, and not only as code of one
 		checker.
 		*/
-		@Rationale { text = "Rules that exist only in one checker are not part of the standard, and tools that implement them from prose would disagree about which UML3 models are correct."; }
+		@Rationale { text = "Rules that exist only in one checker are not part of the standard, and tools that implement them from prose would disagree about which SysUML models are correct."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -84,7 +84,7 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-005'> completenessChecks {
 		doc
 		/*
-		Verification shall report, as warnings, elements that are valid but incomplete for their UML3 keyword: an
+		Verification shall report, as warnings, elements that are valid but incomplete for their SysUML keyword: an
 		entity or aggregate root without identity, a message type without payload, a topic or queue without
 		quality of service, a database view without query text, and a required port of a part that is not
 		connected.
@@ -111,7 +111,7 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-007'> requirementVerificationCoverage {
 		doc
 		/*
-		Verification shall report each requirement of a UML3 model that no verification case, analysis or recorded
+		Verification shall report each requirement of a SysUML model that no verification case, analysis or recorded
 		inspection verifies, and each verification case that verifies no requirement.
 		*/
 		@Rationale { text = "Unverified requirements and verification without a purpose are the two gaps that traceability from requirements to verification exists to expose."; }
@@ -149,7 +149,7 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-010'> checkEffectiveness {
 		doc
 		/*
-		Every UML3 check shall be demonstrated by test models that make it report each kind of finding it targets
+		Every SysUML check shall be demonstrated by test models that make it report each kind of finding it targets
 		and by a clean control model that it accepts. A check of names or keyword use shall also report no
 		findings on the official SysML v2 validation, example and training models.
 		Verified by: tools/run_tests.py suite negative; tools/run_tests.py suite rules-tests; tools/run_tests.py suite docs; tools/run_tests.py suite checker-calibration.
@@ -163,7 +163,7 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-011'> requirementEvidence {
 		doc
 		/*
-		Each UML3 requirement shall state its verification method, and each requirement that is done or to be
+		Each SysUML requirement shall state its verification method, and each requirement that is done or to be
 		confirmed shall name the evidence that verifies it: a regression suite, an experiment or a repository
 		file. Verification shall report evidence that does not resolve.
 		Verified by: tools/run_tests.py suite requirements.
@@ -177,12 +177,12 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-012'> toolingRegression {
 		doc
 		/*
-		The UML3 libraries and tools (checkers, importers, exporters and generators) shall be verified by an
+		The SysUML libraries and tools (checkers, importers, exporters and generators) shall be verified by an
 		automated regression suite that runs unattended once its tools are available, records every result in a
 		machine-readable report and fails when a result differs from the expected one.
 		Verified by: tools/run_tests.py; tools/run_tests.py suite idl-corpus; tools/run_tests.py suite idl-codegen.
 		*/
-		@Rationale { text = "UML3 is defined by libraries and checked by tools that change together; only an unattended regression shows that a change to one did not break the other."; }
+		@Rationale { text = "SysUML is defined by libraries and checked by tools that change together; only an unattended regression shows that a change to one did not break the other."; }
 		@StatusInfo { status = StatusKind::done; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -191,7 +191,7 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-013'> implementationBaselines {
 		doc
 		/*
-		Where verification of UML3 depends on a SysML v2 implementation, each known deviation of that
+		Where verification of SysUML depends on a SysML v2 implementation, each known deviation of that
 		implementation (a valid construct it rejects, an invalid construct it accepts, or keyword semantics it
 		does not apply) shall be recorded with evidence, and the regression suite shall fail when the
 		implementation no longer behaves as recorded.
@@ -206,11 +206,11 @@ package UML3VerificationRequirements {
 	requirement <'UML3-VER-014'> conformanceTests {
 		doc
 		/*
-		UML3 shall provide conformance test models for each conformance point: valid models that a conforming
+		SysUML shall provide conformance test models for each conformance point: valid models that a conforming
 		implementation shall accept and invalid models that it shall reject, each stating its expected outcome in
 		the model in a form that does not depend on a particular checker.
 		*/
-		@Rationale { text = "Implementations can only demonstrate conformance against shared tests; the current negative and rule tests expect the finding codes of the UML3 checkers, which other tools do not produce."; }
+		@Rationale { text = "Implementations can only demonstrate conformance against shared tests; the current negative and rule tests expect the finding codes of the SysUML checkers, which other tools do not produce."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -219,13 +219,13 @@ package UML3VerificationRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how architects, language maintainers and tool vendors verify UML3 models and tools.
+		UseCases: how architects, language maintainers and tool vendors verify SysUML models and tools.
 
 		Contents:
 		- VerifyUML3DesignModel: an architect or developer verifies a design model before it is shared or used
 		  for generation.
 		- QualifyUML3Tooling: a language maintainer shows that a change to the libraries or tools breaks nothing.
-		- ClaimUML3VerificationConformance: a tool vendor shows that a tool verifies UML3 models as the standard
+		- ClaimUML3VerificationConformance: a tool vendor shows that a tool verifies SysUML models as the standard
 		  requires.
 		- Traces: #traces dependencies from each use case to the requirements it needs.
 		*/
@@ -234,7 +234,7 @@ package UML3VerificationRequirements {
 		use case def VerifyUML3DesignModel {
 			doc
 			/*
-			A software architect or developer verifies a UML3 design model: SysML v2 well-formedness, names,
+			A software architect or developer verifies a SysUML design model: SysML v2 well-formedness, names,
 			keyword applicability, design rules and completeness, the verification of its requirements and the
 			consistency of its diagrams. The errors are fixed and deliberate warnings are accepted with a reason.
 			*/
@@ -249,7 +249,7 @@ package UML3VerificationRequirements {
 		use case def QualifyUML3Tooling {
 			doc
 			/*
-			A language maintainer changes a UML3 library or tool and runs the regression suite: every check is
+			A language maintainer changes a SysUML library or tool and runs the regression suite: every check is
 			shown to fire and to accept valid models, recorded implementation deviations still hold, and every
 			done requirement still resolves its evidence.
 			*/
@@ -263,7 +263,7 @@ package UML3VerificationRequirements {
 		use case def ClaimUML3VerificationConformance {
 			doc
 			/*
-			A tool vendor runs the UML3 conformance test models in a SysML v2 tool that implements the UML3 checks
+			A tool vendor runs the SysUML conformance test models in a SysML v2 tool that implements the SysUML checks
 			and design rules, and compares the tool's findings with the outcomes the tests state.
 			*/
 			subject environment : UML3Environment;
@@ -287,7 +287,7 @@ package UML3VerificationRequirements {
 		Realization: the library elements that realize the done and tbc VER requirements.
 
 		Contents:
-		- #realizes dependencies from UML3 library elements to VER requirements. A check that tools perform is
+		- #realizes dependencies from SysUML library elements to VER requirements. A check that tools perform is
 		  realized by the library definitions the check is defined on.
 		*/
 		#realizes dependency from UML3Core to 'UML3-VER-001';

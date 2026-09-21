@@ -1,12 +1,12 @@
 package UML3RequirementModelingRequirements {
 	doc
 	/*
-	REQ: requirements on stating the requirements of a software system inside a UML3 model, with the native
+	REQ: requirements on stating the requirements of a software system inside a SysUML model, with the native
 	SysML v2 requirement constructs: requirement definitions and usages with typed subjects, measurable
 	constraints, requirement kinds and parameters, decomposition, derivation, refinement, satisfaction by design
 	elements, allocation, verification objectives, requirement metadata and priority, requirement views and
 	coverage queries, and interchange with requirement tools.
-	UML3 adds as little as possible here: a UML3 model states requirements exactly as a SysML v2 model does, so
+	SysUML adds as little as possible here: a SysUML model states requirements exactly as a SysML v2 model does, so
 	that software, systems and test engineers share one requirement language. Validating requirements with
 	stakeholders is in UML3ValidationRequirements (VAL), checking the model itself in
 	UML3VerificationRequirements (VER), and requirements shared with a system model in
@@ -32,13 +32,13 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-001'> nativeRequirementModeling {
 		doc
 		/*
-		A UML3 model shall state the requirements of a software system with the native SysML v2 requirement
+		A SysUML model shall state the requirements of a software system with the native SysML v2 requirement
 		definitions and usages, including their subject, actors, stakeholders, assumed and required constraints
-		and nested requirements. UML3 shall add no keyword, metaclass or library definition that a requirement
+		and nested requirements. SysUML shall add no keyword, metaclass or library definition that a requirement
 		needs in order to be stated.
 		Verified by: tools/run_tests.py suite requirements; requirements/01-Core.sysml; tools/run_tests.py suite cameo-patterns.
 		*/
-		@Rationale { text = "Software, systems and test engineers then share one requirement language, and every SysML v2 tool can check, trace and report the requirements of a UML3 model. The UML3 requirements are themselves such a model, and E22 showed CATIA Magic evaluating native requirement definitions satisfied by UML3 design elements; the UML3 requirements themselves are not yet loaded into CATIA Magic, so verification is to be completed."; }
+		@Rationale { text = "Software, systems and test engineers then share one requirement language, and every SysML v2 tool can check, trace and report the requirements of a SysUML model. The requirements of this project are themselves such a model, and E22 showed CATIA Magic evaluating native requirement definitions satisfied by SysUML design elements; the SysUML requirements themselves are not yet loaded into CATIA Magic, so verification is to be completed."; }
 		@StatusInfo { status = StatusKind::tbc; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -47,7 +47,7 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-002'> designElementSubjects {
 		doc
 		/*
-		The subject of a software requirement shall be typed by the UML3 definition that the requirement
+		The subject of a software requirement shall be typed by the SysUML definition that the requirement
 		constrains, for example a #component, #service, #interfaceType, #messageType or #entity definition, so
 		that the requirement applies to each design element that satisfies it and a tool can evaluate it for that
 		element.
@@ -66,7 +66,7 @@ package UML3RequirementModelingRequirements {
 		PerformanceRequirementCheck and DesignConstraintCheck, so that the kind of a requirement is a
 		specialization that queries and views can select rather than a naming convention.
 		*/
-		@Rationale { text = "The library kinds exist in SysML v2 already; using them keeps UML3 requirements compatible with system requirements and lets a view list all interface requirements without parsing names."; }
+		@Rationale { text = "The library kinds exist in SysML v2 already; using them keeps SysUML requirements compatible with system requirements and lets a view list all interface requirements without parsing names."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -75,7 +75,7 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-004'> qualityRequirementKinds {
 		doc
 		/*
-		UML3 shall provide, in a library and without new keywords, requirement definitions for the product
+		SysUML shall provide, in a library and without new keywords, requirement definitions for the product
 		quality characteristics of ISO/IEC 25010, such as performance efficiency, reliability, security and
 		maintainability, each specializing RequirementCheck or one of its library kinds.
 		*/
@@ -130,7 +130,7 @@ package UML3RequirementModelingRequirements {
 		/*
 		A requirement derived from another shall be related to it with the SysML v2 RequirementDerivation
 		library, a #derivation connection from the #original requirement to its #derive requirements, and not
-		with a UML3 dependency.
+		with a SysUML dependency.
 		*/
 		@Rationale { text = "Software requirements are mostly derived from system or business requirements; the native derivation connection is what SysML v2 tools follow when they report the impact of a changed requirement."; }
 		@StatusInfo { status = StatusKind::open; }
@@ -154,7 +154,7 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-010'> satisfactionBinding {
 		doc
 		/*
-		When a UML3 design element satisfies a requirement, the satisfy relationship shall bind the subject of
+		When a SysUML design element satisfies a requirement, the satisfy relationship shall bind the subject of
 		the requirement to that element, and tooling shall report each satisfy relationship whose satisfying
 		element does not conform to the type of the subject.
 		*/
@@ -196,7 +196,7 @@ package UML3RequirementModelingRequirements {
 		the VerificationCases library, with the kinds inspect, analyze, demo and test.
 		Verified by: tools/run_tests.py suite requirements; tools/check_requirements.py.
 		*/
-		@Rationale { text = "The verification method decides who verifies a requirement and with what evidence, long before a verification case exists. The UML3 requirements use it and the requirements suite checks every one of them."; }
+		@Rationale { text = "The verification method decides who verifies a requirement and with what evidence, long before a verification case exists. The requirements of this project use it and the requirements suite checks every one of them."; }
 		@StatusInfo { status = StatusKind::tbc; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -206,11 +206,11 @@ package UML3RequirementModelingRequirements {
 		doc
 		/*
 		The status, rationale, risk and open issues of a requirement shall be recorded with the native
-		ModelingMetadata definitions StatusInfo, Rationale, Risk and Issue, and UML3 shall not duplicate any of
+		ModelingMetadata definitions StatusInfo, Rationale, Risk and Issue, and SysUML shall not duplicate any of
 		them.
 		Verified by: tools/run_tests.py suite requirements.
 		*/
-		@Rationale { text = "A second vocabulary for the same facts would split the reports of mixed system and software models. The UML3 requirements record status and rationale this way and the requirements suite checks them."; }
+		@Rationale { text = "A second vocabulary for the same facts would split the reports of mixed system and software models. The requirements of this project record status and rationale this way and the requirements suite checks them."; }
 		@StatusInfo { status = StatusKind::tbc; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -219,10 +219,10 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-015'> requirementPriority {
 		doc
 		/*
-		UML3 shall provide requirement priority as a metadata definition in a UML3 library, because the SysML v2
+		SysUML shall provide requirement priority as a metadata definition in a SysUML library, because the SysML v2
 		ModelingMetadata library defines status, rationale, risk and issues but no priority.
 		*/
-		@Rationale { text = "Priority drives what is built first and what may be dropped. The UML3 requirements already use UML3Requirements::Priority, but it sits in the requirements model rather than in a library that user models can import."; }
+		@Rationale { text = "Priority drives what is built first and what may be dropped. The requirements of this project already use UML3Requirements::Priority, but it sits in the requirements model rather than in a library that user models can import."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -231,7 +231,7 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-016'> requirementViews {
 		doc
 		/*
-		UML3 shall provide views of requirements: a requirement table with identifier, statement, status,
+		SysUML shall provide views of requirements: a requirement table with identifier, statement, status,
 		priority, verification method, satisfying elements and verifying cases, and a requirement diagram that
 		shows requirements with their decomposition, derivation, satisfaction and verification relationships.
 		*/
@@ -270,7 +270,7 @@ package UML3RequirementModelingRequirements {
 	requirement <'UML3-REQ-019'> requirementInterchange {
 		doc
 		/*
-		UML3 shall exchange requirements with requirement management tools through the SysML v2 API and the
+		SysUML shall exchange requirements with requirement management tools through the SysML v2 API and the
 		OMG Requirements Interchange Format (ReqIF), keeping identifiers, statements, attributes and the
 		derivation, satisfaction and verification relationships.
 		*/

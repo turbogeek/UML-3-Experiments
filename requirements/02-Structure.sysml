@@ -25,12 +25,12 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-001'> classConcept {
 		doc
 		/*
-		UML3 shall provide a class concept whose instances are objects with identity that own attributes and
+		SysUML shall provide a class concept whose instances are objects with identity that own attributes and
 		operations. The concept shall apply to item and part definitions and usages, and an abstract class
 		shall be declared with the native abstract modifier.
 		Verified by: tools/run_tests.py suite cameo; tools/run_tests.py suite traceability; E05.
 		*/
-		@Rationale { text = "Classes are the center of object-oriented analysis and design; a definition that really specializes the UML3 class can be queried, viewed and checked as a class."; }
+		@Rationale { text = "Classes are the center of object-oriented analysis and design; a definition that really specializes the SysUML class can be queried, viewed and checked as a class."; }
 		@StatusInfo { status = StatusKind::done; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -39,7 +39,7 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-002'> activeClassConcept {
 		doc
 		/*
-		UML3 shall provide an active class concept for objects that have their own thread of control and
+		SysUML shall provide an active class concept for objects that have their own thread of control and
 		lifecycle, such as services, schedulers and actors. Every active class shall also be a class, and the
 		concept shall apply to part definitions and usages.
 		Verified by: library/UML3Core.sysml; tools/run_tests.py suite cameo.
@@ -53,9 +53,9 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-003'> interfaceRealization {
 		doc
 		/*
-		UML3 shall provide interfaces as contracts of abstract operations and attributes, distinct from the
+		SysUML shall provide interfaces as contracts of abstract operations and attributes, distinct from the
 		SysML v2 interface definitions that connect ports. A class shall realize one or more interfaces by
-		specializing them and redefining their operations, and UML3 tooling shall report a concrete class that
+		specializing them and redefining their operations, and SysUML tooling shall report a concrete class that
 		leaves an operation of a realized interface abstract.
 		Verified by: tools/run_tests.py suite rules-tests; tools/run_tests.py suite cameo.
 		*/
@@ -68,8 +68,8 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-004'> attributeProperties {
 		doc
 		/*
-		UML3 shall express the attributes of a class as attribute usages typed by value types, with
-		multiplicity, ordering, uniqueness, a default value and read-only status. UML3 shall mark class-scoped
+		SysUML shall express the attributes of a class as attribute usages typed by value types, with
+		multiplicity, ordering, uniqueness, a default value and read-only status. SysUML shall mark class-scoped
 		(static) attributes and attributes that take part in the identity of instances, and shall document when
 		a separate attribute definition is preferred to an attribute usage.
 		Verified by: tools/run_tests.py suite cameo; tools/run_tests.py suite idl-import; tools/run_tests.py suite traceability.
@@ -83,8 +83,8 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-005'> operationFeatures {
 		doc
 		/*
-		UML3 shall provide operations as behavioral features of classes and interfaces, with in, out, inout and
-		return parameters, which specializations can redefine. UML3 shall mark queries, which return a result
+		SysUML shall provide operations as behavioral features of classes and interfaces, with in, out, inout and
+		return parameters, which specializations can redefine. SysUML shall mark queries, which return a result
 		without side effects, and constructors, which create and initialize an instance of the owning class.
 		Verified by: tools/run_tests.py suite cameo; tools/run_tests.py suite idl-import; examples/01-OnlineStoreDomain.sysml.
 		*/
@@ -97,8 +97,8 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-006'> leafElements {
 		doc
 		/*
-		UML3 shall provide a marker for classifiers that may not be specialized and for features that may not
-		be redefined (UML isLeaf). UML3 tooling shall report a specialization of a marked classifier and a
+		SysUML shall provide a marker for classifiers that may not be specialized and for features that may not
+		be redefined (UML isLeaf). SysUML tooling shall report a specialization of a marked classifier and a
 		redefinition of a marked feature.
 		*/
 		@Rationale { text = "A final marker that nothing enforces is only a comment, while frameworks and generated code rely on final classes and methods not being specialized or overridden."; }
@@ -110,7 +110,7 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-007'> associationEnds {
 		doc
 		/*
-		UML3 shall provide associations between classifiers with one end for each participant. Each end shall
+		SysUML shall provide associations between classifiers with one end for each participant. Each end shall
 		state the participating type, the end multiplicity and whether the end is navigable from the opposite
 		end.
 		Verified by: tools/run_tests.py suite cameo; E04; examples/01-OnlineStoreDomain.sysml.
@@ -127,7 +127,7 @@ package UML3StructureRequirements {
 		An association that owns attributes or operations (an association class) shall be both an association
 		and a class, so that the queries, views and rules that apply to classes also apply to it.
 		*/
-		@Rationale { text = "In UML an association class is both an association and a class, and generators turn it into a class; an association that is not also a UML3 class is missed by class queries and class diagrams."; }
+		@Rationale { text = "In UML an association class is both an association and a class, and generators turn it into a class; an association that is not also a SysUML class is missed by class queries and class diagrams."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -136,8 +136,8 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-009'> ownershipAndAggregation {
 		doc
 		/*
-		UML3 shall distinguish composite ownership, in which the whole owns the lifetime of its parts, from
-		references without ownership, both for features and for associations. UML3 shall also provide shared
+		SysUML shall distinguish composite ownership, in which the whole owns the lifetime of its parts, from
+		references without ownership, both for features and for associations. SysUML shall also provide shared
 		aggregation as a kind of association.
 		Verified by: tools/run_tests.py suite cameo; examples/01-OnlineStoreDomain.sysml.
 		*/
@@ -150,8 +150,8 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-010'> generalizationSets {
 		doc
 		/*
-		UML3 shall express generalization, including multiple generalization, with native specialization.
-		UML3 shall group the specializations of a classifier into named generalization sets that state whether
+		SysUML shall express generalization, including multiple generalization, with native specialization.
+		SysUML shall group the specializations of a classifier into named generalization sets that state whether
 		the set is covering and whether it is disjoint.
 		Verified by: examples/01-OnlineStoreDomain.sysml; tools/run_tests.py suite traceability.
 		*/
@@ -164,7 +164,7 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-011'> templateBinding {
 		doc
 		/*
-		UML3 shall provide templates, classifiers whose template parameters are abstract features, and shall
+		SysUML shall provide templates, classifiers whose template parameters are abstract features, and shall
 		bind a template by a specialization that redefines its template parameters with concrete types.
 		Verified by: tools/run_tests.py suite cameo; examples/01-OnlineStoreDomain.sysml.
 		*/
@@ -177,12 +177,12 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-012'> namespacesAndVisibility {
 		doc
 		/*
-		UML3 models shall be organized with native packages, namespace and membership imports, and the public,
-		protected and private visibility of members. UML3 shall not adopt UML package merge, and its
+		SysUML models shall be organized with native packages, namespace and membership imports, and the public,
+		protected and private visibility of members. SysUML shall not adopt UML package merge, and its
 		traceability shall record that package merge and package visibility have no SysML v2 counterpart.
 		Verified by: tools/run_tests.py suite names-positive; tools/run_tests.py suite negative; tools/run_tests.py suite traceability.
 		*/
-		@Rationale { text = "Packages, imports and visibility control what each part of a large model can see and depend on, and native constructs keep UML3 models navigable in every SysML v2 tool."; }
+		@Rationale { text = "Packages, imports and visibility control what each part of a large model can see and depend on, and native constructs keep SysUML models navigable in every SysML v2 tool."; }
 		@StatusInfo { status = StatusKind::done; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -191,9 +191,9 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-013'> instanceSnapshots {
 		doc
 		/*
-		UML3 shall express instances of classes, with the values of their attributes and their links to other
+		SysUML shall express instances of classes, with the values of their attributes and their links to other
 		instances at chosen points in time, using native individuals, snapshots and feature values instead of
-		a UML3 instance construct.
+		a SysUML instance construct.
 		Verified by: examples/06-OnlineStoreBehavior.sysml; tools/run_tests.py suite cameo; tools/run_tests.py suite traceability.
 		*/
 		@Rationale { text = "Object diagrams and example data explain and validate class models, and SysML v2 individuals add lifetimes and snapshots that UML instance specifications lack."; }
@@ -205,7 +205,7 @@ package UML3StructureRequirements {
 	requirement <'UML3-STR-014'> classConstraints {
 		doc
 		/*
-		UML3 shall express the invariants of a class as asserted constraints owned by the class, which every
+		SysUML shall express the invariants of a class as asserted constraints owned by the class, which every
 		instance satisfies, and derived attributes as attributes whose values are computed by an expression.
 		Verified by: traceability/uml2-to-uml3.json; tools/run_tests.py suite traceability.
 		*/
@@ -218,7 +218,7 @@ package UML3StructureRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how developers, architects and reviewers use the structural constructs of UML3.
+		UseCases: how developers, architects and reviewers use the structural constructs of SysUML.
 
 		Contents:
 		- DesignClassStructure: a software developer designs the classes of a component in detail.
@@ -299,7 +299,7 @@ package UML3StructureRequirements {
 	package Realization {
 		doc
 		/*
-		Realization: the UML3 and SysML v2 library elements that realize the done and tbc STR requirements.
+		Realization: the SysUML and SysML v2 library elements that realize the done and tbc STR requirements.
 
 		Contents:
 		- #realizes dependencies from library elements to STR requirements.

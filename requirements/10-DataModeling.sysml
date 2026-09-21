@@ -26,9 +26,9 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-001'> logicalDataModel {
 		doc
 		/*
-		UML3 shall provide entities (business objects with identity and a lifecycle), aggregate roots and value
+		SysUML shall provide entities (business objects with identity and a lifecycle), aggregate roots and value
 		objects for logical data models, and marking an element with one of them shall make it specialize the
-		corresponding library base. Attributes that are not persisted shall be markable as transient. UML3 tooling
+		corresponding library base. Attributes that are not persisted shall be markable as transient. SysUML tooling
 		shall report an entity or aggregate root that has no identity.
 		Verified by: tests/cameo/implied-specializations.json; tests/cameo/view-predictions.json; tools/run_tests.py suite cameo; tests/rules/r02-entity-without-identity.sysml; tools/run_tests.py suite rules-tests.
 		*/
@@ -41,7 +41,7 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-002'> conceptualDataModel {
 		doc
 		/*
-		UML3 shall support conceptual data models of business concepts and their relationships that need no
+		SysUML shall support conceptual data models of business concepts and their relationships that need no
 		attributes, keys or types. A tool shall be able to tell to which level (conceptual, logical or physical) a
 		data model element belongs, and a logical element shall be traceable to the conceptual element it refines.
 		*/
@@ -54,8 +54,8 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-003'> relationshipCardinality {
 		doc
 		/*
-		UML3 shall provide relationships between entities whose end multiplicities state the cardinality (one to
-		one, one to many, many to many) and which may own attributes. UML3 tooling shall warn about a relationship
+		SysUML shall provide relationships between entities whose end multiplicities state the cardinality (one to
+		one, one to many, many to many) and which may own attributes. SysUML tooling shall warn about a relationship
 		that does not have exactly two ends.
 		Verified by: tests/rules/r04-ternary-association.sysml; tools/run_tests.py suite rules-tests; tests/cameo/view-predictions.json; tools/run_tests.py suite cameo.
 		*/
@@ -68,9 +68,9 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-004'> keysAndIndexes {
 		doc
 		/*
-		UML3 shall let attributes and columns be marked as primary key (several marked features forming a composite
+		SysUML shall let attributes and columns be marked as primary key (several marked features forming a composite
 		key, with a key generation strategy), as unique or as indexed, and shall let a table or entity declare named
-		indexes over several columns. UML3 tooling shall report a table without a primary key.
+		indexes over several columns. SysUML tooling shall report a table without a primary key.
 		Verified by: tests/rules/r01-table-without-pk.sysml; tools/run_tests.py suite rules-tests; tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo.
 		*/
 		@Rationale { text = "Keys and indexes define identity, integrity and access paths; key features must be queryable as sets to generate schemas and check designs."; }
@@ -83,7 +83,7 @@ package UML3DataModelingRequirements {
 		doc
 		/*
 		A reference between entities and a column of a table shall be markable as a foreign key with referential
-		actions on delete and on update (no action, restrict, cascade, set null, set default). UML3 tooling shall
+		actions on delete and on update (no action, restrict, cascade, set null, set default). SysUML tooling shall
 		report a foreign key reference whose target is not an entity or table, and a foreign key column that names
 		a table that does not exist.
 		Verified by: tests/rules/r03-foreign-keys.sysml; tools/run_tests.py suite rules-tests; tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo.
@@ -97,8 +97,8 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-006'> physicalSchema {
 		doc
 		/*
-		UML3 shall provide databases, tables, columns with physical details (column name, SQL type and default
-		value) and database views with their query text and materialization. UML3 tooling shall warn about a
+		SysUML shall provide databases, tables, columns with physical details (column name, SQL type and default
+		value) and database views with their query text and materialization. SysUML tooling shall warn about a
 		database view without query text.
 		Verified by: tests/rules/r11-dbview-without-query.sysml; tools/run_tests.py suite rules-tests; tests/cameo/view-predictions.json; tests/cameo/implied-specializations.json; tools/run_tests.py suite cameo.
 		*/
@@ -111,7 +111,7 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-007'> schemaConstraints {
 		doc
 		/*
-		UML3 shall let a physical schema declare named primary key, foreign key, unique and check constraints over
+		SysUML shall let a physical schema declare named primary key, foreign key, unique and check constraints over
 		one or more columns, including composite foreign keys. Referenced tables, referenced columns and indexed
 		columns shall be model references, not text, so that renaming an element keeps constraints valid.
 		*/
@@ -137,7 +137,7 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-009'> mappingConsistency {
 		doc
 		/*
-		UML3 tooling shall report logical entities and attributes that no physical element implements, mapped
+		SysUML tooling shall report logical entities and attributes that no physical element implements, mapped
 		columns whose type or multiplicity does not match the attribute they implement, and mapping dependencies
 		whose client is not a physical element or whose supplier is not a logical element.
 		*/
@@ -150,7 +150,7 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-010'> schemaEvolution {
 		doc
 		/*
-		A data model shall carry a schema version, and UML3 shall let migrations be modeled as ordered changes from
+		A data model shall carry a schema version, and SysUML shall let migrations be modeled as ordered changes from
 		one schema version to the next, each stating whether it is backward compatible and how existing data is
 		transformed.
 		*/
@@ -167,7 +167,7 @@ package UML3DataModelingRequirements {
 		period and disposal rule, and whether changes to them are audited. Tools shall be able to list the elements
 		governed by each owner and each retention rule.
 		*/
-		@Rationale { text = "Data management practice and regulation require ownership and retention to be known per data element; UML3 provides only the audited marker today."; }
+		@Rationale { text = "Data management practice and regulation require ownership and retention to be known per data element; SysUML provides only the audited marker today."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -176,7 +176,7 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-012'> normalizationIntent {
 		doc
 		/*
-		UML3 shall let a logical or physical model state the normal form it is designed to, and shall let each
+		SysUML shall let a logical or physical model state the normal form it is designed to, and shall let each
 		deliberate denormalization (a duplicated attribute, a precomputed aggregate or a merged table) name the
 		elements it duplicates and give its rationale.
 		*/
@@ -189,7 +189,7 @@ package UML3DataModelingRequirements {
 	requirement <'UML3-DATA-013'> nonRelationalModels {
 		doc
 		/*
-		UML3 shall support document, key-value, wide-column and graph data models: collections of documents with
+		SysUML shall support document, key-value, wide-column and graph data models: collections of documents with
 		embedded and referenced sub-documents, partition and sort keys, time to live, and nodes and edges with
 		properties, each mappable from logical entities in the same way as relational schemas.
 		*/
@@ -215,7 +215,7 @@ package UML3DataModelingRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how data modelers, DevOps engineers and security engineers use UML3 data modeling.
+		UseCases: how data modelers, DevOps engineers and security engineers use SysUML data modeling.
 
 		Contents:
 		- DesignLayeredDataModels: a data modeler designs conceptual, logical and physical models and maps them.

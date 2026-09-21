@@ -1,10 +1,10 @@
 package UML3TestingRequirements {
 	doc
 	/*
-	TEST: requirements on modeling the tests of the software that a UML3 model describes: test cases and
+	TEST: requirements on modeling the tests of the software that a SysUML model describes: test cases and
 	suites, fixtures and test data, test doubles, traces to requirements and design elements, coverage, tests
 	derived from behavior and contracts, performance and security tests, and test results.
-	Verifying the UML3 model itself is in UML3VerificationRequirements (VER).
+	Verifying the SysUML model itself is in UML3VerificationRequirements (VER).
 
 	Contents:
 	- Test design: testCases, testSuites, fixturesAndTestData, testDoubles.
@@ -24,7 +24,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-001'> testCases {
 		doc
 		/*
-		UML3 shall model a software test case as a native SysML v2 verification case whose subject is the element
+		SysUML shall model a software test case as a native SysML v2 verification case whose subject is the element
 		under test (an operation, class, component, subsystem or deployed system), whose objective states what
 		the test verifies and whose result is a verdict.
 		*/
@@ -37,7 +37,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-002'> testSuites {
 		doc
 		/*
-		UML3 shall group test cases into test suites that can be nested and that state the setup and teardown
+		SysUML shall group test cases into test suites that can be nested and that state the setup and teardown
 		shared by their test cases.
 		*/
 		@Rationale { text = "Tests are organized by level and component and share their setup; a model without suites cannot say which tests run together or how they are prepared."; }
@@ -49,7 +49,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-003'> fixturesAndTestData {
 		doc
 		/*
-		UML3 shall model the fixture of a test case (the configuration and initial state of the element under test
+		SysUML shall model the fixture of a test case (the configuration and initial state of the element under test
 		and its environment) and its test data (inputs and expected results), with individuals and snapshots of
 		design elements as concrete values.
 		*/
@@ -62,7 +62,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-004'> testDoubles {
 		doc
 		/*
-		UML3 shall model test doubles (stubs, fakes and mocks) that replace a component, port or interface used by
+		SysUML shall model test doubles (stubs, fakes and mocks) that replace a component, port or interface used by
 		the element under test, and shall state the interactions that a mock expects.
 		*/
 		@Rationale { text = "Components and services are tested in isolation by replacing what they depend on; a double declared against the same interface or port stays consistent with the design."; }
@@ -98,7 +98,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-007'> testCoverage {
 		doc
 		/*
-		UML3 tooling shall report the coverage of requirements, operations, states, transitions and message types
+		SysUML tooling shall report the coverage of requirements, operations, states, transitions and message types
 		by test cases, and shall list the elements that no test case covers.
 		*/
 		@Rationale { text = "Coverage of the model shows untested design decisions before any code exists, and complements code coverage afterwards."; }
@@ -110,7 +110,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-008'> testsFromBehavior {
 		doc
 		/*
-		UML3 shall define how test cases are derived from state machines (for example one test case per
+		SysUML shall define how test cases are derived from state machines (for example one test case per
 		transition) and from interactions (one test case per message sequence), and each derived test case shall
 		trace to the behavior it was derived from.
 		*/
@@ -123,7 +123,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-009'> contractTests {
 		doc
 		/*
-		UML3 shall derive contract tests for interfaces, service ports and message types from their contracts
+		SysUML shall derive contract tests for interfaces, service ports and message types from their contracts
 		(operations with their parameters, message schemas, serialization and quality of service), so that a
 		provider and a consumer can each be tested alone against the same contract.
 		*/
@@ -136,7 +136,7 @@ package UML3TestingRequirements {
 	requirement <'UML3-TEST-010'> performanceAndSecurityTests {
 		doc
 		/*
-		UML3 shall specify performance tests, with load profiles and response time and throughput targets given as
+		SysUML shall specify performance tests, with load profiles and response time and throughput targets given as
 		quantities with units, and security tests, with objectives traced to the threats and controls they check.
 		*/
 		@Rationale { text = "Quality requirements are verified by tests with measurable targets, and SysML v2 quantities and units make those targets exact."; }
@@ -230,7 +230,7 @@ package UML3TestingRequirements {
 		Realization: the library elements that realize the done TEST requirements.
 
 		Contents:
-		- None yet: UML3 has no testing library or testing example, so no TEST requirement is done and there are
+		- None yet: SysUML has no testing library or testing example, so no TEST requirement is done and there are
 		  no #realizes dependencies.
 		*/
 	}

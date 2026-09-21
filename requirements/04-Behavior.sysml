@@ -1,7 +1,7 @@
 package UML3BehaviorRequirements {
 	doc
 	/*
-	BHV: requirements on the behavior of UML3 models: operations and their methods, activities, state
+	BHV: requirements on the behavior of SysUML models: operations and their methods, activities, state
 	machines, signals and time triggers, exceptions, active objects and concurrency, interactions between
 	objects, behavior bodies and executable semantics.
 
@@ -12,7 +12,7 @@ package UML3BehaviorRequirements {
 	- Errors: raisedExceptions, exceptionHandling.
 	- Active objects: classifierBehaviors, callConcurrency, callTriggers.
 	- Interactions, bodies and execution: objectInteractions, opaqueBodies, executableSemantics.
-	- UseCases: how developers, architects and engineers use UML3 behavior.
+	- UseCases: how developers, architects and engineers use SysUML behavior.
 	- Realization: the library elements that realize the done and tbc requirements.
 	References: docs/REQUIREMENTS-GUIDE.md; docs/DESIGN.md; UML 2.5.1 Behavior; SysML 7.17; SysML 7.18; KerML 9.2.14.
 	*/
@@ -26,9 +26,9 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-001'> nativeBehaviors {
 		doc
 		/*
-		UML3 shall model behaviors, including activities, state machines, calculations and use cases, with the
+		SysUML shall model behaviors, including activities, state machines, calculations and use cases, with the
 		native SysML v2 action, state, calculation and use case definitions used as-is. Behavior definitions
-		shall need no UML3 keyword, and no UML3 keyword shall make a behavior a class.
+		shall need no SysUML keyword, and no SysUML keyword shall make a behavior a class.
 		Verified by: examples/06-OnlineStoreBehavior.sysml; tools/run_tests.py suite cameo; E05.
 		*/
 		@Rationale { text = "SysML v2 behaviors already are classifiers with features, specialization and performances, and KerML keeps objects disjoint from performances, so a class label on a behavior would be redundant and invalid (decision 2026-09-16)."; }
@@ -55,7 +55,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-003'> activityFlows {
 		doc
 		/*
-		UML3 shall model activities as native action definitions whose steps are ordered by control flow from
+		SysUML shall model activities as native action definitions whose steps are ordered by control flow from
 		a start to an end and exchange objects through their parameters, with decisions guarded by conditions,
 		merges, forks, joins and loops.
 		Verified by: examples/06-OnlineStoreBehavior.sysml; tools/run_tests.py suite cameo; tools/run_tests.py suite traceability.
@@ -69,7 +69,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-004'> stateMachines {
 		doc
 		/*
-		UML3 shall model state machines as native state definitions with entry, do and exit actions, nested and
+		SysUML shall model state machines as native state definitions with entry, do and exit actions, nested and
 		parallel states, and transitions that have a trigger, a guard and an effect.
 		Verified by: examples/06-OnlineStoreBehavior.sysml; tools/run_tests.py suite cameo.
 		*/
@@ -82,7 +82,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-005'> signalTriggers {
 		doc
 		/*
-		UML3 shall provide signals, objects that a behavior sends asynchronously to a target. An accept action
+		SysUML shall provide signals, objects that a behavior sends asynchronously to a target. An accept action
 		or a transition of the receiving behavior shall accept a signal as its trigger, selected by the signal
 		type and optionally by a guard.
 		Verified by: examples/06-OnlineStoreBehavior.sysml; tools/run_tests.py suite cameo.
@@ -110,7 +110,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-007'> raisedExceptions {
 		doc
 		/*
-		UML3 shall let an operation declare the exceptions it may raise, where each exception is an exception
+		SysUML shall let an operation declare the exceptions it may raise, where each exception is an exception
 		type that is also a signal.
 		Verified by: tools/run_tests.py suite idl-import; tools/run_tests.py suite cameo; library/UML3IDL.sysml.
 		*/
@@ -123,7 +123,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-008'> exceptionHandling {
 		doc
 		/*
-		UML3 shall define how a behavior raises an exception, how the exception propagates to the calling or
+		SysUML shall define how a behavior raises an exception, how the exception propagates to the calling or
 		enclosing behavior, and how a handler in an activity or a state machine catches it and continues.
 		*/
 		@Rationale { text = "Error handling is a large part of real software behavior, and without defined raising, propagation and handling a model can neither describe failure paths nor generate them."; }
@@ -148,7 +148,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-010'> callConcurrency {
 		doc
 		/*
-		UML3 shall state for each operation whether concurrent calls are allowed, serialized by the object or
+		SysUML shall state for each operation whether concurrent calls are allowed, serialized by the object or
 		excluded by the callers, and whether a call on an active object is synchronous or queued.
 		*/
 		@Rationale { text = "Thread safety and message queuing are design decisions that code, reviews and tests depend on, and UML records them as the concurrency of operations."; }
@@ -163,7 +163,7 @@ package UML3BehaviorRequirements {
 		A state machine or an activity of an object shall be able to accept a call of an operation of that
 		object as a trigger and to return the results of the call to the caller.
 		*/
-		@Rationale { text = "Object designs often route operation calls into a state machine, as UML call events do, but SysML v2 has no call event, so UML3 must decide whether request signals suffice."; }
+		@Rationale { text = "Object designs often route operation calls into a state machine, as UML call events do, but SysML v2 has no call event, so SysUML must decide whether request signals suffice."; }
 		@StatusInfo { status = StatusKind::tbd; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -172,7 +172,7 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-012'> objectInteractions {
 		doc
 		/*
-		UML3 shall model interactions between objects as native occurrence definitions with lifelines, event
+		SysUML shall model interactions between objects as native occurrence definitions with lifelines, event
 		occurrences ordered by successions on each lifeline, and messages between event occurrences. The
 		schemas, channels and quality of service of these messages shall be those specified by the messaging
 		requirements.
@@ -200,8 +200,8 @@ package UML3BehaviorRequirements {
 	requirement <'UML3-BHV-014'> executableSemantics {
 		doc
 		/*
-		UML3 behaviors shall have execution semantics, based on the KerML and SysML v2 semantic libraries, that
-		are precise enough for a tool to simulate a UML3 model and for generated code to behave as the model.
+		SysUML behaviors shall have execution semantics, based on the KerML and SysML v2 semantic libraries, that
+		are precise enough for a tool to simulate a SysUML model and for generated code to behave as the model.
 		*/
 		@Rationale { text = "Simulation and model-based testing find design errors before code exists, and generated code can only be trusted when it follows the semantics that simulation uses."; }
 		@StatusInfo { status = StatusKind::open; }
@@ -212,7 +212,7 @@ package UML3BehaviorRequirements {
 	package UseCases {
 		doc
 		/*
-		UseCases: how developers, architects, integration, systems and test engineers use UML3 behavior.
+		UseCases: how developers, architects, integration, systems and test engineers use SysUML behavior.
 
 		Contents:
 		- DesignObjectBehavior: a software developer specifies how the objects of a component behave.
@@ -269,7 +269,7 @@ package UML3BehaviorRequirements {
 		use case def SimulateUML3Behavior {
 			doc
 			/*
-			A systems engineer or a test engineer executes the behaviors of a UML3 model, alone or inside a
+			A systems engineer or a test engineer executes the behaviors of a SysUML model, alone or inside a
 			SysML v2 system model, to check scenarios before the code exists.
 			*/
 			subject environment : UML3Environment;
@@ -291,7 +291,7 @@ package UML3BehaviorRequirements {
 	package Realization {
 		doc
 		/*
-		Realization: the UML3 and SysML v2 library elements that realize the done and tbc BHV requirements.
+		Realization: the SysUML and SysML v2 library elements that realize the done and tbc BHV requirements.
 
 		Contents:
 		- #realizes dependencies from library elements to BHV requirements.

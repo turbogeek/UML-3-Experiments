@@ -11,6 +11,7 @@ Suites (each result is recorded in logs/test-report.json):
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   keywords            tools/check_keywords.py: docs/UML3-Keywords.md matches the libraries (keyword, terse id, base)
+  dogfood             DogFoodUML3/: the effort modeled in SysUML; syntax, names, design rules and documentation
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization,
                       and tools/check_diagram_kinds.py (model vs view filters vs palettes, with fixtures)
@@ -274,6 +275,24 @@ def main() -> int:
         "summary": next((l for l in rq.stdout.splitlines() if l.startswith("SUMMARY")), rq.stderr.strip()[-300:]),
         "errors": [x for x in rq_rep.get("findings", []) if x["severity"] == "error"],
         "warnings": [x for x in rq_rep.get("findings", []) if x["severity"] == "warning"]}
+
+    # 4b4. DogFoodUML3, the effort modeled in SysUML (UML3-CORE-014): ANTLR syntax, names against the libraries
+    #      and the requirements it traces to, the design rules and the documentation rules
+    dog_files = sorted((ROOT / "DogFoodUML3").glob("*.sysml"))
+    dog_syn_ok, dog_syn_errs = syntax_check(dog_files) if dog_files else (False, ["no DogFoodUML3/*.sysml"])
+    dog_rc, dog_names = name_check(dog_files, library + req_files + dog_files, LOGS / "names-dogfood.json") \
+        if dog_files else (1, {"files": []})
+    dr = run([sys.executable, str(ROOT / "tools" / "check_rules.py"), "--stdlib", str(STDLIB), "--index",
+              str(ROOT / "library"), str(ROOT / "DogFoodUML3"), "--check", str(ROOT / "DogFoodUML3"),
+              "--report", str(LOGS / "rules-dogfood.json")])
+    dd = run([sys.executable, str(ROOT / "tools" / "check_docs.py"), "--profile", "example", "--report",
+              str(LOGS / "docs-dogfood.json"), str(ROOT / "DogFoodUML3")])
+    report["suites"]["dogfood"] = {
+        "passed": dog_syn_ok and dog_rc == 0 and dr.returncode == 0 and dd.returncode == 0,
+        "files": len(dog_files), "syntaxErrors": dog_syn_errs,
+        "nameFindings": [x | {"file": fr["file"]} for fr in dog_names["files"] for x in fr["findings"]],
+        "rules": next((l for l in dr.stdout.splitlines() if l.startswith("SUMMARY")), dr.stderr.strip()[-300:]),
+        "docs": next((l for l in dd.stdout.splitlines() if l.startswith("SUMMARY")), dd.stderr.strip()[-300:])}
 
     # 4c2. IDL code generation (Java: OMG IDL4-Java 1.0, Rust: docs/IDL-CODEGEN.md): spec naming examples; every
     #      tests/idl/codegen fixture generates, compiles (javac in-process; rustc when on PATH) and contains its

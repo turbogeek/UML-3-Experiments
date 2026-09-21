@@ -1,9 +1,9 @@
 package UML3Actors {
 	doc
 	/*
-	UML3Actors: the roles that use UML3, and the subject of the UML3 use cases.
+	UML3Actors: the roles that use SysUML, and the subject of the SysUML use cases.
 
-	Every UML3 use case names its actors from this package and uses UML3Environment as its subject: UML3 with
+	Every SysUML use case names its actors from this package and uses UML3Environment as its subject: SysUML with
 	its libraries, checkers, generators and the SysML v2 tools that host it.
 
 	Contents:
@@ -18,7 +18,7 @@ package UML3Actors {
 	part def UML3Environment {
 		doc
 		/*
-		The system under consideration in UML3 use cases: the UML3 language definition and libraries, the UML3
+		The system under consideration in SysUML use cases: the SysUML language definition and libraries, the SysUML
 		checkers and generators, and the SysML v2 modeling tool that hosts them.
 		*/
 	}
@@ -57,15 +57,15 @@ package UML3Actors {
 		doc /* Produces specifications, user and developer documentation from the model. */
 	}
 	part def ToolVendor {
-		doc /* Implements UML3 support in a modeling tool, generator or analysis tool and claims conformance. */
+		doc /* Implements SysUML support in a modeling tool, generator or analysis tool and claims conformance. */
 	}
 	part def LanguageMaintainer {
-		doc /* Maintains the UML3 language definition, libraries, documentation and conformance tests. */
+		doc /* Maintains the SysUML libraries and, as the next step, the UML3 language definition, with their documentation and conformance tests. */
 	}
 	part def AIAssistant {
 		doc
 		/*
-		An AI system that drafts, reviews, explains or transforms UML3 models on behalf of a human user, under
+		An AI system that drafts, reviews, explains or transforms SysUML models on behalf of a human user, under
 		that user's review.
 		*/
 	}

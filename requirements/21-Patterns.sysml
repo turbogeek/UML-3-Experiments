@@ -9,7 +9,7 @@ package UML3PatternRequirements {
 	and UML 2.5.1 collaborations.
 	Patterns build on the native requirement constructs of UML3RequirementModelingRequirements (REQ): the
 	solution of a pattern is stated as requirements, and applying a pattern satisfies them. docs/PATTERNS.md
-	maps SPMS 1.4 onto UML3 and records the evidence (experiment E22). Individual integration patterns as
+	maps SPMS 1.4 onto SysUML and records the evidence (experiment E22). Individual integration patterns as
 	components are in UML3MessagingRequirements (MSG).
 
 	Contents:
@@ -33,8 +33,8 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-001'> patternDefinitions {
 		doc
 		/*
-		UML3 shall represent a pattern definition as an abstract definition whose features are the roles of the
-		pattern, marked by a UML3 keyword that identifies it as a pattern, so that pattern definitions are ordinary
+		SysUML shall represent a pattern definition as an abstract definition whose features are the roles of the
+		pattern, marked by a SysUML keyword that identifies it as a pattern, so that pattern definitions are ordinary
 		model elements that can be specialized, queried, documented and kept in libraries.
 		*/
 		@Rationale { text = "SPMS PatternDefinition and UML Collaboration both describe a solution as roles; as a definition with role features, a pattern gets specialization, typing and queries from SysML v2 instead of a separate metamodel. E22 shows the structure with the existing #template keyword; a dedicated keyword lets a query find all patterns."; }
@@ -46,7 +46,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-002'> typedRoles {
 		doc
 		/*
-		Each role of a pattern definition shall have a type and a multiplicity. The type of a role shall be a UML3
+		Each role of a pattern definition shall have a type and a multiplicity. The type of a role shall be a SysUML
 		definition, typically an #interfaceType, whose features state what an element must provide to play the
 		role.
 		*/
@@ -115,7 +115,7 @@ package UML3PatternRequirements {
 		pattern definition redefines each role with the design type that plays it, and a role played by several
 		types is bound through features that subset the role, one per type.
 		*/
-		@Rationale { text = "Design patterns are usually stated and reviewed as class structures; binding by redefinition reuses UML3 template binding (STR-011) and gives SPMS Binding.fulfilledBy with several elements a typed form."; }
+		@Rationale { text = "Design patterns are usually stated and reviewed as class structures; binding by redefinition reuses SysUML template binding (STR-011) and gives SPMS Binding.fulfilledBy with several elements a typed form."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -163,7 +163,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-011'> roleBindingConformance {
 		doc
 		/*
-		UML3 tooling shall report each role that is bound to an element whose type does not conform to the role
+		SysUML tooling shall report each role that is bound to an element whose type does not conform to the role
 		type.
 		*/
 		@Rationale { text = "KerML derives the types of a redefining feature from its own typings and from the feature it redefines, so a non-conforming binding silently narrows the role to an intersection instead of failing (confirmed in CATIA Magic, E22 P4); only a rule reports it."; }
@@ -175,7 +175,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-012'> everyRoleBound {
 		doc
 		/*
-		UML3 tooling shall report each pattern instance that leaves a role with a lower multiplicity above zero
+		SysUML tooling shall report each pattern instance that leaves a role with a lower multiplicity above zero
 		unbound.
 		*/
 		@Rationale { text = "UML states this as the constraint every_role of CollaborationUse and SPMS as the rule that an instance has a binding for each role; an unbound role means the pattern is not applied."; }
@@ -187,7 +187,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-013'> roleContracts {
 		doc
 		/*
-		UML3 tooling shall report each element that plays a role whose type is an #interfaceType without
+		SysUML tooling shall report each element that plays a role whose type is an #interfaceType without
 		implementing every operation of that type.
 		Verified by: tools/run_tests.py suite rules-tests; tests/rules/r06-incomplete-realization.sysml; tests/cameo-experiments/e22-pattern-observer.sysml.
 		*/
@@ -200,7 +200,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-014'> roleConnectionCorrespondence {
 		doc
 		/*
-		UML3 tooling shall report each connection between roles of a pattern that has no corresponding
+		SysUML tooling shall report each connection between roles of a pattern that has no corresponding
 		connection, of the same or a more general type, between the elements bound to those roles in an
 		instance-level pattern instance.
 		*/
@@ -230,7 +230,7 @@ package UML3PatternRequirements {
 		child of, parent of, peer of, requires, required by, variant of, can also be, mitigated by, mitigates,
 		compensated by and compensates, and a community shall be able to add natures, categories and perspectives.
 		*/
-		@Rationale { text = "Pattern languages are defined by these relationships; keeping the SPMS vocabulary makes UML3 catalogs exchangeable, and extensibility is what SPMS itself asks of communities."; }
+		@Rationale { text = "Pattern languages are defined by these relationships; keeping the SPMS vocabulary makes SysUML catalogs exchangeable, and extensibility is what SPMS itself asks of communities."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -239,7 +239,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-017'> patternCatalogs {
 		doc
 		/*
-		UML3 shall provide pattern catalogs as library packages: the object-oriented design patterns of Gamma et
+		SysUML shall provide pattern catalogs as library packages: the object-oriented design patterns of Gamma et
 		al., common architecture patterns such as layers, broker and pipes and filters, the enterprise integration
 		patterns of UML3-MSG-014, and domain-driven design patterns such as repository and aggregate.
 		*/
@@ -252,7 +252,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-018'> antiPatterns {
 		doc
 		/*
-		UML3 shall represent anti-patterns as pattern definitions marked as anti-patterns, related to the patterns
+		SysUML shall represent anti-patterns as pattern definitions marked as anti-patterns, related to the patterns
 		that mitigate or compensate them, and shall be able to import the weakness catalogs of the CISQ quality and
 		security measures, which are published as SPMS data.
 		*/
@@ -265,7 +265,7 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-019'> patternDetection {
 		doc
 		/*
-		UML3 tooling shall be able to detect instances of a pattern or an anti-pattern in a model, record each one
+		SysUML tooling shall be able to detect instances of a pattern or an anti-pattern in a model, record each one
 		as a pattern instance with its bindings and an observation, and state the detection rule as the pattern's
 		formal definition.
 		*/
@@ -278,11 +278,11 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-020'> patternViews {
 		doc
 		/*
-		UML3 shall provide views of pattern instances that show the pattern with its roles and the elements bound
+		SysUML shall provide views of pattern instances that show the pattern with its roles and the elements bound
 		to them, in a collapsed form that names the pattern and an expanded form that shows the role structure,
 		corresponding to the SPMS pattern instance notation and the UML collaboration use.
 		*/
-		@Rationale { text = "Patterns explain designs only if a reader can see them on a diagram; SPMS defines its notation on Diagram Definition, which SysML v2 does not use, so the views are UML3 view definitions and tool customizations."; }
+		@Rationale { text = "Patterns explain designs only if a reader can see them on a diagram; SPMS defines its notation on Diagram Definition, which SysML v2 does not use, so the views are SysUML view definitions and tool customizations."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::demo; }
@@ -291,10 +291,10 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-021'> applyPatternCommand {
 		doc
 		/*
-		A UML3 tool customization shall offer a command that applies a catalog pattern to the selected elements:
+		A SysUML tool customization shall offer a command that applies a catalog pattern to the selected elements:
 		it creates the pattern instance and binds the selected elements to its roles.
 		*/
-		@Rationale { text = "Applying a pattern by hand means several redefinitions per role; a command makes the correct form the easy one, as the UML3 palettes do for single keywords."; }
+		@Rationale { text = "Applying a pattern by hand means several redefinitions per role; a command makes the correct form the easy one, as the SysUML palettes do for single keywords."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::demo; }
@@ -315,10 +315,10 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-023'> spmsInterchange {
 		doc
 		/*
-		UML3 shall import and export pattern definitions and pattern instances as SPMS XMI: at least the required
+		SysUML shall import and export pattern definitions and pattern instances as SPMS XMI: at least the required
 		Definitions package, and the Observations and Relationships packages where the model contains them.
 		*/
-		@Rationale { text = "Export and import of SPMS XMI is the conformance point of the standard; it connects UML3 models to pattern repositories and to analysis tools that report patterns and weaknesses in SPMS form."; }
+		@Rationale { text = "Export and import of SPMS XMI is the conformance point of the standard; it connects SysUML models to pattern repositories and to analysis tools that report patterns and weaknesses in SPMS form."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -327,10 +327,10 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-024'> spmsKerMLAlignment {
 		doc
 		/*
-		The UML3 representation of patterns shall remain mappable to SPMS, and shall adopt the resolution of the
+		The SysUML representation of patterns shall remain mappable to SPMS, and shall adopt the resolution of the
 		SPMS 1.5 issues on KerML support (SPMS15-1, SPMS15-2) once it is published.
 		*/
-		@Rationale { text = "SPMS references UML Element and Property; until the revision says how KerML elements are referenced, interchange with SysML v2 models rests on an unstated bridge. UML3 can contribute its mapping and E22 evidence to that revision."; }
+		@Rationale { text = "SPMS references UML Element and Property; until the revision says how KerML elements are referenced, interchange with SysML v2 models rests on an unstated bridge. SysUML can contribute its mapping and E22 evidence to that revision."; }
 		@StatusInfo { status = StatusKind::tbd; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -339,11 +339,11 @@ package UML3PatternRequirements {
 	requirement <'UML3-PAT-025'> collaborationMapping {
 		doc
 		/*
-		The UML 2.5.1 Collaboration and CollaborationUse shall map to the UML3 pattern definition and the
+		The UML 2.5.1 Collaboration and CollaborationUse shall map to the SysUML pattern definition and the
 		instance-level pattern instance, including their role bindings and their constraints every_role and
 		connectors, and the UML 2.x traceability shall record the mapping.
 		*/
-		@Rationale { text = "Collaborations are the one UML 2.5.1 concept whose traceability is PARTIAL with no UML3 construct; patterns are what collaborations were introduced for."; }
+		@Rationale { text = "Collaborations are the one UML 2.5.1 concept whose traceability is PARTIAL with no SysUML construct; patterns are what collaborations were introduced for."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::inspect; }
@@ -428,7 +428,7 @@ package UML3PatternRequirements {
 		use case def ExchangePatterns {
 			doc
 			/*
-			A tool vendor exchanges pattern definitions and detected pattern instances between UML3 models and
+			A tool vendor exchanges pattern definitions and detected pattern instances between SysUML models and
 			SPMS tools and repositories, including anti-pattern catalogs such as the CISQ weaknesses.
 			*/
 			subject environment : UML3Environment;
