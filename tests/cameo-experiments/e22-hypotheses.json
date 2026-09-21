@@ -1,0 +1,19 @@
+{
+  "description": "Experiment E22, recorded 2026-09-21 before the run: implied relationships of the pattern probe, checked by verifyImpliedSpecializations.groovy with cameo_check.py --library-only --probes ... --hypotheses tests/cameo-experiments/e22-hypotheses.json. G01-G02 test prediction P3 (roles join UML3Core::templateParameters), G03-G06 test that instances are specializations of the pattern and its roles, G07-G08 test prediction P4 (a non-conforming binding intersects the types instead of failing). Negative controls: N01-N03.",
+  "specializes": [
+    {"id": "G01", "why": "P3: the observable role, marked #templateParameter, joins UML3Core::templateParameters", "subject": ["UML3ProbePatternObserver", "ObserverPattern", "observable"], "general": ["UML3Core", "templateParameters"], "expected": true},
+    {"id": "G02", "why": "P3: the observers role joins templateParameters", "subject": ["UML3ProbePatternObserver", "ObserverPattern", "observers"], "general": ["UML3Core", "templateParameters"], "expected": true},
+    {"id": "N01", "why": "P3 control: the role connection is not a template parameter", "subject": ["UML3ProbePatternObserver", "ObserverPattern", "notification"], "general": ["UML3Core", "templateParameters"], "expected": false},
+    {"id": "G03", "why": "the type-level instance is a specialization of the pattern", "subject": ["UML3ProbePatternObserver", "OrderObservation"], "general": ["UML3ProbePatternObserver", "ObserverPattern"], "expected": true},
+    {"id": "G04", "why": "the binding of the observable role redefines, so specializes, the role", "subject": ["UML3ProbePatternObserver", "OrderObservation", "observable"], "general": ["UML3ProbePatternObserver", "ObserverPattern", "observable"], "expected": true},
+    {"id": "G05", "why": "a player of the observers role, bound through a subsetting feature, specializes the role", "subject": ["UML3ProbePatternObserver", "OrderObservation", "emailObservers"], "general": ["UML3ProbePatternObserver", "ObserverPattern", "observers"], "expected": true},
+    {"id": "G06", "why": "the class that plays the observable role specializes the role type", "subject": ["UML3ProbePatternObserver", "OrderService"], "general": ["UML3ProbePatternObserver", "Subject"], "expected": true},
+    {"id": "N02", "why": "control: an observer class does not specialize the Subject role type", "subject": ["UML3ProbePatternObserver", "EmailNotifier"], "general": ["UML3ProbePatternObserver", "Subject"], "expected": false},
+    {"id": "G07", "why": "P4: the misbound observable role still conforms to the role type Subject (types intersect)", "subject": ["UML3ProbePatternWrongBinding", "MisboundObservation", "observable"], "general": ["UML3ProbePatternObserver", "Subject"], "expected": true},
+    {"id": "G08", "why": "P4: the misbound observable role also conforms to EmailNotifier, the type given in the binding", "subject": ["UML3ProbePatternWrongBinding", "MisboundObservation", "observable"], "general": ["UML3ProbePatternObserver", "EmailNotifier"], "expected": true},
+    {"id": "N03", "why": "control: EmailNotifier itself still does not specialize Subject; only the misbound feature carries both types", "subject": ["UML3ProbePatternObserver", "EmailNotifier"], "general": ["UML3ProbePatternObserver", "Subject"], "expected": false}
+  ],
+  "inheritsFeature": [
+    {"id": "G09", "why": "the type-level instance inherits the role connection of the pattern", "subject": ["UML3ProbePatternObserver", "OrderObservation"], "feature": "notification", "expected": true}
+  ]
+}

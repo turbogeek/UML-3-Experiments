@@ -4,7 +4,7 @@
  * instance-level PatternInstance with its Bindings), documented with sections and an observation record,
  * related to another pattern (SPMS Relationships), and constrained by native requirements (the part of SPMS
  * Formalisms that a model can carry). Load after the UML3 libraries.
- * Predictions: tests/cameo-experiments/e22-predictions.json, recorded before the run. */
+ * Predictions: tests/cameo-experiments/e22-predictions.json, recorded before the run. EXPECT-CAMEO: OK */
 package UML3ProbePatternObserver {
 	private import ScalarValues::*;
 	private import SequenceFunctions::*;
