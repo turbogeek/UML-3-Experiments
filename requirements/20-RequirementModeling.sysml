@@ -36,9 +36,9 @@ package UML3RequirementModelingRequirements {
 		definitions and usages, including their subject, actors, stakeholders, assumed and required constraints
 		and nested requirements. UML3 shall add no keyword, metaclass or library definition that a requirement
 		needs in order to be stated.
-		Verified by: tools/run_tests.py suite requirements; requirements/01-Core.sysml.
+		Verified by: tools/run_tests.py suite requirements; requirements/01-Core.sysml; tools/run_tests.py suite cameo-patterns.
 		*/
-		@Rationale { text = "Software, systems and test engineers then share one requirement language, and every SysML v2 tool can check, trace and report the requirements of a UML3 model. The UML3 requirements are themselves such a model; they are not yet loaded into CATIA Magic, so verification is to be completed."; }
+		@Rationale { text = "Software, systems and test engineers then share one requirement language, and every SysML v2 tool can check, trace and report the requirements of a UML3 model. The UML3 requirements are themselves such a model, and E22 showed CATIA Magic evaluating native requirement definitions satisfied by UML3 design elements; the UML3 requirements themselves are not yet loaded into CATIA Magic, so verification is to be completed."; }
 		@StatusInfo { status = StatusKind::tbc; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }

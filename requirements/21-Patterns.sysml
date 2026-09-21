@@ -166,7 +166,7 @@ package UML3PatternRequirements {
 		UML3 tooling shall report each role that is bound to an element whose type does not conform to the role
 		type.
 		*/
-		@Rationale { text = "KerML derives the types of a redefining feature from its own typings and from the feature it redefines, so a non-conforming binding silently narrows the role to an intersection instead of failing (prediction E22 P4); only a rule reports it."; }
+		@Rationale { text = "KerML derives the types of a redefining feature from its own typings and from the feature it redefines, so a non-conforming binding silently narrows the role to an intersection instead of failing (confirmed in CATIA Magic, E22 P4); only a rule reports it."; }
 		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::mandatory; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
@@ -217,8 +217,8 @@ package UML3PatternRequirements {
 		as requirements over metaobjects of the reflective KerML library, so that a SysML v2 tool can evaluate
 		them without UML3-specific checkers.
 		*/
-		@Rationale { text = "Checker rules are tied to one tool; constraints in the model travel with it. Whether CATIA Magic evaluates such constraints is experiment E22 P5, so the requirement itself is still to be decided."; }
-		@StatusInfo { status = StatusKind::tbd; }
+		@Rationale { text = "Checker rules are tied to one tool; constraints in the model travel with it. CATIA Magic's evaluation engine evaluates such a requirement correctly, true for the Observer probe and false for a missing operation (E22 P5); the pattern library still has to provide them."; }
+		@StatusInfo { status = StatusKind::open; }
 		@Priority { level = PriorityKind::optional; }
 		@VerificationMethod { kind = VerificationMethodKind::test; }
 	}

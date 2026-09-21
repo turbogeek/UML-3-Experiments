@@ -14,6 +14,8 @@ Suites (each result is recorded in logs/test-report.json):
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization,
                       and tools/check_diagram_kinds.py (model vs view filters vs palettes, with fixtures)
+  cameo-patterns      (--cameo) the E22 pattern probes: load, validate, implied relationships, and the verdicts of
+                      CATIA Magic's evaluation engine for the pattern requirements (model-level ones included)
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
                       the SysMLv2 test harness REST API, undo the loads, stop the harness.
                       This is the authoritative semantic check.
@@ -401,6 +403,27 @@ def main() -> int:
         if details.get("validationEngine") and not details["validationEngine"]["passed"]:
             report["suites"]["cameo-probes"]["passed"] = False
             report["suites"]["cameo-probes"]["errors"] += details["validationEngine"]["mismatches"]
+
+        # 5a2. patterns (E22): the Observer pattern probes load and validate, their implied relationships hold (a
+        #      non-conforming role binding intersects types), and CATIA Magic's evaluation engine gives the
+        #      expected verdicts for the pattern requirements, including a model-level one and two false controls
+        exp = ROOT / "tests" / "cameo-experiments"
+        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--library-only", "--undo", "--validate",
+                 "--hypotheses", str(exp / "e22-hypotheses.json"), "--evaluations", str(exp / "e22-evaluations.json"),
+                 "--probes", str(exp / "e22-pattern-observer.sysml"), str(exp / "e22b-pattern-wrong-binding.sysml"),
+                 str(exp / "e22c-pattern-evaluation-controls.sysml")])
+        pat = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
+        (ROOT / "logs" / "cameo" / "cameo-patterns-report.json").write_text(json.dumps(pat, indent=2), encoding="utf-8")
+        pat_errors = [f'{p["file"]}: expected {p["expected"]}, observed {p["observed"]}'
+                      for p in pat.get("probes", []) if not p["matchesPrediction"]]
+        pat_errors += [f'{h["id"]}: expected {h["expected"]}, observed {h["observed"]}'
+                       for h in pat.get("impliedSpecializations", {}).get("results", []) if h.get("status") != "PASS"]
+        pat_errors += [f'{e["id"]}: expected {e["expected"]}, observed {e["observed"]}'
+                       for e in pat.get("evaluations", {}).get("results", []) if not e["passed"]]
+        report["suites"]["cameo-patterns"] = {
+            "passed": r.returncode == 0 and not pat_errors and bool(pat.get("evaluations")),
+            "errors": pat_errors or ([r.stderr.strip()[-300:]] if r.returncode else []),
+            "evaluations": pat.get("evaluations"), "inspectAfterUndo": pat.get("inspectAfterUndo")}
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
         cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views",
