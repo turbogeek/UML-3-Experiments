@@ -1,8 +1,10 @@
 # UML-3-Experiments
 
-**Goal:** give SysML v2 the modeling power UML offers for software work: object-oriented analysis and design, software and deployment architecture, messaging/event-driven design, and data/database modeling.
+**Goal:** give SysML v2 the modeling power UML offers for software work: object-oriented analysis and design, software and deployment architecture, messaging/event-driven design, and data/database modeling. Currently targeting the ability to model Java, C/C++, Rust, Python, JavaScript (and its variants), and technologies such as REST, Docker, the Spring Framework, and cloud platforms like MS, Google, or AWS. We want to be compatible with Agile workflows, continuous integration, DevOps, etc. Note also that the intent is not to do this all at once, but to do some experiments to prove the capabilities and then turn over heavy lifting to any promisingly implementable goals to iterate and expand. 
 
 The approach uses only the extension mechanisms SysML v2 already standardizes:
+
+**Caution:** This is a work in progress! It is experimental and has already morphed drastically and will do so more in the future! This is mainly AI-driven, thus the volatility, as the AI makes assumptions that UML and SysMLv2 experts may find distasteful. 
 
 * **Model libraries** of abstract base definitions (`Class`, `Operation`, `Component`, `DomainEvent`, `Entity`, `Table`...).
 * **Semantic metadata keywords** (`#entity`, `#service`, `#primaryKey`...), the SysML v2 replacement for UML stereotypes. A keyword makes the element really specialize its library base (KerML 9.2.16), so models stay queryable and CATIA Magic shows the keyword as a `«#keyword»` label.
