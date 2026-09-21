@@ -268,10 +268,10 @@ def main() -> int:
             segs = segments(s)
             r = reqs.get(segs[-1])
             if r is None:
-                add("RESOLVE", d["file"], d["line"], f"source '{s}' is not a requirement of requirements/")
+                add("RESOLVE", d["file"], d["line"], f"source {s} is not a requirement of requirements/")
                 continue
             if len(segs) > 1 and segs[-2] != r["package"]:
-                add("RESOLVE", d["file"], d["line"], f"source '{s}' is in package {r['package']}, not {segs[-2]}")
+                add("RESOLVE", d["file"], d["line"], f"source {s} is in package {r['package']}, not {segs[-2]}")
             if d["implementations"] is not None and sorted(r["appliesTo"]) != d["implementations"]:
                 add("GROUP", d["file"], d["line"],
                     f"{r['id']} applies to {', '.join(r['appliesTo'])}, but package {d['package']} states "
@@ -281,10 +281,10 @@ def main() -> int:
             segs = segments(t)
             item = items.get(segs[-1])
             if item is None:
-                add("RESOLVE", d["file"], d["line"], f"target '{t}' is not an item of the external set")
+                add("RESOLVE", d["file"], d["line"], f"target {t} is not an item of the external set")
                 continue
             if len(segs) > 1 and segs[-2] not in (item["package"], item["parent"], item["parentName"]):
-                add("RESOLVE", d["file"], d["line"], f"target '{t}' is in {item['parent'] or item['package']}, not {segs[-2]}")
+                add("RESOLVE", d["file"], d["line"], f"target {t} is in {item['parent'] or item['package']}, not {segs[-2]}")
             for r in sources:
                 answers[item["id"]].append({"kind": d["kind"], "requirement": r["id"], "status": r["status"],
                                             "appliesTo": r["appliesTo"], "realizedBy": r.get("realizedBy", []),
