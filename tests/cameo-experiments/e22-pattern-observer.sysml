@@ -8,6 +8,7 @@
 package UML3ProbePatternObserver {
 	private import ScalarValues::*;
 	private import SequenceFunctions::*;
+	private import ControlFunctions::*;
 	private import UML3Core::*;
 
 	/* ---- SPMS Definitions: the pattern, its roles and the role types ---- */

@@ -40,6 +40,13 @@
       "why": "CATIA Magic evaluates '(pkg meta KerML::Package).ownedElement' in the palette customization, but evaluating a requirement's constraint needs an evaluation entry point that has not been found yet; the experiment needs a script that evaluates the constraint through the tool's expression evaluator"
     }
   ],
-  "observations": null,
+  "observations": [
+    {
+      "run": 1,
+      "date": "2026-09-21",
+      "log": "logs/cameo-e22.log",
+      "result": "P1 not met: CATIA Magic rejected e22-pattern-observer.sysml with one semantic error, line 50 \"Name resolution error: couldn't resolve reference to Element 'exists'\". The probe used the arrow invocation ->exists without importing ControlFunctions, which defines it; the official examples import ControlFunctions::* where they use ->forAll. The failed load was cancelled, so e22b could not resolve its import and every hypothesis reported 'not found'. The libraries loaded and validated with 0 failures. This is a defect of the probe, not of the basis: the construct is native. Neither the ANTLR validator nor check_names looked at names inside expressions; check_names now has rule FUNCTION with negative test n25, and calibration on 251 OMG models stays at 0 false positives. The probe now imports ControlFunctions::*."
+    }
+  ],
   "conclusion": null
 }

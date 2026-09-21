@@ -43,7 +43,7 @@ JAR = Path(os.environ.get("SYSML_VALIDATOR_JAR",
                           ROOT.parent / "sysml-validator" / "validator-cli" / "target" / "sysml-validator.jar"))
 CHECKER = ROOT / "tools" / "check_names.py"
 LOGS = ROOT / "logs"
-EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|LINT|APPLICABILITY)")
+EXPECT_RE = re.compile(r"EXPECT:\s*(SYNTAX|IMPORT|TYPE|KEYWORD|QUALIFIED|FUNCTION|LINT|APPLICABILITY)")
 
 
 def run(cmd: list[str], timeout: int = 600) -> subprocess.CompletedProcess:

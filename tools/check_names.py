@@ -10,6 +10,8 @@ standard library plus project files and verifies, per file:
   KEYWORD     prefix / body metadata                     (#kw   @Meta)
   QUALIFIED   A::B::C in value expressions (e.g. Enum::literal), reported only when the
               missing member belongs to a package or enum def (complete member lists)
+  FUNCTION    functions invoked with the arrow notation (x->exists {...}) are visible, i.e. their
+              library package (ControlFunctions, SequenceFunctions, ...) is imported
   LINT        constraints the ANTLR validator accepts but CATIA Magic / Pilot reject:
               member prefix order (visibility, direction, derived, abstract, constant,
               ref/end, #keywords) and integer literals beyond 32-bit int
@@ -727,6 +729,14 @@ def check_file(fm: FileModel, idx: Index) -> list[Finding]:
                 resolve_qualified(qn, t.line, "QUALIFIED", closed_only=True)
             i = nxt
             continue
+        # A function invoked with the arrow notation ('x->exists {...}') must be visible. CATIA Magic reports
+        # "couldn't resolve reference to Element 'exists'" when ControlFunctions is not imported, and neither the
+        # ANTLR validator nor the rest of this checker looks at names inside expressions (E22).
+        if (t.text == "-" and i + 2 < len(toks) and toks[i + 1].text == ">" and toks[i + 2].kind == "ident"
+                and toks[i + 2].text not in visible):
+            findings.append(Finding("FUNCTION", toks[i + 2].line,
+                                    f"function '{toks[i + 2].text}' is not visible; import the library package "
+                                    "that defines it, for example ControlFunctions::* for exists, forAll, select"))
         i += 1
 
     # A reserved word cannot be a declared name: 'enum first { ... }' is rejected by CATIA Magic and by the
