@@ -1,0 +1,80 @@
+// OnlineStore.uml3 - a sample written in the UML3 notation, the language that extends and subsets KerML
+// (UML3-IMPL-002). It is a SKETCH for discussion: UML3 has no grammar yet (DESIGN issue I-39) and no tool reads
+// this file. OnlineStore.sysml beside it is the same model in SysUML, which the checkers and CATIA Magic do read,
+// and README.md maps the two constructs by construct through the domain metamodel.
+//
+// What the sketch tries to show:
+// - UML words are the keywords (class, datatype, enumeration, interface, exception, association, composition),
+//   so a UML user writes UML terms instead of the SysML v2 constructs underneath.
+// - Modifiers that SysUML writes as keywords (#id, #unique, #static, #query) are written in front of the feature.
+// - Relationships have a keyword form and a shortcut form, as the request for proposals asks for.
+// - Everything here has exactly one counterpart in SysUML, which is what the round trip needs (UML3-IMPL-005).
+
+package OnlineStore {
+
+    import UML3::*;                                  // the UML3 standard library, derived from the KerML one
+
+    datatype Money {
+        attribute amount : Decimal { precision 19; scale 4; }
+        attribute currency : CurrencyCode;
+    }
+
+    enumeration OrderStatus { created; paid; shipped; cancelled; }
+
+    exception OrderAlreadyShipped {
+        attribute orderNumber : String;
+    }
+
+    class Customer {
+        id attribute customerId : Uuid;              // the identifying attribute
+        unique attribute email : EmailAddress;
+        attribute name : String;
+        operation changeEmail(in newEmail : EmailAddress);
+    }
+
+    class Order {
+        id attribute orderNumber : String;
+        attribute status : OrderStatus = OrderStatus::created;
+        attribute total : Money;
+        query operation isPaid() : Boolean;          // a query does not change the state
+        operation cancel(in reason : String [0..1]) : Boolean raises OrderAlreadyShipped;
+    }
+
+    class OrderLine {
+        attribute quantity : Int32;
+        attribute price : Money;
+    }
+
+    interface PaymentService {
+        operation authorize(in forOrder : Order, in amount : Money) : Boolean;
+        operation refund(in amount : Money);
+    }
+
+    class CardPayment realizes PaymentService {
+        attribute provider : String;
+        operation authorize(in forOrder : Order, in amount : Money) : Boolean;
+        operation refund(in amount : Money);
+    }
+
+    class PreferredCustomer extends Customer {       // generalization; the symbol form is ':> Customer'
+        attribute discountPercent : Int32;
+    }
+
+    // Relationships in keyword form: the ends say who takes part, with multiplicity and navigability.
+    association Places {
+        navigable end customer : Customer [1];
+        navigable end order : Order [0..*];
+    }
+
+    composition Contains {
+        end order : Order [1];
+        end line : OrderLine [1..*];
+    }
+
+    // The same two relationships in shortcut form, which a grammar would accept instead:
+    //   Customer [1] -- [0..*] Order as Places;
+    //   Order [1] *-- [1..*] OrderLine as Contains;
+    //   CardPayment ..> Order uses;
+
+    dependency CardPayment ..> Order uses;
+}

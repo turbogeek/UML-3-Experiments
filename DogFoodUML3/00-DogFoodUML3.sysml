@@ -15,6 +15,9 @@ package DogFoodUML3 {
 	  contracts between them, their wiring, and the workstation they run on.
 	- DogFoodTraceability (03-Traceability.sysml): the requirements that the elements of the effort satisfy or are
 	  allocated to.
+	- DomainMetamodel (DomainMetamodel/): the data architecture, a model of the underlying and the surface data of
+	  UML-level software modeling that neither implementation dictates, with the SysUML element that realizes each
+	  concept (UML3-IMPL-012).
 	References: requirements/01-Core.sysml; requirements/22-Implementations.sysml; docs/DESIGN.md.
 	*/
 }

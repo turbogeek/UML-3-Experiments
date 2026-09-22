@@ -13,7 +13,9 @@ Suites (each result is recorded in logs/test-report.json):
   keywords            tools/check_keywords.py: docs/UML3-Keywords.md matches the libraries (keyword, terse id, base)
   refinements         tools/check_refinements.py fixtures (answers to an external requirement set): expected
                       finding codes and exit codes, and the answers of the clean case
-  dogfood             DogFoodUML3/: the effort modeled in SysUML; syntax, names, design rules and documentation
+  dogfood             DogFoodUML3/: the effort modeled in SysUML, with its domain metamodel; syntax, names,
+                      design rules and documentation
+  samples             samples/: the SysUML file of each sample pair (syntax, names, design rules, docs)
   idl-corpus          tools/idl_corpus_check.py: IDL core vs third-party corpora (external/idl submodules)
   catia-customization customization/catia-magic: syntax, names, documentation and rules of the tool customization,
                       and tools/check_diagram_kinds.py (model vs view filters vs palettes, with fixtures)
@@ -313,7 +315,7 @@ def main() -> int:
 
     # 4b4. DogFoodUML3, the effort modeled in SysUML (UML3-CORE-014): ANTLR syntax, names against the libraries
     #      and the requirements it traces to, the design rules and the documentation rules
-    dog_files = sorted((ROOT / "DogFoodUML3").glob("*.sysml"))
+    dog_files = sorted((ROOT / "DogFoodUML3").rglob("*.sysml"))
     dog_syn_ok, dog_syn_errs = syntax_check(dog_files) if dog_files else (False, ["no DogFoodUML3/*.sysml"])
     dog_rc, dog_names = name_check(dog_files, library + req_files + dog_files, LOGS / "names-dogfood.json") \
         if dog_files else (1, {"files": []})
@@ -328,6 +330,23 @@ def main() -> int:
         "nameFindings": [x | {"file": fr["file"]} for fr in dog_names["files"] for x in fr["findings"]],
         "rules": next((l for l in dr.stdout.splitlines() if l.startswith("SUMMARY")), dr.stderr.strip()[-300:]),
         "docs": next((l for l in dd.stdout.splitlines() if l.startswith("SUMMARY")), dd.stderr.strip()[-300:])}
+
+    # 4b5. samples/: models that show a capability to readers (samples/uml3 shows one model in both
+    #      implementations). The SysUML file of each pair is checked like an example; the .uml3 sketch is not
+    #      parsed by any tool yet (issue I-39)
+    sample_files = sorted((ROOT / "samples").rglob("*.sysml"))
+    smp_syn_ok, smp_syn_errs = syntax_check(sample_files) if sample_files else (False, ["no samples/**/*.sysml"])
+    smp_rc, smp_names = name_check(sample_files, library, LOGS / "names-samples.json") if sample_files else (1, {"files": []})
+    sr = run([sys.executable, str(ROOT / "tools" / "check_rules.py"), "--stdlib", str(STDLIB), "--index",
+              str(ROOT / "library"), "--check", str(ROOT / "samples"), "--report", str(LOGS / "rules-samples.json")])
+    sd = run([sys.executable, str(ROOT / "tools" / "check_docs.py"), "--profile", "example", "--report",
+              str(LOGS / "docs-samples.json"), str(ROOT / "samples")])
+    report["suites"]["samples"] = {
+        "passed": smp_syn_ok and smp_rc == 0 and sr.returncode == 0 and sd.returncode == 0,
+        "files": len(sample_files), "syntaxErrors": smp_syn_errs,
+        "nameFindings": [x | {"file": fr["file"]} for fr in smp_names["files"] for x in fr["findings"]],
+        "rules": next((l for l in sr.stdout.splitlines() if l.startswith("SUMMARY")), sr.stderr.strip()[-300:]),
+        "docs": next((l for l in sd.stdout.splitlines() if l.startswith("SUMMARY")), sd.stderr.strip()[-300:])}
 
     # 4c2. IDL code generation (Java: OMG IDL4-Java 1.0, Rust: docs/IDL-CODEGEN.md): spec naming examples; every
     #      tests/idl/codegen fixture generates, compiles (javac in-process; rustc when on PATH) and contains its

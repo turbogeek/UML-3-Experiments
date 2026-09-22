@@ -7,7 +7,7 @@ docs/UML3-Requirements.md.
   EVIDENCE     done/tbc requirements end their doc with "Verified by:"; each entry resolves:
                'tools/run_tests.py suite <name>' (a suite of run_tests.py), 'Enn' (an experiment), a repository path
   REALIZATION  done requirements are the target of at least one '#realizes dependency from <element> to <id>'
-               whose client resolves (library/ or requirements/)
+               whose client resolves (library/, requirements/ or DogFoodUML3/)
   USECASE      every use case def has a doc, a subject, an actor and an objective, and '#traces' at least one
                existing requirement
   COVERAGE     (warning) requirements that no use case traces
@@ -140,7 +140,9 @@ def analyze(stdlib: str) -> tuple[dict, dict, dict, list]:
         raise ToolError("no requirements/*.sysml")
 
     idx = cn.Index()
-    for f in cn.collect([stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library"), str(REQ_DIR)], (".sysml",)):
+    # DogFoodUML3 is indexed too: a requirement may be realized by an element of the model of this effort
+    sources = [str(ROOT / "library"), str(REQ_DIR), str(ROOT / "DogFoodUML3")]
+    for f in cn.collect([stdlib], (".sysml", ".kerml")) + cn.collect(sources, (".sysml",)):
         idx.add(cn.index_file(f))
     idx.finalize()
     run_tests = (ROOT / "tools" / "run_tests.py").read_text(encoding="utf-8")

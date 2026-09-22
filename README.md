@@ -121,6 +121,7 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 | `library/` | The eight SysUML libraries (packages `UML3*`) |
 | `requirements/` | SysUML and UML3 requirements (22 area files), actors and use cases, in SysML v2 |
 | `DogFoodUML3/` | The effort itself modeled in SysUML: the two implementations, the verification toolchain and what they satisfy (UML3-CORE-014) |
+| `DogFoodUML3/DomainMetamodel/` | The data architecture: the concepts of the underlying data (classifiers, features, relationships) and of the surface data (keyword forms, diagram kinds, presentations), and the SysUML element that realizes each of them (UML3-IMPL-012) |
 | `examples/` | Online-store models using every keyword |
 | `tests/negative/` | Models that must fail locally (`EXPECT:` header) |
 | `tests/cameo/` | Cameo hypotheses: implied specializations, label expectations |

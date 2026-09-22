@@ -338,6 +338,30 @@ what vendors implement, as an extension of it; whether UML 2.5.1 symbols are ret
 The requirements say which implementation they bind (`@AppliesTo`, area IMPL), and the library packages keep their
 `UML3*` names for now. The effort itself is modeled in SysUML in `DogFoodUML3/` (UML3-CORE-014).
 
+## The domain metamodel: the data architecture in SysUML (2026-09-22)
+
+The concepts that SysUML and UML3 share are modeled in `DogFoodUML3/DomainMetamodel/` (UML3-IMPL-012), in SysUML
+itself. It has three layers: the **foundation** (identity, names, documentation, namespaces, relationships), the
+**structure** of a class model (classifiers, features, operations, associations, generalizations, dependencies,
+constraints) and the **surface** (keyword forms, diagram kinds, palette entries, and the presentations of particular
+elements: text, shapes, labels, compartments). The surface is kept apart from the underlying data the way the OMG
+keeps a model apart from its diagram interchange: a presentation refers to the element it shows and adds no meaning,
+so dropping every presentation leaves the model complete.
+
+**Why SysML v2 and not UML.** The metamodel is the "one set of concepts" that UML3-IMPL-001 and UML3-IMPL-003 speak
+of, so each implementation can map its constructs to it and the mapping can be checked; a class model of this kind is
+what SysUML claims to handle, so writing it in SysUML exercises the language on a real system (UML3-CORE-014); the
+OMG publishes the KerML and SysML v2 abstract syntax the same way, as reflective models in the textual notation
+(`KerML.kerml`, `SysML.sysml`); and the text is diffable and checked by the whole local suite, which a Cameo project
+file would not be. A submission to the OMG would still need a normative MOF metamodel, which is a separate artifact
+that can be generated from this one.
+
+**What it already shows.** The SysUML realization map (`04-SysUMLRealization.sysml`) states the element behind every
+concept, and the gaps it makes visible are real: an association class is the same element as an association
+(UML3-STR-008 is open), a parameter is an ordinary directed usage, and the presentation concepts have no standard
+realization at all, which is why a diagram is the part of a model that the round trip cannot carry (UML3-IMPL-005,
+UML3-IMPL-010).
+
 ## Patterns and requirement evaluation (E22)
 
 [PATTERNS.md](PATTERNS.md) maps the OMG Structured Patterns Metamodel Standard onto UML3. E22 tested the mapping in

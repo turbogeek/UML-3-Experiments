@@ -10,6 +10,7 @@ package UML3ImplementationRequirements {
 
 	Contents:
 	- The two implementations: twoImplementations, uml3Language, uml3Behaviors.
+	- The concepts they share: domainMetamodel.
 	- Compatibility: conceptAlignment, keywordCorrespondence, losslessRoundTrip, notationOnlyConstructs.
 	- Verification and order of work: roundTripRegression, capabilityRegressionCorpus, pilotImplementation.
 	- Graphics: graphicalNotation.
@@ -169,6 +170,23 @@ package UML3ImplementationRequirements {
 		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
 	}
 
+	requirement <'UML3-IMPL-012'> domainMetamodel {
+		doc
+		/*
+		UML-level software modeling shall have one domain metamodel: a model of the concepts of its underlying data
+		(the elements, their features and the relationships between them) and of its surface data (the keyword forms,
+		diagram kinds, palette entries and presentations that show the underlying data), stated without the constructs
+		of either implementation. Each implementation shall state, for every concept, the element that realizes it, and
+		a concept without a realization shall be reported.
+		Verified by: tools/run_tests.py suite dogfood; DogFoodUML3/DomainMetamodel/00-DomainMetamodel.sysml.
+		*/
+		@Rationale { text = "The two implementations are said to realize one set of concepts, but that set was only implied by the libraries of SysUML, so nothing could be checked against it and UML3 would have to be aligned by reading SysUML's code. A metamodel of the data makes the concepts and their realizations explicit, which is what the alignment of UML3-IMPL-003 and the round trip of UML3-IMPL-005 are defined against."; }
+		@StatusInfo { status = StatusKind::tbc; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::inspect; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
 	requirement <'UML3-IMPL-011'> uml3Behaviors {
 		doc
 		/*
@@ -255,9 +273,9 @@ package UML3ImplementationRequirements {
 		#traces dependency from ModelSoftwareInSysMLv2 to 'UML3-IMPL-001', UML3CoreRequirements::'UML3-CORE-001',
 			UML3SysMLInteropRequirements::'UML3-SYS-001';
 		#traces dependency from MoveModelsBetweenImplementations to 'UML3-IMPL-003', 'UML3-IMPL-004', 'UML3-IMPL-005',
-			'UML3-IMPL-006', 'UML3-IMPL-007';
+			'UML3-IMPL-006', 'UML3-IMPL-007', 'UML3-IMPL-012';
 		#traces dependency from DefineUML3Language to 'UML3-IMPL-002', 'UML3-IMPL-003', 'UML3-IMPL-008',
-			'UML3-IMPL-009', 'UML3-IMPL-011';
+			'UML3-IMPL-009', 'UML3-IMPL-011', 'UML3-IMPL-012';
 		#traces dependency from PresentUMLInSysMLv2Tools to 'UML3-IMPL-010';
 	}
 }
