@@ -20,14 +20,16 @@ Suites (each result is recorded in logs/test-report.json):
   cameo-patterns      (--cameo) the E22 pattern probes: load, validate, implied relationships, and the verdicts of
                       CATIA Magic's evaluation engine for the pattern requirements (model-level ones included)
   cameo (--cameo)     tools/cameo_check.py: load library + examples into CATIA Magic through
-                      the SysMLv2 test harness REST API, undo the loads, stop the harness.
+                      the SysMLv2 test harness REST API, undo the loads and reset the harness,
+                      which keeps running (--shutdown-harness stops it). The harness updates
+                      itself from sysml-validator/utilityScripts when those files change.
                       This is the authoritative semantic check.
 
 Paths default to sibling checkouts and can be overridden with environment variables:
   SYSML_RELEASE   (default ../SysML-v2-Release)
   SYSML_VALIDATOR_JAR (default ../sysml-validator/validator-cli/target/sysml-validator.jar)
 
-Usage: python tools/run_tests.py [--skip-calibration] [--cameo [--keep-harness]]
+Usage: python tools/run_tests.py [--skip-calibration] [--cameo [--shutdown-harness]]
 Exit code: 0 all suites pass, 1 any failure, 2 environment problem.
 """
 from __future__ import annotations
@@ -77,7 +79,9 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--skip-calibration", action="store_true")
     ap.add_argument("--cameo", action="store_true", help="also run the CATIA Magic harness check")
-    ap.add_argument("--keep-harness", action="store_true", help="with --cameo: do not shut the harness down")
+    ap.add_argument("--shutdown-harness", action="store_true",
+                    help="with --cameo: stop the harness afterwards; by default it keeps running and is reset")
+    ap.add_argument("--keep-harness", action="store_true", help=argparse.SUPPRESS)   # the default since harness 2.0
     args = ap.parse_args()
 
     LOGS.mkdir(exist_ok=True)
@@ -475,10 +479,10 @@ def main() -> int:
             "errors": pat_errors or ([r.stderr.strip()[-300:]] if r.returncode else []),
             "evaluations": pat.get("evaluations"), "inspectAfterUndo": pat.get("inspectAfterUndo")}
 
-        # 5b. full load of library + examples, implied-specialization hypotheses, undo, shutdown
+        # 5b. full load of library + examples, implied-specialization hypotheses, undo, reset
         cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views",
                "--idl", "--svg", "--palettes"]
-        if not args.keep_harness:
+        if args.shutdown_harness:
             cmd.append("--shutdown")
         r = run(cmd)
         cameo_report = ROOT / "logs" / "cameo" / "cameo-report.json"

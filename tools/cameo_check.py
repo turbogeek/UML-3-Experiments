@@ -1,21 +1,33 @@
 """
 Authoritative semantic check through the CATIA Magic / Cameo SysML v2 test harness.
 
-The harness (sysml-validator/utilityScripts/start-v2language-test-harness.groovy) exposes
-  GET  /status
-  POST /load-sysml  {"filePath": ...}   parse + link + validate; on SUCCESS the model is
-                                        COPIED INTO THE OPEN PROJECT (errors cancel the session)
-  POST /run-script  {"scriptName": ...} run a Groovy script from the harness scripts dir
-  POST /shutdown
+The harness (sysml-validator/utilityScripts/, version 2) exposes
+  GET  /ping        version of the harness
+  GET  /status      port, uptime, open project, recent runs, last error
+  POST /load-sysml  {"filePath": ..., "persist": true}
+                    parse + link + validate; with persist (the default) the model is COPIED INTO
+                    THE OPEN PROJECT, with "persist": false nothing is changed and only the
+                    diagnostics come back (errors always cancel the session)
+  POST /run-script  {"scriptName": ...} or {"scriptText": ...} with optional "args";
+                    each run gets a class loader of its own that is closed afterwards
+  POST /reset       close windows scripts opened, cancel a left-open session, drop script classes
+  POST /reload      re-read the harness implementation (no restart in MagicDraw)
+  GET  /shutdown    stop the server
+
+The harness stays running between runs: this tool resets it instead of stopping it, and it keeps
+the harness up to date by itself. When the harness files in the validator repository differ from
+the ones the harness runs, they are copied over and the implementation is reloaded; a changed
+bootstrap is relaunched through the harness, which takes the port back on its own.
 
 Because later files resolve names against what earlier loads persisted, files are loaded in
 dependency order and the run stops at the first failure (later errors would be cascades).
 
 Usage:
-  python tools/cameo_check.py [--port 8770] [--undo] [--shutdown] [files...]
+  python tools/cameo_check.py [--port 8770] [--undo] [--shutdown] [--no-reset] [files...]
     default files: library (Core, Types, Components, Messaging, Data) then examples/*.sysml
     --undo      afterwards run undoUML3Loads.groovy to remove only the packages loaded here
-    --shutdown  afterwards stop the harness (frees cached script classes)
+    --no-reset  do not reset the harness afterwards (keep windows and script classes)
+    --shutdown  afterwards stop the harness (only needed to free the port)
 Writes logs/cameo/cameo-report.json and one response file per load.
 Exit code: 0 all loaded, 1 a load failed, 2 harness unavailable / tool error.
 """
@@ -29,6 +41,7 @@ import re
 import shutil
 import subprocess
 import sys
+import time
 import urllib.error
 import urllib.request
 from pathlib import Path
@@ -52,6 +65,46 @@ PALETTE_EXPECTED = ROOT / "tests" / "cameo" / "palette-expectations.json"
 HYPOTHESES = ROOT / "tests" / "cameo" / "implied-specializations.json"
 # SCRIPTS_DIR hard-coded in start-v2language-test-harness.groovy
 HARNESS_SCRIPTS = Path(os.environ.get("USERPROFILE", str(Path.home()))) / "Documents" / "GitHub" / "sysmlv2-validator" / "utilityScripts"
+
+
+# the validator repository is the source of truth for the harness itself
+HARNESS_SOURCE = Path(os.environ.get("SYSML_VALIDATOR_REPO", str(ROOT.parent / "sysml-validator"))) / "utilityScripts"
+HARNESS_BOOTSTRAP = "start-v2language-test-harness.groovy"
+HARNESS_IMPL = "v2language-harness-impl.groovy"
+
+
+def sync_harness(port: int) -> dict:
+    """Copies the harness files when they differ from what the harness runs and puts them in use without a manual
+    restart: a changed implementation is reloaded, a changed bootstrap is relaunched through the harness itself,
+    which stops the old server and takes the port back."""
+    info: dict = {"copied": [], "reloaded": False, "relaunched": False}
+    if not HARNESS_SOURCE.is_dir():
+        return info
+    impl_changed = bootstrap_changed = False
+    for name in (HARNESS_BOOTSTRAP, HARNESS_IMPL):
+        src, dst = HARNESS_SOURCE / name, HARNESS_SCRIPTS / name
+        if src.is_file() and (not dst.exists() or src.read_bytes() != dst.read_bytes()):
+            shutil.copy2(src, dst)
+            info["copied"].append(name)
+            impl_changed = impl_changed or name == HARNESS_IMPL
+            bootstrap_changed = bootstrap_changed or name == HARNESS_BOOTSTRAP
+    if bootstrap_changed:
+        try:   # the old server dies while answering, so the reply is usually lost
+            call(port, "/run-script", {"scriptName": HARNESS_BOOTSTRAP}, timeout=30)
+        except Exception:
+            pass
+        for _ in range(20):
+            time.sleep(1)
+            try:
+                if call(port, "/ping")[1].get("success"):
+                    info["relaunched"] = True
+                    break
+            except Exception:
+                continue
+    elif impl_changed:
+        info["reload"] = call(port, "/reload", {})[1]
+        info["reloaded"] = bool(info["reload"].get("success"))
+    return info
 
 
 def sync_scripts(hypotheses: Path = HYPOTHESES) -> None:
@@ -117,6 +170,7 @@ def main() -> int:
     ap.add_argument("--port", type=int, default=8770)
     ap.add_argument("--undo", action="store_true")
     ap.add_argument("--shutdown", action="store_true")
+    ap.add_argument("--no-reset", action="store_true")
     ap.add_argument("--probes", nargs="*", default=[],
                     help="negative/exploratory probe files (EXPECT-CAMEO header), loaded after the library")
     ap.add_argument("--library-only", action="store_true", help="load only library/ (no examples)")
@@ -142,6 +196,11 @@ def main() -> int:
     args = ap.parse_args()
     LOGS.mkdir(parents=True, exist_ok=True)
 
+    harness_sync = sync_harness(args.port)
+    if harness_sync["copied"]:
+        print("HARNESS UPDATED: " + ", ".join(harness_sync["copied"]) +
+              (" (relaunched)" if harness_sync["relaunched"] else " (reloaded)" if harness_sync["reloaded"] else
+               " (NOT in use: reload failed)"))
     try:
         status, st = call(args.port, "/status", timeout=10)
     except Exception as exc:
@@ -151,6 +210,9 @@ def main() -> int:
     if status != 200:
         print(f"HARNESS UNAVAILABLE: /status returned {status} {st}", file=sys.stderr)
         return 2
+    if str(st.get("version", "1")) < "2":
+        print("HARNESS IS VERSION 1: restart it in MagicDraw once to pick up version 2 "
+              "(utilityScripts/start-v2language-test-harness.groovy); it then updates itself", file=sys.stderr)
 
     if args.files:
         files = [Path(f).resolve() for f in args.files]
@@ -169,6 +231,7 @@ def main() -> int:
 
     sync_scripts(Path(args.hypotheses).resolve() if args.hypotheses else HYPOTHESES)
     report: dict = {"started": dt.datetime.now().isoformat(timespec="seconds"), "port": args.port, "loads": []}
+    report["harness"] = dict(harness_sync, version=st.get("version", "1"))
     _, before = call(args.port, "/run-script", {"scriptName": INSPECT_SCRIPT})
     report["inspectBefore"] = before.get("result", before)
     if "matches=0" not in str(report["inspectBefore"]):
@@ -505,8 +568,10 @@ def main() -> int:
         print("AFTER UNDO: " + str(report["inspectAfterUndo"]).strip().replace("\n", " | "))
 
     if args.shutdown:
-        _, sd = call(args.port, "/shutdown", {})
-        report["shutdown"] = sd
+        report["shutdown"] = call(args.port, "/shutdown", {})[1]
+    elif not args.no_reset:
+        # the harness stays running for the next check; this only drops what this run left behind
+        report["reset"] = call(args.port, "/reset", {})[1]
 
     report["finished"] = dt.datetime.now().isoformat(timespec="seconds")
     report["passed"] = not failed

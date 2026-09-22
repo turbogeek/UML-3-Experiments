@@ -101,7 +101,7 @@ python tools/run_tests.py --cameo    # plus CATIA Magic (SysMLv2 test harness mu
 | IDL code generation | `tools/idl/idl2code.groovy`, suite `idl-codegen` | 34/34 OMG IDL4-Java naming examples (2 spec inconsistencies documented), 53/53 spec Java declarations, Java compiled with javac, Rust with rustc 1.98.1 |
 | Keyword semantics (implied specialization) | CATIA Magic API | 44/44 against the recorded baseline, including a terse-id element (1 case is a known Cameo deviation, see Known issues) |
 
-Every Cameo run loads files in dependency order and undoes only its own harness-load commands. It stops and fails if any other command is on the undo stack, and cleanup is confirmed by an inspection with a positive control. The harness is then shut down. Experiments record their predictions in git before they run (`tests/cameo*/`).
+Every Cameo run loads files in dependency order and undoes only its own harness-load commands. It stops and fails if any other command is on the undo stack, and cleanup is confirmed by an inspection with a positive control. The harness is then reset and keeps running, and it updates itself: when the harness files in `sysml-validator/utilityScripts/` change, `cameo_check.py` copies them over and reloads the implementation, or relaunches the bootstrap through the harness itself, so a harness change needs no restart in MagicDraw. Experiments record their predictions in git before they run (`tests/cameo*/`).
 
 ## Known issues and open work
 
@@ -147,4 +147,4 @@ Every Cameo run loads files in dependency order and undoes only its own harness-
 * Sibling checkouts of `SysML-v2-Release` and `sysml-validator` (with `validator-cli/target/sysml-validator.jar` built). Override their locations with `SYSML_RELEASE` and `SYSML_VALIDATOR_JAR`.
 * Python 3, a JDK 17+ (the Java generator test compiles in-process), and Groovy for the local tools.
 * The IDL corpora: `git submodule update --init --depth 1`. Optional: a Rust toolchain (`winget install Rustlang.Rustup`) so the tests also compile the generated Rust; without it Rust is only generated and checked against expected lines.
-* For `--cameo`: CATIA Magic / MSoSA 2026x with the SysML v2 plugin and `start-v2language-test-harness.groovy` running (REST on port 8770).
+* For `--cameo`: CATIA Magic / MSoSA 2026x with the SysML v2 plugin and `start-v2language-test-harness.groovy` running (REST on port 8770). Start it once from MagicDraw; it stays up across runs (`--shutdown-harness` stops it). Each script runs in a class loader of its own that is closed afterwards, `POST /reset` drops windows and script classes between tests, and `POST /reload` puts a changed harness implementation in use.
