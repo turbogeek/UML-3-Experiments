@@ -195,6 +195,10 @@ def main() -> int:
     ap.add_argument("--sample-svg", action="store_true",
                     help="load samples/uml3 and draw its views as diagrams, exporting SVG and PNG, then check them "
                          "against tests/cameo/sample-svg-expectations.json (E23)")
+    ap.add_argument("--close-project", action="store_true",
+                    help="afterwards close the project this run created (never one that was already open). Each "
+                         "created project is a permanent entry in CATIA Magic's local repository, so a test run "
+                         "should create one and pass this on its LAST step only, not on every step")
     ap.add_argument("--open", action="store_true",
                     help="make sure a project is open: create an empty one from this installation's SysML v2 "
                          "template when there is none, so a run needs nobody to open a project by hand. An already "
@@ -255,15 +259,19 @@ def main() -> int:
     # A run must not depend on somebody having opened a project. With --open, an empty SysML v2 project is made
     # from this installation's own template when none is open; an open project is used unchanged (E23 P1).
     if args.open:
+        # Reuses whatever project is already open and creates one only when there is none, because each created
+        # project is a new entry in CATIA Magic's local repository that closing the window does not remove (19
+        # entries and 862 MB in a day). A whole test run should therefore make ONE project, not one per step:
+        # only the last step passes --close-project.
         (HARNESS_SCRIPTS / "uml3-open-request.txt").write_text(
-            "mode=create\ntemplate=auto\ntimeoutSeconds=240\n", encoding="utf-8")
+            "mode=create\ntemplate=auto\ntimeoutSeconds=300\n", encoding="utf-8")
         _, opened = call(args.port, "/run-script", {"scriptName": OPEN_SCRIPT}, timeout=330)
         text = opened.get("result") or opened.get("error") or ""
         line = next((ln for ln in text.splitlines() if ln.startswith("OPEN|")), "")
         report["project"] = {"passed": "RESULT|OK" in text, "report": text.strip()}
         # only a project this run made is ours to close afterwards; one that was already open belongs to whoever
         # opened it and is left alone
-        if line.endswith("|created"):
+        if line.rsplit("|", 1)[-1] in ("created", "created-and-saved", "opened"):
             created_project = line.split("|")[1]
         print(f"{'PASS' if 'RESULT|OK' in text else 'FAIL'}  project  {line}")
         if "RESULT|OK" not in text:
@@ -640,7 +648,7 @@ def main() -> int:
     # Give back the project this run made. Each one holds a whole SysML v2 template, and eight left open took
     # CATIA Magic from 3 GB to 11.5 GB; open projects also keep their documents registered with the window
     # manager, which is what rots over a long session (I-45). Nothing is saved and nothing else is touched.
-    if created_project:
+    if created_project and args.close_project:
         (HARNESS_SCRIPTS / "uml3-open-request.txt").write_text(
             f"mode=close\ntimeoutSeconds=120\ncloseProject={created_project}\n", encoding="utf-8")
         _, closed = call(args.port, "/run-script", {"scriptName": OPEN_SCRIPT}, timeout=300)

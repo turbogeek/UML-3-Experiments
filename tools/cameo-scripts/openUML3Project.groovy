@@ -18,6 +18,12 @@
 // It never saves and never closes a project, and an already open project is left alone whatever the request
 // says: a run must not discard someone's unsaved work.
 //
+// REUSE ONE PROJECT PER SESSION, DO NOT MAKE ONE PER RUN. createProjectFromTemplate makes an ESI project in
+// CATIA Magic's local repository, and that entry stays after the window is closed: 19 of them and 862 MB piled
+// up in a single day. Saving such a project to a local file instead is not possible - msosa.log answers "Save
+// service not found in project", because it is a repository project and not a file one. So mode=create returns
+// an already open project untouched, and only the last step of a whole test run closes it.
+//
 // Why the bounded wait: project work runs on the event dispatch thread, and a modal dialog there (a failed
 // load, a question) blocks it until someone clicks. The harness runs one script at a time, so an unbounded
 // wait would block every later run, including the ones that could say what is on screen. This script therefore
@@ -114,32 +120,6 @@ if (project != null && !(force && mode == "create")) {
 if (mode == "report") {
     out.append("OPEN|none|-|dirty=-|none\n")
     return out.append("RESULT|FAIL|no project open and mode=report\n").toString()
-}
-
-// template=auto: ask the installation where it is, so no repository file has to name a path on this machine.
-// MagicDraw runs with its install directory as the working directory, which is the reliable fallback.
-if (mode == "create" && template == "auto") {
-    def roots = []
-    ["getInstallRoot", "getHomePath", "getApplicationHome"].each { String m ->
-        try {
-            Class env = Class.forName("com.nomagic.magicdraw.core.ApplicationEnvironment", true,
-                app.getClass().getClassLoader())
-            if (env.metaClass.respondsTo(env, m)) roots << [m, env."$m"()?.toString()]
-        } catch (Throwable t) { }
-    }
-    roots << ["user.dir", System.getProperty("user.dir")]
-    def hit = null
-    for (r in roots) {
-        if (r[1] == null || ((String) r[1]).isEmpty()) continue
-        def candidate = new File(new File((String) r[1], "templates"), "SysML v2/SysML v2.mdszip")
-        if (candidate.exists()) { hit = [r[0], candidate]; break }
-    }
-    if (hit == null) {
-        out.append("TEMPLATE|not found|" + clean(roots.collect { it[1] }.findAll { it }.join(", ")) + "\n")
-        return out.append("RESULT|FAIL|no templates/SysML v2/SysML v2.mdszip under this installation\n").toString()
-    }
-    out.append("TEMPLATE|" + hit[0] + "|" + clean(hit[1]) + "\n")
-    template = ((File) hit[1]).getAbsolutePath()
 }
 
 def source = mode == "create" ? template : path

@@ -544,8 +544,13 @@ def main() -> int:
         #     to draw itself, so every shape is there because a UML3 keyword put it there; the run creates its
         #     own empty SysML v2 project, exports SVG and PNG, and checks modes, layout, shapes, labels and that
         #     the images really rasterised
+        # The last CATIA Magic step, so it is the one allowed to give the project back. In a full run it will not
+        # have to: the first step creates the project and the other three report it already-open, so the run
+        # shares one and leaves it for the next run to reuse. --close-project only fires when THIS step created
+        # the project, which is what happens when it is run on its own. Every created project is a permanent
+        # entry in CATIA Magic's local repository, so creating one per step is what must not happen.
         r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--open", "--library-only", "--sample-svg",
-                 "--undo"])
+                 "--undo", "--close-project"])
         sample = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
         (ROOT / "logs" / "cameo" / "cameo-sample-report.json").write_text(json.dumps(sample, indent=2),
                                                                          encoding="utf-8")
