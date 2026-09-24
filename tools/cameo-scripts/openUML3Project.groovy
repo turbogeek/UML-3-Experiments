@@ -24,7 +24,9 @@
 // posts its work with invokeLater and waits with a timeout; on timeout it returns BLOCKED and the harness stays
 // usable - run probeOpenWindows.groovy next to see the dialog.
 //   Observed 2026-09-24: loadProject on a .mdszip (a Teamwork Cloud export, not a local project) showed a modal
-//   error dialog and held the EDT for 14 minutes. E:\LocalConfigs\2026xR1\msosa.log named the cause.
+//   error dialog and held the EDT for 14 minutes. CATIA Magic's own msosa.log named the cause within
+//   milliseconds; it is written where the -Dlocalconfig.location of the running process points, which is not
+//   always under the user profile, so read the process command line to find it.
 // Output lines (no System.exit):
 //   OPEN|<name>|<id>|dirty=<true/false>|<source>    source: already-open, created, opened, none
 //   ROOTS|<root namespace count>                    FILE|<path>|exists=<true/false>
