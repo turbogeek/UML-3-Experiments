@@ -4,6 +4,9 @@
 //     mode=create                  create an empty project from template= (nothing is read from disk but the
 //                                  template, nothing is ever saved): the repeatable choice for tests
 //     mode=open                    open the local project file named by project=
+//     mode=close                   close the projects named by closeProject= lines, freeing their memory. Only
+//                                  exact names are closed, never a pattern: a run must not guess which project
+//                                  someone is working in. Nothing is saved, so name only projects you created.
 //     template=auto                 find the stock SysML v2 template in this installation (templates/SysML v2/),
 //                                  so no machine-specific path is written down anywhere
 //     template=<path to a .mdszip/.mdzip project template>
@@ -45,11 +48,13 @@ def reqFile = new File(dir, "uml3-open-request.txt")
 String path = null, template = null, mode = null
 int timeoutSeconds = 180
 boolean force = false
+List<String> closeNames = []
 if (reqFile.exists()) {
     reqFile.readLines("UTF-8").each { l ->
         if (l.startsWith("project=")) path = l.substring(8).trim()
         else if (l.startsWith("template=")) template = l.substring(9).trim()
         else if (l.startsWith("mode=")) mode = l.substring(5).trim()
+        else if (l.startsWith("closeProject=")) closeNames << l.substring(13).trim()
         else if (l.trim() == "force=true") force = true
         else if (l.startsWith("timeoutSeconds=")) timeoutSeconds = l.substring(15).trim() as int
     }
@@ -64,6 +69,39 @@ def describe = { project, String source ->
     try {
         out.append("ROOTS|" + (RootNamespaces.getAllRoots(project)?.size()) + "\n")
     } catch (Throwable t) { out.append("ERROR|roots|" + clean(t) + "\n") }
+}
+
+// mode=close: free the projects a run created. Each project holds a whole SysML v2 template (101 root
+// namespaces), so leaving them open costs real memory, and every open project keeps its documents registered
+// with the window manager, which is what rots over a long session (I-45). Closed one at a time with a bounded
+// wait, because a dirty project may ask whether to save and that question blocks the event thread.
+if (mode == "close") {
+    if (closeNames.isEmpty()) return out.append("RESULT|FAIL|mode=close needs closeProject=<name> lines\n").toString()
+    int closed = 0
+    for (String wanted : closeNames) {
+        def match = (app.getProjectsManager().getProjects() ?: []).find { clean(call0(it, "getName")) == wanted }
+        if (match == null) { out.append("CLOSE|" + wanted + "|not open\n"); continue }
+        out.append("CLOSE|" + wanted + "|dirty=" + clean(call0(match, "isDirty")) + "\n")
+        def problem = new java.util.concurrent.atomic.AtomicReference(null)
+        def finished = new CountDownLatch(1)
+        SwingUtilities.invokeLater({
+            // closeProjectNoSave discards without asking; plain closeProject puts "The project X has been
+            // modified. Save changes?" on screen and waits for a click, which no automated run can answer.
+            // Only ever called on projects the caller named, and these are scratch projects made from the
+            // stock template, so there is nothing to lose.
+            try { app.getProjectsManager().closeProjectNoSave(match) } catch (Throwable t) { problem.set(t) }
+            finally { finished.countDown() }
+        } as Runnable)
+        if (!finished.await(timeoutSeconds, TimeUnit.SECONDS)) {
+            out.append("BLOCKED|close " + wanted + "|" + timeoutSeconds + "\n")
+            return out.append("RESULT|BLOCKED|closing " + wanted + " did not finish; a save question is " +
+                "probably on screen\n").toString()
+        }
+        if (problem.get() != null) out.append("ERROR|close " + wanted + "|" + clean(problem.get()) + "\n")
+        else closed++
+    }
+    out.append("OPEN|" + clean(call0(app.getProject(), "getName")) + "|-|dirty=-|after-close\n")
+    return out.append("RESULT|OK|closed " + closed + " of " + closeNames.size() + "\n").toString()
 }
 
 def project = app.getProject()
