@@ -1,0 +1,148 @@
+{
+ "description": "Expectations for the UML3 sample (samples/uml3) drawn as diagrams in CATIA Magic and exported to SVG and PNG (E23; tools/check_view_svg.py, cameo_check.py --sample-svg). Recorded 2026-09-24 from the first run, whose predictions are in tests/cameo-experiments/e23-predictions.json. The point of these expectations is that the sample says nothing about how to draw it: every shape is there because a UML3 keyword put it there, so a change that breaks the keyword-to-diagram correspondence shows up here. Unlike svg-expectations.json these views name their includes and excludes directly, because the sample has no separate prediction file.",
+ "maxOverlaps": 0,
+ "png": true,
+ "minPng": [
+  200,
+  150
+ ],
+ "views": [
+  {
+   "view": "OnlineStoreSysUMLSampleViews::sampleClassDiagram",
+   "mode": "TREE",
+   "comment": "The 11 elements ClassDiagram selects, one compact box each. The 4 enumeration literals are drawn inside OrderStatus and are not listed: they are not exposed elements. The sample's 2 dependencies are unnamed, so they can be neither included nor excluded by name; E23 P5 records that CATIA Magic draws dependencies as edges.",
+   "includes": [
+    "Money",
+    "OrderStatus",
+    "OrderAlreadyShipped",
+    "Customer",
+    "PreferredCustomer",
+    "Order",
+    "OrderLine",
+    "PaymentService",
+    "CardPayment",
+    "Places",
+    "Contains"
+   ],
+   "excludes": [
+    "customerId",
+    "email",
+    "changeEmail",
+    "discountPercent",
+    "orderNumber",
+    "status",
+    "total",
+    "lines",
+    "cancel",
+    "isPaid",
+    "quantity",
+    "price",
+    "authorize",
+    "refund",
+    "provider",
+    "amount",
+    "currency",
+    "AggregationKind"
+   ],
+   "keywordLabels": {
+    "«#classType def»": 5,
+    "«#interfaceType def»": 1,
+    "«#exceptionType def»": 1,
+    "«#dataType def»": 1,
+    "«enum def»": 1,
+    "«#association def»": 1,
+    "«#composition def»": 1
+   }
+  },
+  {
+   "view": "OnlineStoreSysUMLSampleViews::sampleClassDetails",
+   "mode": "UNDEFINED",
+   "minPng": [
+    300,
+    300
+   ],
+   "comment": "The same 11 elements with their compartments, so the features are asserted too: this is where the model's detail is proved. isPaid is excluded because CATIA Magic draws no calculation compartment, so a '#query calc' is invisible (E23 P11, issue I-41) - it is a defect recorded as an expectation, not a filter doing its job, and this line should be deleted when a calc becomes visible.",
+   "includes": [
+    "Money",
+    "OrderStatus",
+    "OrderAlreadyShipped",
+    "Customer",
+    "PreferredCustomer",
+    "Order",
+    "OrderLine",
+    "PaymentService",
+    "CardPayment",
+    "Places",
+    "Contains",
+    "customerId",
+    "email",
+    "name",
+    "changeEmail",
+    "discountPercent",
+    "orderNumber",
+    "status",
+    "total",
+    "lines",
+    "cancel",
+    "quantity",
+    "price",
+    "authorize",
+    "refund",
+    "provider",
+    "amount",
+    "currency",
+    "customer",
+    "order",
+    "line"
+   ],
+   "excludes": [
+    "isPaid",
+    "AggregationKind"
+   ],
+   "keywordLabels": {
+    "«#classType def»": 5,
+    "«#interfaceType def»": 1,
+    "«#exceptionType def»": 1,
+    "«#dataType def»": 1,
+    "«enum def»": 1,
+    "«#association def»": 1,
+    "«#composition def»": 1
+   }
+  },
+  {
+   "view": "OnlineStoreSysUMLSampleViews::sampleClassTable",
+   "mode": "UNKNOWN",
+   "minPng": [
+    300,
+    200
+   ],
+   "comment": "ClassTable selects classifiers only. The excludes are the whole point of this view: the exception, the association and the composition have their own keywords and must not appear, which is what tells ClassTable apart from ClassDiagram over the same package.",
+   "includes": [
+    "Customer",
+    "PreferredCustomer",
+    "Order",
+    "OrderLine",
+    "CardPayment",
+    "PaymentService",
+    "Money",
+    "OrderStatus"
+   ],
+   "excludes": [
+    "OrderAlreadyShipped",
+    "Places",
+    "Contains",
+    "isPaid",
+    "AggregationKind"
+   ],
+   "keywordLabels": {
+    "«#classType def»": 5,
+    "«#interfaceType def»": 1,
+    "«#dataType def»": 1,
+    "«enum def»": 1,
+    "«#exceptionType def»": 0,
+    "«#association def»": 0,
+    "«#composition def»": 0
+   }
+  }
+ ]
+}

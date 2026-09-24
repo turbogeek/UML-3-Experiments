@@ -6,6 +6,11 @@ Per view:
   EXPORTED   an SVG was written with <text> elements (mode svgTextTags), so names can be read from the file
   MODE       the display mode derived from the view's rendering (TREE, NESTED, UNDEFINED, UNKNOWN) is as expected
   LAYOUT     no two sibling shapes overlap (maxOverlaps, default 0)
+  KEYWORDS   with "keywordLabels": {"<<#classType def>>": 5, ...}, each keyword label is drawn exactly that many
+             times; a count of 0 asserts that a kind of element was filtered out
+  PNG        with "png": true, the exported PNG really is a PNG (signature and IHDR) and is at least minPng
+             ([width, height], default [100, 100]) - the SVG checks read names out of a file and would pass on a
+             diagram that never rasterised
   SHAPES     every expected element is drawn as a shape, except those listed in notDrawn; no excluded element is
   LABELS     every expected element appears in the SVG as a declared-name label, and no excluded element does.
              A declared-name label is a text whose declared name is the element name: 'Customer',
@@ -13,13 +18,15 @@ Per view:
              (types) and words inside documentation sentences do not count.
 Includes and excludes come from the view's entry or, with predictionId, from tests/cameo/view-predictions.json.
 
-Usage (library): check(export_text, svg_dir) -> report dict;  CLI: python tools/check_view_svg.py export.txt svg_dir
+Usage (library): check(export_text, expectations) -> report dict, with expectations from load_expectations(spec)
+CLI: python tools/check_view_svg.py <export.txt> [expectations.json]
 """
 from __future__ import annotations
 
 import html
 import json
 import re
+import struct
 import sys
 from pathlib import Path
 
@@ -47,6 +54,12 @@ def declared_name(text: str) -> str | None:
     return None
 
 
+def svg_texts(svg: str) -> list[str]:
+    """Every <text> of the drawing, unescaped, in document order. svg_labels reads declared names out of these;
+    the keyword labels are whole texts of their own, so they are counted rather than parsed."""
+    return [html.unescape(t).strip() for t in re.findall(r"<text\b[^>]*>([^<]*)", svg)]
+
+
 def svg_labels(svg: str) -> set[str]:
     names = set()
     for raw in re.findall(r"<text\b[^>]*>([^<]*)", svg):
@@ -60,7 +73,7 @@ def parse_export(text: str) -> dict[str, dict]:
     views: dict[str, dict] = {}
     for line in text.splitlines():
         f = line.split("|")
-        if len(f) < 2 or f[0] not in ("VIEW", "MODE", "OVERLAP", "ELEM", "SVG", "ERROR"):
+        if len(f) < 2 or f[0] not in ("VIEW", "MODE", "OVERLAP", "ELEM", "SVG", "PNG", "ERROR"):
             continue
         v = views.setdefault(f[1], {"shapes": set(), "errors": []})
         if f[0] == "VIEW":
@@ -74,14 +87,29 @@ def parse_export(text: str) -> dict[str, dict]:
             v["shapes"].add(f[2])
         elif f[0] == "SVG":
             v["svg"], v["svgBytes"], v["svgMode"] = f[2], int(f[3]), f[4] if len(f) > 4 else None
+        elif f[0] == "PNG":
+            v["png"], v["pngBytes"] = f[2], int(f[3])
         elif f[0] == "ERROR":
             v["errors"].append("|".join(f[2:]))
     return views
 
 
-def load_expectations() -> list[dict]:
-    spec = json.loads(EXPECTATIONS.read_text(encoding="utf-8"))
-    preds = {p["id"]: p for p in json.loads(PREDICTIONS.read_text(encoding="utf-8"))["views"]}
+def png_size(path: Path) -> tuple[int, int] | None:
+    """Width and height from the IHDR chunk, or None when the file is not a PNG. A diagram that failed to render
+    can still leave a file behind, so the bytes are what decides, not the name."""
+    try:
+        head = path.read_bytes()[:24]
+    except OSError:
+        return None
+    if len(head) < 24 or head[:8] != b"\x89PNG\r\n\x1a\n" or head[12:16] != b"IHDR":
+        return None
+    return struct.unpack(">II", head[16:24])
+
+
+def load_expectations(spec_path: Path = EXPECTATIONS) -> list[dict]:
+    spec = json.loads(spec_path.read_text(encoding="utf-8"))
+    preds = ({p["id"]: p for p in json.loads(PREDICTIONS.read_text(encoding="utf-8"))["views"]}
+             if any("predictionId" in e for e in spec["views"]) else {})
     out = []
     for e in spec["views"]:
         e = dict(e)
@@ -91,6 +119,8 @@ def load_expectations() -> list[dict]:
             e.setdefault("excludes", p.get("excludes", []))
         e.setdefault("notDrawn", [])
         e.setdefault("maxOverlaps", spec.get("maxOverlaps", 0))
+        e.setdefault("png", spec.get("png", False))
+        e.setdefault("minPng", spec.get("minPng", [100, 100]))
         out.append(e)
     return out
 
@@ -110,9 +140,32 @@ def check(export_text: str, expectations: list[dict] | None = None) -> dict:
             problems.append(f"display mode {o.get('mode')}, expected {e['mode']}")
         if o.get("overlaps", 0) > e["maxOverlaps"]:
             problems.append(f"{o.get('overlaps')} overlapping shape pairs (e.g. {o.get('overlapExamples')})")
-        labels = set()
+        # PNG: the picture a reader looks at. The SVG checks below read names out of the file, which says nothing
+        # about whether the diagram rasterises, so the image itself is checked: PNG signature and a size that a
+        # diagram with shapes on it cannot fall below (an empty or failed render comes out tiny).
+        size = None
+        if e.get("png"):
+            if not o.get("png"):
+                problems.append("no PNG exported (the run did not ask for png=true)")
+            else:
+                size = png_size(Path(o["png"]))
+                min_w, min_h = e.get("minPng", [100, 100])
+                if size is None:
+                    problems.append(f"PNG not readable as a PNG: {o['png']} ({o.get('pngBytes')} bytes)")
+                elif size[0] < min_w or size[1] < min_h:
+                    problems.append(f"PNG {size[0]}x{size[1]} smaller than the expected {min_w}x{min_h}")
+        labels, texts = set(), []
         if o.get("svg") and Path(o["svg"]).exists():
-            labels = svg_labels(Path(o["svg"]).read_text(encoding="utf-8"))
+            svg = Path(o["svg"]).read_text(encoding="utf-8")
+            labels, texts = svg_labels(svg), svg_texts(svg)
+        # The keyword labels are the point of the whole exercise: a box is drawn as a class because a UML3
+        # keyword made it one, and the drawing says so («#classType def»). Counted, not just looked for, so that
+        # a keyword quietly dropping off one of five classes is a failure. A count of 0 asserts the opposite:
+        # that a view's filter kept a kind of element out.
+        for keyword, expected_n in (e.get("keywordLabels") or {}).items():
+            seen = texts.count(keyword)
+            if seen != expected_n:
+                problems.append(f"keyword label {keyword} drawn {seen} times, expected {expected_n}")
         drawn_expected = [n for n in e["includes"] if n not in e["notDrawn"]]
         missing_shapes = [n for n in drawn_expected if n not in o["shapes"]]
         missing_labels = [n for n in drawn_expected if n not in labels]
@@ -128,7 +181,8 @@ def check(export_text: str, expectations: list[dict] | None = None) -> dict:
         if drawn_anyway:
             problems.append(f"expected not drawn but drawn (update notDrawn): {drawn_anyway}")
         results.append({"view": e["view"], "mode": o.get("mode"), "overlaps": o.get("overlaps"),
-                        "svgBytes": o.get("svgBytes"), "labels": len(labels), "problems": problems,
+                        "svgBytes": o.get("svgBytes"), "labels": len(labels), "png": o.get("png"),
+                        "pngSize": list(size) if size else None, "problems": problems,
                         "passed": not problems})
     return {"passed": bool(results) and all(r["passed"] for r in results), "results": results}
 
@@ -137,10 +191,12 @@ def main() -> int:
     if len(sys.argv) < 2:
         print(__doc__)
         return 2
-    report = check(Path(sys.argv[1]).read_text(encoding="utf-8"))
+    spec = Path(sys.argv[2]) if len(sys.argv) > 2 else EXPECTATIONS
+    report = check(Path(sys.argv[1]).read_text(encoding="utf-8"), load_expectations(spec))
     for r in report["results"]:
+        png = f" png={r['pngSize'][0]}x{r['pngSize'][1]}" if r.get("pngSize") else ""
         print(f"{'PASS' if r['passed'] else 'FAIL'}  {r['view']}  mode={r['mode']} overlaps={r['overlaps']} "
-              f"labels={r['labels']}  {'; '.join(r['problems'])}")
+              f"labels={r['labels']}{png}  {'; '.join(r['problems'])}")
     return 0 if report["passed"] else 1
 
 

@@ -1,0 +1,96 @@
+{
+  "experiment": "E23: the UML3 sample (samples/uml3) rendered as diagrams in CATIA Magic and exported to SVG and PNG, in a project the test run creates for itself",
+  "recorded": "2026-09-24, before the first run",
+  "ran": "2026-09-24, CATIA Magic 2026x Refresh1 (build 2026.1.0-42-b71a9669)",
+  "setup": "CATIA Magic with no project open; the run creates an empty SysML v2 project from the stock template (createProjectFromTemplate, tools/cameo-scripts/openUML3Project.groovy), loads library/UML3*.sysml, samples/uml3/OnlineStore.sysml and samples/uml3/OnlineStoreSampleViews.sysml, then requests the 3 sample views with png=true",
+  "question": "Does a model written only with UML3 keywords draw as the UML diagram those keywords name, without anything in the sample saying how to draw it?",
+  "answer": "Yes. All 11 elements of the sample are drawn with the UML keyword that produced them, in the three renderings, with no overlapping shapes, and the filters select what was predicted. One construct is invisible: a #query calc is drawn nowhere (P11).",
+  "predictions": [
+    {
+      "id": "P1",
+      "claim": "createProjectFromTemplate on templates/SysML v2/SysML v2.mdszip yields a project with KerML root namespaces, so a run needs no project opened by hand",
+      "confidence": "high",
+      "why": "confirmed once before these predictions were written: 101 roots, the same count as the baseline of the UML3 project",
+      "observed": "confirmed",
+      "observation": "101 root namespaces in both projects created (Untitled1, Untitled2); all 10 files loaded with 0 error lines"
+    },
+    {
+      "id": "P2",
+      "claim": "All 3 sample views are found and none has a diagram before the run, because the project is new",
+      "confidence": "high",
+      "observed": "partly refuted",
+      "observation": "all 3 found, but sampleClassDiagram already has a diagram before anything creates one, while sampleClassDetails and sampleClassTable have none. Reproduced in two projects created seconds earlier (inspectOnly run), so it is deterministic, not a leftover. The cause is not established: 'the view renders asTreeDiagram' would fit these three but contradicts E13, where six TREE views of examples/05 had no diagram. Issue I-40"
+    },
+    {
+      "id": "P3",
+      "claim": "sampleClassDiagram draws exactly these 11 as shapes: Money, OrderStatus, OrderAlreadyShipped, Customer, PreferredCustomer, Order, OrderLine, PaymentService, CardPayment, Places, Contains",
+      "confidence": "medium",
+      "why": "ClassDiagram's filter selects a class diagram keyword or an enum def; every one of the 11 carries one",
+      "observed": "confirmed",
+      "observation": "11 displayed, exactly those 11, each labelled with its keyword: «#exceptionType def», «#interfaceType def», «#classType def», «#dataType def», «enum def», «#association def», «#composition def». CardPayment and PreferredCustomer carry their supertype in the label (CardPayment :> PaymentService)"
+    },
+    {
+      "id": "P4",
+      "claim": "No feature of the sample is drawn on sampleClassDiagram: customerId, email, name, changeEmail, discountPercent, orderNumber, status, total, lines, isPaid, cancel, quantity, price, authorize, refund and amount are all absent as shapes",
+      "confidence": "medium",
+      "why": "the filter selects only elements carrying the keywords; features stay inside their owners",
+      "observed": "confirmed with a correction",
+      "observation": "no feature is drawn as a shape, but the four enumeration literals of OrderStatus (created, paid, shipped, cancelled) are drawn inside its box as an 'enums' compartment, which the compact rendering does by design (E14)"
+    },
+    {
+      "id": "P5",
+      "claim": "The 2 dependencies of the sample (#uses, #raises) are exposed but drawn as edges, not shapes",
+      "confidence": "medium",
+      "why": "E13 observed that CATIA Magic does not draw dependencies as shapes; both are unnamed here, so they carry no label either",
+      "observed": "confirmed",
+      "observation": "neither dependency appears among the displayed elements of any of the 3 views, and no dependency label appears in the SVG"
+    },
+    {
+      "id": "P6",
+      "claim": "sampleClassTable selects 8 elements - Customer, PreferredCustomer, Order, OrderLine, CardPayment, PaymentService, Money, OrderStatus - and excludes OrderAlreadyShipped, Places and Contains",
+      "confidence": "medium",
+      "why": "ClassTable filters on @classType, @interfaceType, @DataTypeKind and enum defs only; an exception, an association and a composition are none of those",
+      "observed": "confirmed",
+      "observation": "8 displayed, exactly those 8; OrderAlreadyShipped, Places and Contains are absent, which is the difference between ClassTable and ClassDiagram stated in the view's doc"
+    },
+    {
+      "id": "P7",
+      "claim": "The display modes are TREE for sampleClassDiagram, UNDEFINED for sampleClassDetails and UNKNOWN for sampleClassTable",
+      "confidence": "high",
+      "why": "E14: the view definition's rendering decides the mode, and these three reuse ClassDiagram, ClassDetailDiagram and ClassTable unchanged",
+      "observed": "confirmed",
+      "observation": "TREE, UNDEFINED, UNKNOWN, and DisplayExposedElements returned the same mode it was asked for in each case"
+    },
+    {
+      "id": "P8",
+      "claim": "No two sibling shapes overlap on any of the 3 diagrams after the default layouter runs",
+      "confidence": "medium",
+      "why": "E14 established that the default layouter positions the shapes; the sample is small",
+      "observed": "confirmed",
+      "observation": "SysML2DiagramLayouter reported canLayout=true, result=true and 0 overlaps on all 3 diagrams"
+    },
+    {
+      "id": "P9",
+      "claim": "png=true writes a readable PNG for each of the 3 views, each with the PNG signature and larger than 100 by 100 pixels",
+      "confidence": "medium",
+      "why": "the exporter has had a png switch since E13 but no run has ever used it, so this is untested code",
+      "observed": "confirmed",
+      "observation": "3 PNGs with the PNG signature: sampleClassDiagram 454x335, sampleClassTable 693x503, sampleClassDetails 731x719. The SVGs use <text> elements (svgTextTags), so both forms can be checked"
+    },
+    {
+      "id": "P10",
+      "claim": "sampleClassDetails draws the same 11 elements as sampleClassDiagram, and its SVG is larger than sampleClassDiagram's, because compartments are drawn",
+      "confidence": "medium",
+      "why": "E14: a view definition without a rendering draws full compartments; the filters of the two definitions are identical",
+      "observed": "confirmed",
+      "observation": "the same 11 elements; 35489 bytes against 9032, and 121 <text> elements against 27. The compartments show doc, attributes, items, ends and actions, so the identity (#id customerId : Uuid), the uniqueness (#unique email), the multiplicity (lines[1..*] : OrderLine), the navigability (#navigable customer) and the interface realization (:>> authorize, :>> refund) are all visible"
+    },
+    {
+      "id": "P11",
+      "claim": "NOT PREDICTED, found in the run: a #query calc is drawn nowhere",
+      "confidence": "-",
+      "observed": "new finding",
+      "observation": "Order::isPaid, written '#query calc isPaid', appears in no compartment of sampleClassDetails, in no SVG and in no displayed-element list, while '#operation action cancel' on the same class is drawn in the actions compartment. The detail rendering has compartments for doc, attributes, items, ends and actions, and none for calculations. Issue I-41; it is evidence for open point 3 of samples/uml3/README.md, which asks whether a UML3 query operation should map to a calc at all"
+    }
+  ]
+}

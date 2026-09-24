@@ -28,6 +28,10 @@ Usage:
     --undo      afterwards run undoUML3Loads.groovy to remove only the packages loaded here
     --no-reset  do not reset the harness afterwards (keep windows and script classes)
     --shutdown  afterwards stop the harness (only needed to free the port)
+    --open      make sure a project is open, creating an empty one from this installation's SysML v2 template
+                when there is none, so no run depends on somebody having opened a project by hand (E23)
+    --sample-svg  draw the views of samples/uml3 as diagrams and export SVG + PNG, then check them against
+                tests/cameo/sample-svg-expectations.json
 Writes logs/cameo/cameo-report.json and one response file per load.
 Exit code: 0 all loaded, 1 a load failed, 2 harness unavailable / tool error.
 """
@@ -63,6 +67,10 @@ REPO_SCRIPTS = ROOT / "tools" / "cameo-scripts"
 CUSTOMIZATION = ROOT / "customization" / "catia-magic"
 PALETTE_EXPECTED = ROOT / "tests" / "cameo" / "palette-expectations.json"
 HYPOTHESES = ROOT / "tests" / "cameo" / "implied-specializations.json"
+OPEN_SCRIPT = "openUML3Project.groovy"
+SAMPLE_SVG_EXPECTED = ROOT / "tests" / "cameo" / "sample-svg-expectations.json"
+SAMPLE_FILES = [ROOT / "samples" / "uml3" / "OnlineStore.sysml",
+                ROOT / "samples" / "uml3" / "OnlineStoreSampleViews.sysml"]
 # SCRIPTS_DIR hard-coded in start-v2language-test-harness.groovy
 HARNESS_SCRIPTS = Path(os.environ.get("USERPROFILE", str(Path.home()))) / "Documents" / "GitHub" / "sysmlv2-validator" / "utilityScripts"
 
@@ -184,6 +192,13 @@ def main() -> int:
     ap.add_argument("--svg", action="store_true",
                     help="open each view of tests/cameo/svg-expectations.json as a diagram, lay it out, export SVG and "
                          "check display mode, overlaps, drawn shapes and SVG labels (needs examples; IDL views need --idl)")
+    ap.add_argument("--sample-svg", action="store_true",
+                    help="load samples/uml3 and draw its views as diagrams, exporting SVG and PNG, then check them "
+                         "against tests/cameo/sample-svg-expectations.json (E23)")
+    ap.add_argument("--open", action="store_true",
+                    help="make sure a project is open: create an empty one from this installation's SysML v2 "
+                         "template when there is none, so a run needs nobody to open a project by hand. An already "
+                         "open project is used as it is and never saved or closed")
     ap.add_argument("--palettes", action="store_true",
                     help="load customization/catia-magic and check the UML3 palettes CATIA Magic builds "
                          "(tests/cameo/palette-expectations.json)")
@@ -224,6 +239,9 @@ def main() -> int:
             # the CATIA Magic customization builds on the libraries and the examples it draws
             files += [CUSTOMIZATION / "UML3CatiaMagic.sysml", CUSTOMIZATION / "examples" / "OnlineStoreCatiaMagicViews.sysml",
                       CUSTOMIZATION / "UML3CatiaMagicActivation.sysml"]
+        if args.sample_svg:
+            # the sample and the views over it; the views reuse UML3Views, already in the library list
+            files += SAMPLE_FILES
     missing = [str(f) for f in files if not f.exists()]
     if missing:
         print("MISSING FILES: " + ", ".join(missing), file=sys.stderr)
@@ -232,6 +250,20 @@ def main() -> int:
     sync_scripts(Path(args.hypotheses).resolve() if args.hypotheses else HYPOTHESES)
     report: dict = {"started": dt.datetime.now().isoformat(timespec="seconds"), "port": args.port, "loads": []}
     report["harness"] = dict(harness_sync, version=st.get("version", "1"))
+
+    # A run must not depend on somebody having opened a project. With --open, an empty SysML v2 project is made
+    # from this installation's own template when none is open; an open project is used unchanged (E23 P1).
+    if args.open:
+        (HARNESS_SCRIPTS / "uml3-open-request.txt").write_text(
+            "mode=create\ntemplate=auto\ntimeoutSeconds=240\n", encoding="utf-8")
+        _, opened = call(args.port, "/run-script", {"scriptName": OPEN_SCRIPT}, timeout=330)
+        text = opened.get("result") or opened.get("error") or ""
+        line = next((ln for ln in text.splitlines() if ln.startswith("OPEN|")), "")
+        report["project"] = {"passed": "RESULT|OK" in text, "report": text.strip()}
+        print(f"{'PASS' if 'RESULT|OK' in text else 'FAIL'}  project  {line}")
+        if "RESULT|OK" not in text:
+            print(text, file=sys.stderr)
+            return 2
     _, before = call(args.port, "/run-script", {"scriptName": INSPECT_SCRIPT})
     report["inspectBefore"] = before.get("result", before)
     if "matches=0" not in str(report["inspectBefore"]):
@@ -440,6 +472,39 @@ def main() -> int:
             if not r["passed"]:
                 print(f"    {r['view']}: {'; '.join(r['problems'])}")
         failed = failed or not svg_report["passed"]
+
+    # The sample drawn: samples/uml3 says nothing about how to draw itself, so every shape on these diagrams is
+    # there because a UML3 keyword put it there (E23). Exported to SVG and to PNG - the SVG checks read names out
+    # of a file, which would still pass on a diagram that never rasterised, so the image is checked too.
+    if args.sample_svg and not failed:
+        sys.path.insert(0, str(ROOT / "tools"))
+        import check_view_svg as cvs  # noqa: E402
+        expectations = cvs.load_expectations(SAMPLE_SVG_EXPECTED)
+        sample_dir = LOGS / "sample-svg"
+        shutil.rmtree(sample_dir, ignore_errors=True)
+        sample_dir.mkdir(parents=True, exist_ok=True)
+        (HARNESS_SCRIPTS / "uml3-svg-request.txt").write_text(
+            "\n".join(["outDir=" + sample_dir.as_posix(), "png=true"] + ["view=" + e["view"] for e in expectations])
+            + "\n", encoding="utf-8")
+        _, ex = call(args.port, "/run-script", {"scriptName": "exportViewDiagrams.groovy"}, timeout=1800)
+        text = ex.get("result") or ex.get("error") or ""
+        (LOGS / "sample-view-diagrams.txt").write_text(text, encoding="utf-8")
+        sample_report = cvs.check(text, expectations)
+        (HARNESS_SCRIPTS / "uml3-undo-only.txt").write_text("UML3 View Diagrams\nLayout diagram\n", encoding="utf-8")
+        _, undo_sample = call(args.port, "/run-script", {"scriptName": UNDO_SCRIPT})
+        sample_report["undo"] = undo_sample.get("result", undo_sample)
+        if "undosPerformed=0" in str(sample_report["undo"]) and "TOP|UML3 View Diagrams" in text:
+            sample_report["passed"] = False
+            sample_report["undoProblem"] = "the view-diagram command was not undone"
+        report["sampleDiagrams"] = sample_report
+        passed_n = sum(r["passed"] for r in sample_report["results"])
+        print(f"{'PASS' if sample_report['passed'] else 'FAIL'}  sample diagrams SVG+PNG "
+              f"({passed_n}/{len(sample_report['results'])}) in {sample_dir}")
+        for r in sample_report["results"]:
+            size = f"{r['pngSize'][0]}x{r['pngSize'][1]}" if r.get("pngSize") else "no PNG"
+            print(f"    {'ok  ' if r['passed'] else 'FAIL'} {r['view'].split('::')[-1]}  mode={r['mode']} "
+                  f"labels={r['labels']} png={size}  {'; '.join(r['problems'])}")
+        failed = failed or not sample_report["passed"]
 
     # UML3 palettes: what CATIA Magic's model-based customization makes of the UML3 view definitions (E17).
     # Read-only: the DSL service is asked for each view's visualization, palette categories, buttons and the

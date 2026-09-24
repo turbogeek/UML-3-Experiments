@@ -8,6 +8,23 @@ The same model twice:
 * [`OnlineStore.sysml`](OnlineStore.sysml) — in **SysUML**, the implementation that exists. The validator, the
   checkers and CATIA Magic read this one, so it is the authority for what the model means.
 
+and, so that the sample can be seen and not only read:
+
+* [`OnlineStoreSampleViews.sysml`](OnlineStoreSampleViews.sysml) — three views over the sample, reusing the UML3
+  diagram kinds unchanged. CATIA Magic draws them and the test harness exports SVG and PNG into
+  `logs/cameo/sample-svg/`; suite `sample-diagrams` checks what was drawn (E23). The sample itself says nothing
+  about how to draw it, so every shape on those diagrams is there because a UML3 keyword put it there — which is
+  what makes the pictures evidence rather than decoration.
+
+![The sample as a UML class diagram](../../docs/images/uml3-sample-class-diagram.png)
+
+Every box carries the keyword that produced it: `#classType item def Customer` is drawn as a class because
+`ClassDiagram`'s `@classType` filter selected it, and `CardPayment :> PaymentService` shows the interface
+realization. The detail form draws the same elements with their compartments, which is where the identity, the
+uniqueness, the multiplicities and the redefined operations become visible:
+
+![The same elements with their compartments](../../docs/images/uml3-sample-class-details.png)
+
 The point of the pair is the correspondence: every construct on the left has exactly one counterpart on the right,
 which is what a lossless round trip between the implementations needs (UML3-IMPL-005), and both denote the same
 concept of the domain metamodel (`DogFoodUML3/DomainMetamodel`, UML3-IMPL-012).
@@ -58,6 +75,12 @@ concept of the domain metamodel (`DogFoodUML3/DomainMetamodel`, UML3-IMPL-012).
    a `#raises` dependency. The round trip has to put it back on the operation.
 3. **Query operations.** SysUML uses `#query calc` (a calculation) and `#operation action` (an action); UML3 writes
    both as `operation`, with `query` as a modifier. The transformation picks the construct from the modifier.
+   **Evidence against the calc (E23).** `Order::isPaid`, written `#query calc isPaid`, is drawn nowhere: not in a
+   compartment, not in the SVG, not among the displayed elements, while `#operation action cancel` on the same
+   class is drawn. CATIA Magic's detail rendering has no compartment for calculations (issue I-41). A query
+   operation that is invisible on every diagram is a poor mapping, so the choice may have to be
+   `#operation action` with a return parameter, and `query` becomes a keyword on the action rather than a
+   different construct.
 4. **Composition twice.** The sample states composition both as a composite feature (`item lines`) and as a
    `#composition` connection, as example 01 does. UML3 should say which one its `composition` keyword produces.
 5. **The standard library.** `import UML3::*;` assumes one library package; the SysUML side imports several

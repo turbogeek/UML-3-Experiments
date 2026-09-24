@@ -26,6 +26,10 @@ Suites (each result is recorded in logs/test-report.json):
                       which keeps running (--shutdown-harness stops it). The harness updates
                       itself from sysml-validator/utilityScripts when those files change.
                       This is the authoritative semantic check.
+  sample-diagrams     (--cameo) the sample of samples/uml3 drawn as diagrams in CATIA Magic and exported to SVG
+                      and PNG (E23): the sample says nothing about how to draw it, so every shape on the diagram
+                      is there because a UML3 keyword put it there. The run creates its own empty SysML v2
+                      project from the installation's template, so it needs no project opened by hand.
 
 Paths default to sibling checkouts and can be overridden with environment variables:
   SYSML_RELEASE   (default ../SysML-v2-Release)
@@ -499,8 +503,8 @@ def main() -> int:
             "evaluations": pat.get("evaluations"), "inspectAfterUndo": pat.get("inspectAfterUndo")}
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, reset
-        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--undo", "--validate", "--display", "--views",
-               "--idl", "--svg", "--palettes"]
+        cmd = [sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--open", "--undo", "--validate", "--display",
+               "--views", "--idl", "--svg", "--palettes"]
         if args.shutdown_harness:
             cmd.append("--shutdown")
         r = run(cmd)
@@ -526,6 +530,28 @@ def main() -> int:
         report["suites"]["cameo"] = {
             "passed": r.returncode == 0, "exitCode": r.returncode, "errors": errors,
             "inspectAfterUndo": details.get("inspectAfterUndo")}
+
+        # 5c. sample diagrams (E23): the sample of samples/uml3 drawn in CATIA Magic. It says nothing about how
+        #     to draw itself, so every shape is there because a UML3 keyword put it there; the run creates its
+        #     own empty SysML v2 project, exports SVG and PNG, and checks modes, layout, shapes, labels and that
+        #     the images really rasterised
+        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--open", "--library-only", "--sample-svg",
+                 "--undo"])
+        sample = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
+        (ROOT / "logs" / "cameo" / "cameo-sample-report.json").write_text(json.dumps(sample, indent=2),
+                                                                         encoding="utf-8")
+        smp_errors = [f'{Path(x["file"]).name}: {e}' for x in sample.get("loads", []) for e in x["errors"]]
+        smp_errors += [f'sample diagram {d["view"]}: {"; ".join(d["problems"])}'
+                       for d in sample.get("sampleDiagrams", {}).get("results", []) if not d["passed"]]
+        if (sample.get("project") or {}).get("passed") is False:
+            smp_errors.append("no project: " + str(sample["project"]["report"])[-200:])
+        if r.returncode and not smp_errors:
+            smp_errors = [r.stderr.strip() or f"cameo_check exit code {r.returncode}"]
+        report["suites"]["sample-diagrams"] = {
+            "passed": r.returncode == 0 and not smp_errors, "errors": smp_errors,
+            "diagrams": [{"view": d["view"], "mode": d["mode"], "labels": d["labels"], "png": d.get("pngSize")}
+                         for d in sample.get("sampleDiagrams", {}).get("results", [])],
+            "inspectAfterUndo": sample.get("inspectAfterUndo")}
 
     report["finished"] = dt.datetime.now().isoformat(timespec="seconds")
     report["passed"] = all(s["passed"] for s in report["suites"].values())
