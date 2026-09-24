@@ -6,8 +6,17 @@
 //     close=true                                (optional: close the diagram window again afterwards)
 //     reopen=true                               (optional: close the window first, to rebuild it and its palette)
 // The diagram must exist (exportViewDiagrams.groovy creates it). Opening and closing a diagram window changes no
-// model element and creates no command. Output lines (no System.exit):
-//   OPEN|path|diagram name       SHOT|path|file|bytes|width|height
+// model element and creates no command.
+//
+// KNOWN LIMIT (2026-09-24): CATIA Magic does not bring an ALREADY OPEN diagram tab to the front. open(),
+// openInActiveTab(true) and close-then-open were all tried; a run over several views then screenshots whichever
+// diagram tab is in front and writes the same picture under different names. A view whose window is of another
+// kind (a ClassTable opens a table, not a diagram) does come to the front, which is what makes the duplicate easy
+// to miss. So every shot is hashed and a repeat is reported as WARN|duplicate: a wrong screenshot must not pass
+// as a right one. Capture one view per run when each picture has to be its own.
+// Output lines (no System.exit):
+//   OPEN|path|diagram name       SHOT|path|file|bytes|width|height|sha256-16
+//   WARN|duplicate|path|<the earlier view with the same image>
 //   ERROR|path|stage|message     RESULT|OK|<screenshots> or RESULT|FAIL|<reason>
 import com.nomagic.magicdraw.core.Application
 import com.dassault_systemes.modeler.kerml.model.RootNamespaces
@@ -49,6 +58,7 @@ def findPath = { List path ->
 }
 
 int shots = 0
+Map<String, String> byDigest = [:]          // image digest -> the view that produced it first
 views.each { String path ->
     def view = findPath(path.split("::") as List)
     if (view == null) { out.append("ERROR|" + path + "|find|view not found\n"); return }
@@ -62,7 +72,11 @@ views.each { String path ->
             try {
                 if (reopen && diagram.respondsTo("close")) diagram.close()
                 if (diagram.respondsTo("ensureLoaded")) diagram.ensureLoaded()
-                if (diagram.respondsTo("open")) diagram.open()
+                // open() opens a TAB but does not bring it to the front: capturing two views in one run then
+                // screenshots whichever tab was already active and writes byte-identical files (2026-09-24).
+                // openInActiveTab makes this diagram the one on screen, which is what a screenshot must show.
+                if (diagram.respondsTo("openInActiveTab")) diagram.openInActiveTab(true)
+                else if (diagram.respondsTo("open")) diagram.open()
                 out.append("OPEN|" + path + "|" + clean(nameOf(diagram)) + "|" + diagram.getClass().getSimpleName() + "\n")
             } catch (Throwable inner) {
                 out.append("ERROR|" + path + "|open|" + clean(inner) + " cause=" + clean(inner.getCause()) + "\n")
@@ -87,7 +101,17 @@ views.each { String path ->
         def image = holder[0]
         def file = new File(outDir, path.replace("::", ".").replaceAll("[^A-Za-z0-9_.-]", "_") + ".png")
         ImageIO.write(image, "PNG", file)
-        out.append("SHOT|" + path + "|" + file.getPath() + "|" + file.length() + "|" + image.getWidth() + "|" + image.getHeight() + "\n")
+        // hash the bytes on disk: two views whose screenshots are identical mean the tab never changed, and the
+        // picture on file is not the view it is named after (see KNOWN LIMIT above)
+        String digest = "-"
+        try {
+            def md = java.security.MessageDigest.getInstance("SHA-256")
+            digest = md.digest(file.getBytes()).encodeHex().toString().substring(0, 16)
+        } catch (Throwable t) { }
+        out.append("SHOT|" + path + "|" + file.getPath() + "|" + file.length() + "|" + image.getWidth() + "|" +
+            image.getHeight() + "|" + digest + "\n")
+        if (byDigest.containsKey(digest)) out.append("WARN|duplicate|" + path + "|" + byDigest.get(digest) + "\n")
+        else byDigest.put(digest, path)
         shots++
         if (close) {
             SwingUtilities.invokeAndWait({
