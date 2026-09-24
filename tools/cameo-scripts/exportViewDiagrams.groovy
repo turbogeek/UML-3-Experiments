@@ -30,11 +30,17 @@ String outDir = null
 List<String> views = []
 boolean inspectOnly = false
 boolean png = false
+boolean closeDiagrams = false
 reqFile.readLines("UTF-8").each { l ->
     if (l.startsWith("outDir=")) outDir = l.substring(7).trim()
     else if (l.startsWith("view=")) views << l.substring(5).trim()
     else if (l.trim() == "inspectOnly=true") inspectOnly = true   // report diagram presence only; no model change
     else if (l.trim() == "png=true") png = true                   // also write <view>.png for human review
+    // close each diagram once it is exported. A rendered view (tree, interconnection, table) is shown in an
+    // editor window; this script opened dozens over a long session and closed none, and CATIA Magic then failed
+    // every rendered view with "EditorWindow.restoreOptions()" NPE while unrendered views still worked (I-45).
+    // Test runs should close; leave it off when the diagrams are meant to stay open to look at.
+    else if (l.trim() == "closeDiagrams=true") closeDiagrams = true
 }
 if (!outDir || views.isEmpty()) return "RESULT|FAIL|request needs outDir= and at least one view="
 new File(outDir).mkdirs()
@@ -211,6 +217,12 @@ diagrams.each { path, diagram ->
         } catch (Throwable t) {
             out.append("ERROR|" + path + "|png|" + clean(t) + "\n")
         }
+    }
+    if (closeDiagrams) {
+        try {
+            SwingUtilities.invokeAndWait({ if (diagram.respondsTo("close")) diagram.close() } as Runnable)
+            out.append("CLOSED|" + path + "\n")
+        } catch (Throwable t) { out.append("ERROR|" + path + "|close|" + clean(t) + "\n") }
     }
 }
 out.append(exported == views.size() ? "RESULT|OK|" + exported + "\n" : "RESULT|FAIL|exported " + exported + " of " + views.size() + "\n")

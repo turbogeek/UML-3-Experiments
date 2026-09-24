@@ -453,8 +453,8 @@ def main() -> int:
         shutil.rmtree(svg_dir, ignore_errors=True)
         svg_dir.mkdir(parents=True, exist_ok=True)
         (HARNESS_SCRIPTS / "uml3-svg-request.txt").write_text(
-            "\n".join(["outDir=" + svg_dir.as_posix(), "png=true"] + ["view=" + e["view"] for e in expectations])
-            + "\n", encoding="utf-8")
+            "\n".join(["outDir=" + svg_dir.as_posix(), "png=true", "closeDiagrams=true"]
+                      + ["view=" + e["view"] for e in expectations]) + "\n", encoding="utf-8")
         _, ex = call(args.port, "/run-script", {"scriptName": "exportViewDiagrams.groovy"}, timeout=1800)
         text = ex.get("result") or ex.get("error") or ""
         (LOGS / "view-diagrams.txt").write_text(text, encoding="utf-8")
@@ -484,8 +484,8 @@ def main() -> int:
         shutil.rmtree(sample_dir, ignore_errors=True)
         sample_dir.mkdir(parents=True, exist_ok=True)
         (HARNESS_SCRIPTS / "uml3-svg-request.txt").write_text(
-            "\n".join(["outDir=" + sample_dir.as_posix(), "png=true"] + ["view=" + e["view"] for e in expectations])
-            + "\n", encoding="utf-8")
+            "\n".join(["outDir=" + sample_dir.as_posix(), "png=true", "closeDiagrams=true"]
+                      + ["view=" + e["view"] for e in expectations]) + "\n", encoding="utf-8")
         _, ex = call(args.port, "/run-script", {"scriptName": "exportViewDiagrams.groovy"}, timeout=1800)
         text = ex.get("result") or ex.get("error") or ""
         (LOGS / "sample-view-diagrams.txt").write_text(text, encoding="utf-8")
