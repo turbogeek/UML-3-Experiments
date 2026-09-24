@@ -63,6 +63,14 @@ def run(cmd: list[str], timeout: int = 600) -> subprocess.CompletedProcess:
     return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", timeout=timeout)
 
 
+def why_failed(r: subprocess.CompletedProcess) -> list[str]:
+    """Something to read when a cameo_check run failed but reported no finding of its own. It used to record
+    only stderr, and cameo_check prints its refusals on stdout, so the suite showed an empty error and said
+    nothing about what went wrong (observed 2026-09-24, when two suites failed for want of an open project)."""
+    lines = [ln for ln in (r.stdout or "").splitlines() if ln.startswith(("FAIL", "TOOL ERROR", "HARNESS", "MISSING"))]
+    return (lines or [(r.stderr or "").strip()] or [])[-5:] or [f"cameo_check exit code {r.returncode}"]
+
+
 def syntax_check(files: list[Path]) -> tuple[bool, list[str]]:
     """Returns (passed, error lines). Uses the validator's exit code AND its error lines."""
     r = run(["java", f"-Dsysml.library.path={STDLIB}", "-jar", str(JAR), "--no-color", *map(str, files)])
@@ -464,8 +472,8 @@ def main() -> int:
     if args.cameo:
         # 5a. probes: library + tests/cameo-negative, verify what Cameo builds, undo (harness stays up)
         probes = sorted((ROOT / "tests" / "cameo-negative").glob("*.sysml"))
-        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--library-only", "--undo", "--validate",
-                 "--hypotheses", str(ROOT / "tests" / "cameo-negative" / "probe-effects.json"),
+        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--open", "--library-only", "--undo",
+                 "--validate", "--hypotheses", str(ROOT / "tests" / "cameo-negative" / "probe-effects.json"),
                  "--probes", *map(str, probes)])
         cameo_report = ROOT / "logs" / "cameo" / "cameo-report.json"
         details = json.loads(cameo_report.read_text(encoding="utf-8")) if cameo_report.exists() else {}
@@ -474,7 +482,7 @@ def main() -> int:
         report["suites"]["cameo-probes"] = {
             "passed": r.returncode == 0 and bool(probe_rows) and all(p["matchesPrediction"] for p in probe_rows),
             "errors": [f'{p["file"]}: expected {p["expected"]}, observed {p["observed"]}'
-                       for p in probe_rows if not p["matchesPrediction"]] or ([r.stderr.strip()] if r.returncode else []),
+                       for p in probe_rows if not p["matchesPrediction"]] or (why_failed(r) if r.returncode else []),
             "inspectAfterUndo": details.get("inspectAfterUndo"),
             "validationEngine": details.get("validationEngine")}
         if details.get("validationEngine") and not details["validationEngine"]["passed"]:
@@ -485,7 +493,8 @@ def main() -> int:
         #      non-conforming role binding intersects types), and CATIA Magic's evaluation engine gives the
         #      expected verdicts for the pattern requirements, including a model-level one and two false controls
         exp = ROOT / "tests" / "cameo-experiments"
-        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--library-only", "--undo", "--validate",
+        r = run([sys.executable, str(ROOT / "tools" / "cameo_check.py"), "--open", "--library-only", "--undo",
+                 "--validate",
                  "--hypotheses", str(exp / "e22-hypotheses.json"), "--evaluations", str(exp / "e22-evaluations.json"),
                  "--probes", str(exp / "e22-pattern-observer.sysml"), str(exp / "e22b-pattern-wrong-binding.sysml"),
                  str(exp / "e22c-pattern-evaluation-controls.sysml")])
@@ -499,7 +508,7 @@ def main() -> int:
                        for e in pat.get("evaluations", {}).get("results", []) if not e["passed"]]
         report["suites"]["cameo-patterns"] = {
             "passed": r.returncode == 0 and not pat_errors and bool(pat.get("evaluations")),
-            "errors": pat_errors or ([r.stderr.strip()[-300:]] if r.returncode else []),
+            "errors": pat_errors or (why_failed(r) if r.returncode else []),
             "evaluations": pat.get("evaluations"), "inspectAfterUndo": pat.get("inspectAfterUndo")}
 
         # 5b. full load of library + examples, implied-specialization hypotheses, undo, reset

@@ -248,6 +248,7 @@ def main() -> int:
         return 2
 
     sync_scripts(Path(args.hypotheses).resolve() if args.hypotheses else HYPOTHESES)
+    created_project: str | None = None
     report: dict = {"started": dt.datetime.now().isoformat(timespec="seconds"), "port": args.port, "loads": []}
     report["harness"] = dict(harness_sync, version=st.get("version", "1"))
 
@@ -260,6 +261,10 @@ def main() -> int:
         text = opened.get("result") or opened.get("error") or ""
         line = next((ln for ln in text.splitlines() if ln.startswith("OPEN|")), "")
         report["project"] = {"passed": "RESULT|OK" in text, "report": text.strip()}
+        # only a project this run made is ours to close afterwards; one that was already open belongs to whoever
+        # opened it and is left alone
+        if line.endswith("|created"):
+            created_project = line.split("|")[1]
         print(f"{'PASS' if 'RESULT|OK' in text else 'FAIL'}  project  {line}")
         if "RESULT|OK" not in text:
             print(text, file=sys.stderr)
@@ -631,6 +636,18 @@ def main() -> int:
                   "- inspect CATIA Magic before continuing")
             failed = True
         print("AFTER UNDO: " + str(report["inspectAfterUndo"]).strip().replace("\n", " | "))
+
+    # Give back the project this run made. Each one holds a whole SysML v2 template, and eight left open took
+    # CATIA Magic from 3 GB to 11.5 GB; open projects also keep their documents registered with the window
+    # manager, which is what rots over a long session (I-45). Nothing is saved and nothing else is touched.
+    if created_project:
+        (HARNESS_SCRIPTS / "uml3-open-request.txt").write_text(
+            f"mode=close\ntimeoutSeconds=120\ncloseProject={created_project}\n", encoding="utf-8")
+        _, closed = call(args.port, "/run-script", {"scriptName": OPEN_SCRIPT}, timeout=300)
+        text = closed.get("result") or closed.get("error") or ""
+        report["projectClosed"] = {"name": created_project, "report": text.strip()}
+        print(f"CLOSED PROJECT {created_project}: "
+              + (next((ln for ln in text.splitlines() if ln.startswith("RESULT|")), "no result")))
 
     if args.shutdown:
         report["shutdown"] = call(args.port, "/shutdown", {})[1]
