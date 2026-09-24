@@ -1,6 +1,8 @@
 {
- "description": "Expectations for views rendered as diagrams in CATIA Magic and exported to SVG (tools/check_view_svg.py, cameo_check.py --svg). Example views reuse the includes/excludes of tests/cameo/view-predictions.json. notDrawn lists exposed elements CATIA Magic does not draw as shapes (observed in E13: dependencies). Display modes follow the view definitions' renderings (E14): compact views TREE, detail views and SequenceDiagram UNDEFINED, ComponentDiagram NESTED, ClassTable UNKNOWN. IDL view expectations recorded 2026-09-17 before their first run.",
+ "description": "Expectations for views rendered as diagrams in CATIA Magic and exported to SVG (tools/check_view_svg.py, cameo_check.py --svg). Example views reuse the includes/excludes of tests/cameo/view-predictions.json. notDrawn lists exposed elements CATIA Magic does not draw as shapes (observed in E13: dependencies). Display modes follow the view definitions' renderings (E14): compact views TREE, detail views and SequenceDiagram UNDEFINED, ComponentDiagram NESTED, ClassTable UNKNOWN. IDL view expectations recorded 2026-09-17 before their first run. PNG added 2026-09-24 (E23): each view is exported to PNG as well and checked as an image, because the SVG checks read text out of a file and would pass on a diagram that never rasterised. minPng is a floor with margin, not the observed size - the smallest of the 15 is storePackages at 297x120 and layout is not byte-identical between runs.",
  "maxOverlaps": 0,
+ "png": true,
+ "minPng": [150, 80],
  "views": [
   {
    "view": "OnlineStoreViews::domainClassDiagram",
