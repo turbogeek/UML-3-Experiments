@@ -1605,6 +1605,49 @@ library package UML3CatiaMagic {
 		}
 	}
 
+	view def <UML3ClassTable> 'UML3 Class Table' :> bt, UML3Views::ClassTable {
+		doc
+		/*
+		UML3Views::ClassTable as a CATIA Magic table: the classifiers of a package, one row each, with columns.
+
+		Usage: view domainClassTable : UML3CatiaMagic::'UML3 Class Table' { expose OnlineStoreDomain::*; }
+		Why this exists: the tool-neutral UML3Views::ClassTable renders 'asElementTable' and names no columns.
+		The standard rendering carries the columns in 'columnView', but a standard column view cannot say how a
+		cell is drawn, so only a tool's own column views make a readable table. Without them CATIA Magic opens
+		the table with the right number of rows and nothing in them, and no column headers at all (I-44): the
+		filter had selected the 8 classifiers of the sample and there was nowhere to put them. The columns below
+		are CATIA Magic's own, so they belong here with the rest of the tool customization, not in the library.
+		References: UML3Views::ClassTable; SysML 9.2.20; E23.
+		*/
+		render rendering uml3ClassTableRendering :>> asTable, UML3Views::ClassTable::asElementTable {
+			doc
+			/*
+			The rendering of this view: the table of Base Table, with the columns a class table needs. It
+			redefines BOTH inherited renderings - CATIA Magic's asTable and the asElementTable that
+			UML3Views::ClassTable renders - because a view may own only one renderer
+			(validateViewDefinitionOnlyOneViewRendering), and this view inherits one from each supertype.
+			*/
+			view nameColumn : ColumnByFeatureView :> column {
+				doc /* The name of the classifier, as the model declares it. */
+				ref item :>> columnFeature = declaredName meta KerML::Feature;
+			}
+			view documentationColumn : ColumnByExpressionView :> column {
+				doc /* What the classifier is, taken from its documentation. */
+				attribute :>> isMultiline default true;
+				render rendering : StringCellRendering :>> asTableCell {
+					calc :>> getValue {
+						in rowElement : KerML::Element;
+						(rowElement.ownedElement as KerML::Comment).body
+					}
+				}
+			}
+			view qualifiedNameColumn : ColumnByFeatureView :> column {
+				doc /* Where the classifier lives, as its qualified name. */
+				ref item :>> columnFeature = qualifiedName meta KerML::Feature;
+			}
+		}
+	}
+
 	package UML3ViewTemplates {
 		doc
 		/*

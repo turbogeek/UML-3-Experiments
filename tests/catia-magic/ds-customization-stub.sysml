@@ -78,6 +78,30 @@ library package DS_Views {
 		abstract view def <bsv> 'Base Symbolic View' :> sv {
 			part baseViewPalette : ViewPalettes::BasePalette :>> palette;
 		}
+		/* Tables. The standard rendering Views::asElementTable carries its columns in columnView but cannot say
+		 * how a cell is drawn, so CATIA Magic adds column views and cell renderings; 'UML3 Class Table' uses
+		 * them (I-44). */
+		rendering def TableCellRendering {
+			calc getValue { in rowElement [0..1]; }
+		}
+		rendering asTableCell : TableCellRendering;
+		rendering def StringCellRendering :> TableCellRendering;
+		view def ColumnView {
+			attribute isMultiline [0..1] : ScalarValues::Boolean;
+		}
+		view def ColumnByFeatureView :> ColumnView {
+			ref item columnFeature [0..1];
+		}
+		view def ColumnByExpressionView :> ColumnView {
+			render asTableCell;
+		}
+		rendering asTable :> Views::asElementTable {
+			view column : ColumnView :> columnView;
+		}
+		abstract view def <bgv> 'Base Grid View' :> Visualization;
+		abstract view def <bt> 'Base Table' :> bgv {
+			render asTable;
+		}
 	}
 	package ViewPalettes {
 		part def BasePalette :> Palette {

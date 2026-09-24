@@ -68,4 +68,16 @@ package OnlineStoreCatiaMagicViews {
 		doc /* The message schemas with payload attributes, drawn with the UML3 messaging palette. */
 		expose OnlineStoreMessaging::*;
 	}
+
+	view domainClassTable : 'UML3 Class Table' {
+		doc
+		/*
+		The store's classifiers as a table, one row each, with name, documentation and qualified name.
+
+		The tool-neutral OnlineStoreViews::domainClassTable exposes the same content but names no columns, so
+		CATIA Magic opens it with the right number of rows and nothing in them (I-44). This is the form that
+		reads.
+		*/
+		expose OnlineStoreDomain::*;
+	}
 }
