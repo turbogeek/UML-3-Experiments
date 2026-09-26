@@ -9,6 +9,8 @@ Suites (each result is recorded in logs/test-report.json):
   checker-calibration check_names.py on the official OMG models              -> must PASS
                       (guards the checker against false positives)
   requirements        requirements/*.sysml: syntax, names, tools/check_requirements.py (form, evidence, realization, use cases)
+  languages           tools/check_languages.py: can UML3 describe software that is actually built? Every cited
+                      UML3 name exists, every row that is not COVERED says what is missing, doc is up to date
   docs                tools/check_docs.py: documentation rules D01-D05 on library/ and examples/, checker fixtures
   keywords            tools/check_keywords.py: docs/UML3-Keywords.md matches the libraries (keyword, terse id, base)
   refinements         tools/check_refinements.py fixtures (answers to an external requirement set): expected
@@ -178,6 +180,15 @@ def main() -> int:
     report["suites"]["traceability"] = {"passed": tr.returncode == 0, "rows": tr_rep.get("rows"),
                                         "statusCounts": tr_rep.get("statusCounts"),
                                         "findings": tr_rep.get("findings", [tr.stderr.strip()])}
+
+    # 4a2. UML3 -> languages, frameworks and platforms: can UML3 describe software that is actually built?
+    #      Every cited UML3 name must exist, every row that is not COVERED must say what is missing or lost,
+    #      and the generated document must be up to date
+    lg = run([sys.executable, str(ROOT / "tools" / "check_languages.py"), "--stdlib", str(STDLIB),
+              "--report", str(LOGS / "languages-report.json")])
+    lg_rep = json.loads((LOGS / "languages-report.json").read_text(encoding="utf-8")) if lg.returncode != 2 else {}
+    report["suites"]["languages"] = {"passed": lg.returncode == 0, "counts": lg_rep.get("counts"),
+                                     "findings": lg_rep.get("findings", [lg.stderr.strip()])}
 
     # 4b. design rules: examples must have no ERROR findings; each tests/rules file must produce exactly
     #     the rule IDs in its EXPECT-RULES header (R12 stacking warnings are allowed extras), 'none' = clean

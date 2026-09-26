@@ -1,0 +1,661 @@
+{
+  "title": "UML3 to implementation languages, frameworks and platforms",
+  "description": "Does UML3 have the constructs needed to describe software that is actually built? Each row is something a target language or platform requires, how that target spells it, and which UML3 construct covers it. The point of the table is the coverage column: GAP and TBD rows are the ones that decide whether UML3 is sufficient for code generation, and they are meant to be read, not hidden.",
+  "coverageLegend": {
+    "COVERED": "a UML3 construct expresses it; the construct is named in the UML3 column",
+    "PARTIAL": "expressible, but with loss - the note says what is lost",
+    "GAP": "no UML3 construct expresses it; a requirement is needed if it matters",
+    "TBD": "not yet analyzed, or the target's current behaviour has not been confirmed"
+  },
+  "versionBasis": "Versions are what this machine can actually compile and run, so a claim can be tested rather than recalled: Java 21.0.8 LTS (javac 21.0.8), Rust 1.98.1 (2026-09-01), Python 3.14.4, Docker 29.2.0. No C or C++ compiler is installed here, so those two columns are analysis only and are marked TBD wherever the answer depends on compiler behaviour. Confirm the current public releases before this becomes a normative annex.",
+  "targets": [
+    {
+      "id": "java",
+      "name": "Java",
+      "version": "21.0.8 LTS",
+      "evidence": "tools/idl/ generates Java that javac compiles in suite idl-codegen"
+    },
+    {
+      "id": "rust",
+      "name": "Rust",
+      "version": "1.98.1",
+      "evidence": "tools/idl/ generates Rust that rustc compiles when present, in suite idl-codegen"
+    },
+    {
+      "id": "python",
+      "name": "Python",
+      "version": "3.14.4",
+      "evidence": "none yet"
+    },
+    {
+      "id": "c",
+      "name": "C",
+      "version": "C23",
+      "evidence": "none; no compiler on this machine"
+    },
+    {
+      "id": "cpp",
+      "name": "C++",
+      "version": "C++23",
+      "evidence": "none; no compiler on this machine"
+    }
+  ],
+  "rows": [
+    {
+      "area": "Structure",
+      "concept": "Class with state and behaviour",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::classType"
+      ],
+      "targets": {
+        "java": "class",
+        "rust": "struct + impl",
+        "python": "class",
+        "c": "struct + functions taking it",
+        "cpp": "class"
+      },
+      "notes": "Rust and C separate data from behaviour; a generator emits the data type and its operations separately from one UML3 class."
+    },
+    {
+      "area": "Structure",
+      "concept": "Interface / contract without state",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::interfaceType"
+      ],
+      "targets": {
+        "java": "interface",
+        "rust": "trait",
+        "python": "typing.Protocol or abc.ABC",
+        "c": "struct of function pointers",
+        "cpp": "abstract class / concept"
+      },
+      "notes": "Realization is specialization plus redefinition of every abstract operation."
+    },
+    {
+      "area": "Structure",
+      "concept": "Trait or interface with a default implementation",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Core::interfaceType"
+      ],
+      "targets": {
+        "java": "default method",
+        "rust": "trait with a provided method",
+        "python": "mixin class",
+        "c": "-",
+        "cpp": "virtual with a body"
+      },
+      "notes": "An interfaceType operation may be non-abstract and carry a body, so the shape exists; UML3 says nothing about whether an implementor may override it, which is what default methods are about."
+    },
+    {
+      "area": "Structure",
+      "concept": "Abstract class",
+      "coverage": "COVERED",
+      "uml3": [
+        "KerML abstract"
+      ],
+      "targets": {
+        "java": "abstract class",
+        "rust": "-",
+        "python": "abc.ABC",
+        "c": "-",
+        "cpp": "class with a pure virtual"
+      },
+      "notes": "'abstract' is native KerML, so no UML3 keyword is needed."
+    },
+    {
+      "area": "Structure",
+      "concept": "Value type / record / data class",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::dataType",
+        "UML3Data::valueObject"
+      ],
+      "targets": {
+        "java": "record",
+        "rust": "struct with derive(Clone, PartialEq)",
+        "python": "@dataclass(frozen=True)",
+        "c": "struct",
+        "cpp": "struct / aggregate"
+      },
+      "notes": "Equality by value is the defining property and is what dataType means."
+    },
+    {
+      "area": "Structure",
+      "concept": "Enumeration",
+      "coverage": "COVERED",
+      "uml3": [
+        "SysML enum def"
+      ],
+      "targets": {
+        "java": "enum",
+        "rust": "enum (fieldless)",
+        "python": "enum.Enum",
+        "c": "enum",
+        "cpp": "enum class"
+      },
+      "notes": "Native SysML v2; UML3 adds no keyword."
+    },
+    {
+      "area": "Structure",
+      "concept": "Enumeration carrying data (sum type / tagged union)",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3IDL::union"
+      ],
+      "targets": {
+        "java": "sealed interface + records",
+        "rust": "enum with fields",
+        "python": "Union / match",
+        "c": "tagged union",
+        "cpp": "std::variant"
+      },
+      "notes": "#union gives the discriminated choice; associating a distinct payload shape with each case is not expressed, so a Rust enum with fields does not round trip."
+    },
+    {
+      "area": "Structure",
+      "concept": "Generics / templates",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Core::template",
+        "UML3Core::templateParameter"
+      ],
+      "targets": {
+        "java": "type parameter with bounds",
+        "rust": "generic with trait bounds",
+        "python": "TypeVar / PEP 695",
+        "c": "macros",
+        "cpp": "template with concepts"
+      },
+      "notes": "Parameters and binding exist; constraints on a parameter (Java bounds, Rust trait bounds, C++ concepts) have no UML3 construct, and they are what makes generic code compile."
+    },
+    {
+      "area": "Structure",
+      "concept": "Single inheritance",
+      "coverage": "COVERED",
+      "uml3": [
+        "KerML specialization"
+      ],
+      "targets": {
+        "java": "extends",
+        "rust": "-",
+        "python": "subclass",
+        "c": "struct embedding by convention",
+        "cpp": "public base"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Structure",
+      "concept": "Multiple inheritance",
+      "coverage": "COVERED",
+      "uml3": [
+        "KerML specialization"
+      ],
+      "targets": {
+        "java": "interfaces only",
+        "rust": "multiple traits",
+        "python": "multiple bases, MRO",
+        "c": "-",
+        "cpp": "multiple bases"
+      },
+      "notes": "KerML specialization is multiple by nature; what each language permits is a generator concern."
+    },
+    {
+      "area": "Structure",
+      "concept": "Static / class-level member",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::static"
+      ],
+      "targets": {
+        "java": "static",
+        "rust": "associated item",
+        "python": "classmethod / staticmethod",
+        "c": "file-scope",
+        "cpp": "static member"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Structure",
+      "concept": "Constant",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::final"
+      ],
+      "targets": {
+        "java": "static final",
+        "rust": "const",
+        "python": "Final",
+        "c": "const / #define",
+        "cpp": "constexpr"
+      },
+      "notes": "KerML rejects 'constant' on a package-level feature, so #final on a static attribute is the form that loads."
+    },
+    {
+      "area": "Structure",
+      "concept": "Visibility",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "KerML private/protected/public"
+      ],
+      "targets": {
+        "java": "public/protected/private/package",
+        "rust": "pub, pub(crate)",
+        "python": "convention",
+        "c": "static",
+        "cpp": "public/protected/private"
+      },
+      "notes": "KerML has member visibility, but not Rust's pub(crate) or Java's package-private as distinct concepts."
+    },
+    {
+      "area": "Structure",
+      "concept": "Singleton",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::singleton"
+      ],
+      "targets": {
+        "java": "enum singleton / DI scope",
+        "rust": "OnceLock",
+        "python": "module-level instance",
+        "c": "static instance",
+        "cpp": "function-local static"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Operation / method",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::operation",
+        "UML3Core::query"
+      ],
+      "targets": {
+        "java": "method",
+        "rust": "fn in impl",
+        "python": "def",
+        "c": "function",
+        "cpp": "member function"
+      },
+      "notes": "#query marks a side-effect-free operation, which maps to Rust &self and C++ const."
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Constructor",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Core::constructor"
+      ],
+      "targets": {
+        "java": "constructor",
+        "rust": "associated fn new",
+        "python": "__init__",
+        "c": "init function",
+        "cpp": "constructor"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Destructor / deterministic cleanup",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "java": "AutoCloseable",
+        "rust": "Drop",
+        "python": "context manager",
+        "c": "free function",
+        "cpp": "destructor / RAII"
+      },
+      "notes": "Nothing marks an operation as the one that releases a resource, and nothing marks a type as owning one. This matters for every language in the table except Python."
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Exception raised by an operation",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Core::exceptionType",
+        "UML3IDL::raises"
+      ],
+      "targets": {
+        "java": "throws",
+        "rust": "Result<T, E>",
+        "python": "raise",
+        "c": "error return code",
+        "cpp": "throw / expected"
+      },
+      "notes": "The exception type exists, but #raises is a dependency from the operation rather than a feature of it, so a round trip must put it back on the operation; open point 2 of samples/uml3/README.md."
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Operator overloading",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "java": "-",
+        "rust": "impl Add",
+        "python": "__add__",
+        "c": "-",
+        "cpp": "operator+"
+      },
+      "notes": "No way to say that an operation implements an operator. Needed to generate idiomatic Rust, C++ and Python value types."
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Closure / function-valued parameter",
+      "coverage": "TBD",
+      "uml3": [],
+      "targets": {
+        "java": "functional interface",
+        "rust": "Fn traits",
+        "python": "callable",
+        "c": "function pointer",
+        "cpp": "std::function"
+      },
+      "notes": "KerML has expressions and calculation usages; whether a feature can be typed by a function has not been checked."
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Asynchronous operation",
+      "coverage": "GAP",
+      "uml3": [
+        "UML3Core::activeClass"
+      ],
+      "targets": {
+        "java": "CompletableFuture / virtual threads",
+        "rust": "async fn",
+        "python": "async def",
+        "c": "-",
+        "cpp": "coroutine"
+      },
+      "notes": "#activeClass says a class has its own thread of control, which is not the same as an operation returning a future. Every current language in this table has async; UML3 cannot express it."
+    },
+    {
+      "area": "Memory",
+      "concept": "Ownership, borrowing, lifetimes",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "java": "-",
+        "rust": "&, &mut, lifetimes",
+        "python": "-",
+        "c": "manual",
+        "cpp": "unique_ptr / shared_ptr"
+      },
+      "notes": "Composition implies ownership of a part, but not exclusive borrowing, mutability of a reference, or a lifetime. Rust cannot be generated idiomatically without this; C++ smart-pointer choice is the same question."
+    },
+    {
+      "area": "Types",
+      "concept": "Sized primitive types",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Types::Int32",
+        "UML3Types::Uuid"
+      ],
+      "targets": {
+        "java": "int, long",
+        "rust": "i32, u64",
+        "python": "int",
+        "c": "int32_t",
+        "cpp": "std::int32_t"
+      },
+      "notes": "UML3Types adds width to the mathematical ScalarValues, which is what a generator needs."
+    },
+    {
+      "area": "Types",
+      "concept": "Optional / nullable",
+      "coverage": "COVERED",
+      "uml3": [
+        "KerML multiplicity [0..1]"
+      ],
+      "targets": {
+        "java": "Optional",
+        "rust": "Option<T>",
+        "python": "T | None",
+        "c": "pointer or flag",
+        "cpp": "std::optional"
+      },
+      "notes": "Multiplicity carries it; no keyword needed."
+    },
+    {
+      "area": "Types",
+      "concept": "Collections, ordering and uniqueness",
+      "coverage": "COVERED",
+      "uml3": [
+        "KerML multiplicity, ordered, nonunique"
+      ],
+      "targets": {
+        "java": "List / Set",
+        "rust": "Vec / HashSet",
+        "python": "list / set",
+        "c": "array",
+        "cpp": "vector / set"
+      },
+      "notes": "ordered and unique give the four collection kinds."
+    },
+    {
+      "area": "Types",
+      "concept": "Type alias",
+      "coverage": "TBD",
+      "uml3": [],
+      "targets": {
+        "java": "-",
+        "rust": "type X = Y",
+        "python": "type X = Y",
+        "c": "typedef",
+        "cpp": "using"
+      },
+      "notes": "A KerML alias renames a member in a namespace; whether that is the same thing as a type alias has not been checked."
+    },
+    {
+      "area": "Modules",
+      "concept": "Package / module / namespace",
+      "coverage": "COVERED",
+      "uml3": [
+        "SysML package",
+        "UML3Components::layer"
+      ],
+      "targets": {
+        "java": "package",
+        "rust": "mod / crate",
+        "python": "module / package",
+        "c": "translation unit",
+        "cpp": "namespace"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Modules",
+      "concept": "Build manifest and dependency versions",
+      "coverage": "GAP",
+      "uml3": [
+        "UML3Components::Technology"
+      ],
+      "targets": {
+        "java": "pom.xml / build.gradle",
+        "rust": "Cargo.toml",
+        "python": "pyproject.toml",
+        "c": "Makefile",
+        "cpp": "CMakeLists.txt"
+      },
+      "notes": "@Technology names a technology but carries no version or dependency set, so a build file cannot be generated from the model."
+    },
+    {
+      "area": "Frameworks",
+      "concept": "Dependency injection / component wiring",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Components::component",
+        "UML3Components::assembly",
+        "UML3Components::required",
+        "UML3Components::provided"
+      ],
+      "targets": {
+        "java": "Spring @Autowired",
+        "rust": "constructor wiring",
+        "python": "FastAPI Depends",
+        "c": "-",
+        "cpp": "constructor wiring"
+      },
+      "notes": "Required and provided ports with assembly connections are exactly what a DI container resolves."
+    },
+    {
+      "area": "Frameworks",
+      "concept": "Object-relational mapping",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::entity",
+        "UML3Data::table",
+        "UML3Data::column",
+        "UML3Data::primaryKey",
+        "UML3Data::foreignKey",
+        "UML3Data::mapsTo"
+      ],
+      "targets": {
+        "java": "JPA @Entity",
+        "rust": "Diesel / sqlx",
+        "python": "SQLAlchemy",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "#mapsTo links the logical entity to the physical table, which is the mapping an ORM configuration expresses."
+    },
+    {
+      "area": "Frameworks",
+      "concept": "REST endpoint",
+      "coverage": "TBD",
+      "uml3": [
+        "UML3Components::servicePort"
+      ],
+      "targets": {
+        "java": "@RestController",
+        "rust": "axum router",
+        "python": "FastAPI route",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "A service port is the right anchor, but nothing expresses an HTTP method, a path, a status code or a media type."
+    },
+    {
+      "area": "Frameworks",
+      "concept": "Serialization / wire format",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Messaging::messageType",
+        "UML3IDL"
+      ],
+      "targets": {
+        "java": "Jackson",
+        "rust": "serde",
+        "python": "pydantic",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "The IDL mapping is a proven wire format with a round trip; JSON field naming, optionality and versioning are not expressed."
+    },
+    {
+      "area": "Frameworks",
+      "concept": "Publish / subscribe messaging",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Messaging::topic",
+        "UML3Messaging::queue",
+        "UML3Messaging::publishes",
+        "UML3Messaging::subscribes",
+        "UML3Messaging::broker"
+      ],
+      "targets": {
+        "java": "Spring Kafka",
+        "rust": "rdkafka",
+        "python": "aiokafka",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Containers",
+      "concept": "Image built from a component",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Components::artifact",
+        "UML3Components::manifest"
+      ],
+      "targets": {
+        "java": "-",
+        "rust": "-",
+        "python": "-",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "An artifact that manifests a component is a container image; example 02 models exactly that."
+    },
+    {
+      "area": "Containers",
+      "concept": "Container running on a host",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Components::executionEnvironment",
+        "UML3Components::node",
+        "UML3Components::deploy"
+      ],
+      "targets": {
+        "java": "-",
+        "rust": "-",
+        "python": "-",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "Docker 29.2.0 on this machine; a container is an execution environment on a node, and #deploy places the artifact."
+    },
+    {
+      "area": "Containers",
+      "concept": "Environment configuration and secrets",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "java": "-",
+        "rust": "-",
+        "python": "-",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "Nothing expresses an environment variable, a config map or a secret, and a deployment cannot be generated without them."
+    },
+    {
+      "area": "Containers",
+      "concept": "Replicas, health checks, resource limits",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "java": "-",
+        "rust": "-",
+        "python": "-",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "Scaling and liveness are the substance of a container deployment and have no UML3 construct. Candidate for a UML3Deployment library."
+    },
+    {
+      "area": "Containers",
+      "concept": "Network between containers",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Components::communicationPath"
+      ],
+      "targets": {
+        "java": "-",
+        "rust": "-",
+        "python": "-",
+        "c": "-",
+        "cpp": "-"
+      },
+      "notes": "A communication path connects nodes; ports, protocols and published addresses are not expressed."
+    }
+  ]
+}

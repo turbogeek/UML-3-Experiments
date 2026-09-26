@@ -46,6 +46,7 @@ TRACEABILITY = ROOT / "traceability" / "uml2-to-uml3.json"
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_traceability as ct  # noqa: E402  - one definition of what a row's prose is
+import check_languages as cl  # noqa: E402
 
 HEADING_FONT = "Arial"
 BODY_FONT = "Times New Roman"
@@ -260,7 +261,42 @@ def annex_a(doc: OmgDocument) -> None:
         widths=[round(width * s, 2) for s in share])
 
 
-PARTS = {"annex-a": ("Annex A: UML 2.5.1 to UML3 mapping", annex_a)}
+def annex_h(doc: OmgDocument) -> None:
+    """Annex H, whether UML3 can describe software that is actually built, from the language coverage map."""
+    data = json.loads((ROOT / "traceability" / "uml3-to-languages.json").read_text(encoding="utf-8"))
+    rows, targets = data["rows"], data["targets"]
+
+    doc.heading("UML3 coverage of implementation languages and platforms", level=1, number="Annex H")
+    doc.body("(informative)")
+    doc.body(data["description"])
+
+    doc.heading("Targets", level=2, number="H.1")
+    doc.table(["Target", "Version", "Evidence"],
+              [[t["name"], t["version"], t.get("evidence", "")] for t in targets], widths=[1.1, 1.4, 4.0])
+    doc.body(data["versionBasis"])
+
+    doc.heading("Summary", level=2, number="H.2")
+    counts = {k: sum(1 for r in rows if r["coverage"] == k) for k in cl.COVERAGE}
+    doc.table(["Coverage", "Meaning", "Concepts"],
+              [[k, data["coverageLegend"][k], str(counts[k])] for k in cl.COVERAGE]
+              + [["Total", "", str(len(rows))]], widths=[0.9, 4.4, 1.2])
+
+    doc.heading("Coverage by concept", level=2, number="H.3")
+    doc.body(f"{counts['GAP']} concepts have no UML3 construct and {counts['TBD']} are unanalyzed; those "
+             f"{counts['GAP'] + counts['TBD']} rows are what decide whether UML3 is sufficient to generate "
+             "software for these targets.")
+    width = doc.landscape()
+    # Coverage needs room for COVERED on one line; the shares sum to 1
+    share = [0.18, 0.09, 0.15, 0.09, 0.09, 0.09, 0.07, 0.08, 0.16]
+    doc.table(["Concept", "Coverage", "UML3"] + [t["name"] for t in targets] + ["Notes"],
+              [[r["concept"], r["coverage"], ", ".join(r.get("uml3", []))]
+               + [(r.get("targets") or {}).get(t["id"], "") for t in targets]
+               + [cl.row_notes(r)] for r in rows],
+              widths=[round(width * s, 2) for s in share])
+
+
+PARTS = {"annex-a": ("Annex A: UML 2.5.1 to UML3 mapping", annex_a),
+         "annex-h": ("Annex H: UML3 coverage of implementation languages", annex_h)}
 
 
 def to_pdf(docx_path: Path) -> Path | None:
