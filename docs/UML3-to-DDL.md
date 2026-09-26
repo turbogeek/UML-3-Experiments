@@ -45,6 +45,16 @@ Where the rows that are not COVERED would be fixed (see [UML3-LAYERING.md](UML3-
 | metadata | 18 |
 | out-of-scope | 1 |
 
+## Reading the table
+
+Every column says something in its own right, and an empty one is not the absence of an answer:
+
+* **Coverage** — whether a UML3 construct expresses the concept, as the legend above defines.
+* **Layer** — where a fix belongs for a row that is not COVERED (see [UML3-LAYERING.md](UML3-LAYERING.md)). It reads NA on a COVERED row, which by rule has no layer.
+* **UML3** — the construct that carries the concept. **A dash here on a GAP row is the finding itself: no UML3 construct expresses the concept, which is what GAP means.** On a PARTIAL row the construct named is the nearest one that exists, and the note says what it loses.
+* **The target columns** — how that language, engine or platform spells the concept. **NA means that target has no counterpart**, which is a decision about the target and not a gap in UML3; where the answer is not yet known the Coverage column says TBD.
+* **Notes** — required for every row that is not COVERED, and it must say what is missing or what is lost.
+
 ## Schema objects
 
 | Concept | Coverage | Layer | UML3 | ISO SQL | PostgreSQL | MySQL | SQL Server | Oracle | MongoDB | Cassandra | DynamoDB | Neo4j | Notes |

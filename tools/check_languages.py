@@ -97,6 +97,31 @@ def check(data: dict, idx: cn.Index | None) -> list[dict]:
     return findings
 
 
+READING_GUIDE = [
+    "## Reading the table",
+    "",
+    "Every column says something in its own right, and an empty one is not the absence of an answer:",
+    "",
+    "* **Coverage** — whether a UML3 construct expresses the concept, as the legend above defines.",
+    "* **Layer** — where a fix belongs for a row that is not COVERED (see"
+    " [UML3-LAYERING.md](UML3-LAYERING.md)). It reads NA on a COVERED row, which by rule has no layer.",
+    "* **UML3** — the construct that carries the concept. **A dash here on a GAP row is the finding itself:"
+    " no UML3 construct expresses the concept, which is what GAP means.** On a PARTIAL row the construct named"
+    " is the nearest one that exists, and the note says what it loses.",
+    "* **The target columns** — how that language, engine or platform spells the concept. **NA means that"
+    " target has no counterpart**, which is a decision about the target and not a gap in UML3; where the answer"
+    " is not yet known the Coverage column says TBD.",
+    "* **Notes** — required for every row that is not COVERED, and it must say what is missing or what is lost.",
+    "",
+]
+
+
+def reading_guide() -> list[str]:
+    """Told to the reader before the first table, so no column has to be guessed at. Generated rather than
+    written into each map, so the three cannot drift apart."""
+    return list(READING_GUIDE)
+
+
 def cell(text: str) -> str:
     return (text or "").replace("|", "\\|").replace("\n", " ").strip() or "—"
 
@@ -123,6 +148,7 @@ def render(data: dict) -> str:
         out += [f"| {k} | {layers[k]} |" for k in LAYERS if layers.get(k)]
         out += [""]
 
+    out += reading_guide()
     header = "| Concept | Coverage | Layer | UML3 | " + " | ".join(t["name"] for t in targets) + " | Notes |"
     sep = "|---" * (4 + len(targets) + 1) + "|"
     for area in dict.fromkeys(r["area"] for r in rows):

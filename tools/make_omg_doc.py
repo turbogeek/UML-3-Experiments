@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import datetime as dt
 import json
+import re
 import subprocess
 import sys
 from pathlib import Path
@@ -261,6 +262,21 @@ def annex_a(doc: OmgDocument) -> None:
         widths=[round(width * s, 2) for s in share])
 
 
+def reading_guide_paragraphs() -> list[str]:
+    """The same column-by-column explanation the markdown carries, as plain prose. Taken from
+    check_languages so the two cannot say different things; markdown emphasis and links are stripped because a
+    specification is read on paper."""
+    out = []
+    for line in cl.READING_GUIDE:
+        line = line.strip()
+        if not line or line.startswith("##"):
+            continue
+        line = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", line)      # [text](link) -> text
+        line = line.replace("**", "").replace("—", "-")
+        out.append(line[2:].strip() if line.startswith("* ") else line)
+    return out
+
+
 def coverage_annex(doc: OmgDocument, map_name: str, letter: str, title: str) -> None:
     """Any of the coverage maps as an annex. They share a schema, so they share one renderer: a second copy is
     how the rationale went missing from Annex A."""
@@ -286,6 +302,8 @@ def coverage_annex(doc: OmgDocument, map_name: str, letter: str, title: str) -> 
     doc.heading("Coverage by concept", level=2, number=f"{letter}.3")
     doc.body(f"{counts['GAP']} concepts have no UML3 construct and {counts['TBD']} are unanalyzed; those "
              f"{counts['GAP'] + counts['TBD']} rows are what decide whether UML3 is sufficient here.")
+    for paragraph in reading_guide_paragraphs():
+        doc.body(paragraph)
     width = doc.landscape()
     # Coverage needs room for COVERED on one line; the shares sum to 1
     fixed = [0.18, 0.09, 0.15]
