@@ -44,6 +44,9 @@ except ImportError:  # pragma: no cover - the message matters more than the trac
 ROOT = Path(__file__).resolve().parent.parent
 TRACEABILITY = ROOT / "traceability" / "uml2-to-uml3.json"
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_traceability as ct  # noqa: E402  - one definition of what a row's prose is
+
 HEADING_FONT = "Arial"
 BODY_FONT = "Times New Roman"
 
@@ -253,7 +256,7 @@ def annex_a(doc: OmgDocument) -> None:
     doc.table(
         ["UML 2.x", "Status", "SysML v2 / KerML", "UML3", "Notation", "Notes"],
         [[flatten(r.get("uml2")), flatten(r.get("status")), flatten(r.get("sysml")), flatten(r.get("uml3")),
-          flatten(r.get("notation")), flatten(r.get("notes"))] for r in rows],
+          flatten(r.get("notation")), ct.row_notes(r)] for r in rows],
         widths=[round(width * s, 2) for s in share])
 
 

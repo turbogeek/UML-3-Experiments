@@ -92,6 +92,14 @@ def check(data: dict, idx: cn.Index) -> list[dict]:
     return findings
 
 
+def row_notes(row: dict) -> str:
+    """The prose a reader needs for one row: the rationale a PARTIAL or NOT_ADOPTED row must carry, followed by
+    any notes. One definition, because every renderer needs the same answer - tools/make_omg_doc.py rendered
+    'notes' alone and silently dropped the rationale, so 12 of 13 PARTIAL and NOT_ADOPTED rows looked as though
+    no one had justified them."""
+    return " ".join(x for x in (row.get("rationale"), row.get("notes")) if x)
+
+
 def contains_snippet(text: str, snippet: str) -> bool:
     """The snippet occurs in the model text, ignoring documentation: 'attribute x : T;' matches
     'attribute x : T { doc /* ... */ }' (token streams normalized by compare_model_tokens)."""
@@ -141,7 +149,7 @@ def render(data: dict) -> str:
             example = ""
             if r.get("example"):
                 example = f"[{Path(r['example']['file']).name}](../{r['example']['file']})"
-            notes = " ".join(x for x in (r.get("rationale"), r.get("notes")) if x)
+            notes = row_notes(r)
             views = code_list(r.get("views", []))
             sysml = code_list(r.get("sysml", [])) + (f"; views: {views}" if views else "")
             out.append("| " + " | ".join([
