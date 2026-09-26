@@ -84,8 +84,10 @@ derived from the published specification; it is also how `check_docs.py` already
 
 ## Open points
 
-1. **Which document first.** The traceability report is the smallest complete candidate: it is already generated
-   from JSON and is all tables. A full UML3 specification answering `ad/2026-04-01` is the eventual target.
+1. ~~Which document first.~~ **Settled**: the specification's layout is in
+   [UML3-SPECIFICATION-OUTLINE.md](UML3-SPECIFICATION-OUTLINE.md) — Clause 7 the UML metamodel, 8 the UML3
+   language, 9 the extension of SysML v2, then the mapping, requirements, example and tutorial annexes, which may
+   be separate volumes. The traceability annex is the pilot for the renderer, because it is already generated.
 2. **The OMG specification template.** `E:\_Documents\_OMG` holds the RFP and the Policies and Procedures, but no
    specification template with the real Word styles. Without it the styles here are reconstructed from the
    published PDF: close, but not authoritative.
