@@ -30,6 +30,9 @@ import check_names as cn  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 COVERAGE = ("COVERED", "PARTIAL", "GAP", "TBD")
+# Where a gap would be fixed, by the decision procedure of docs/UML3-LAYERING.md. A gap without a layer is an
+# unanswered design question, and a specification is judged partly on what it refused to add.
+LAYERS = ("language", "library", "metadata", "out-of-scope")
 
 # Every coverage map has the same shape, so they share one checker and one renderer. Adding a map is a data
 # file and a line here - not a second copy of this logic, which is how tools/make_omg_doc.py came to drop the
@@ -69,6 +72,16 @@ def check(data: dict, idx: cn.Index | None) -> list[dict]:
         # the rule this table exists for: a gap that does not say what is missing teaches nobody anything
         if cov in ("PARTIAL", "GAP", "TBD") and not row_notes(row):
             add("SCHEMA", row, f"{cov} requires a note saying what is missing or lost")
+        # the accounting docs/UML3-LAYERING.md asks for: a gap must say where it would be fixed, so that the
+        # language-layer count stays small and arguable and the library-layer count is just a work list
+        layer = row.get("layer")
+        if cov in ("PARTIAL", "GAP", "TBD"):
+            if not layer:
+                add("LAYER", row, f"{cov} requires a layer: one of {', '.join(LAYERS)}")
+            elif layer not in LAYERS:
+                add("LAYER", row, f"unknown layer {layer!r}")
+        if cov == "COVERED" and layer:
+            add("LAYER", row, "COVERED rows need no layer; it is already covered")
         if cov == "COVERED" and not row.get("uml3"):
             add("SCHEMA", row, "COVERED requires the UML3 construct to be named")
         for target in (row.get("targets") or {}):
@@ -102,13 +115,20 @@ def render(data: dict) -> str:
     out += ["", data["versionBasis"], "", "## Summary", "", "| Coverage | Concepts |", "|---|---|"]
     out += [f"| {k} | {counts.get(k, 0)} |" for k in COVERAGE]
     out += [f"| **Total** | **{len(rows)}** |", ""]
+    layers = Counter(r["layer"] for r in rows if r.get("layer"))
+    if layers:
+        out += ["Where the rows that are not COVERED would be fixed "
+                "(see [UML3-LAYERING.md](UML3-LAYERING.md)):", "",
+                "| Layer | Concepts |", "|---|---|"]
+        out += [f"| {k} | {layers[k]} |" for k in LAYERS if layers.get(k)]
+        out += [""]
 
-    header = "| Concept | Coverage | UML3 | " + " | ".join(t["name"] for t in targets) + " | Notes |"
-    sep = "|---" * (3 + len(targets) + 1) + "|"
+    header = "| Concept | Coverage | Layer | UML3 | " + " | ".join(t["name"] for t in targets) + " | Notes |"
+    sep = "|---" * (4 + len(targets) + 1) + "|"
     for area in dict.fromkeys(r["area"] for r in rows):
         out += [f"## {area}", "", header, sep]
         for r in (x for x in rows if x["area"] == area):
-            cells = [cell(r["concept"]), f"**{r['coverage']}**",
+            cells = [cell(r["concept"]), f"**{r['coverage']}**", cell(r.get("layer", "")),
                      cell(", ".join(f"`{n}`" for n in r.get("uml3", [])))]
             cells += [cell((r.get("targets") or {}).get(t["id"], "")) for t in targets]
             cells.append(cell(row_notes(r)))

@@ -33,76 +33,84 @@ Versions are what this machine can actually compile and run, so a claim can be t
 | TBD | 3 |
 | **Total** | **38** |
 
+Where the rows that are not COVERED would be fixed (see [UML3-LAYERING.md](UML3-LAYERING.md)):
+
+| Layer | Concepts |
+|---|---|
+| language | 5 |
+| library | 6 |
+| metadata | 6 |
+
 ## Structure
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Class with state and behaviour | **COVERED** | `UML3Core::classType` | class | struct + impl | class | struct + functions taking it | class | Rust and C separate data from behaviour; a generator emits the data type and its operations separately from one UML3 class. |
-| Interface / contract without state | **COVERED** | `UML3Core::interfaceType` | interface | trait | typing.Protocol or abc.ABC | struct of function pointers | abstract class / concept | Realization is specialization plus redefinition of every abstract operation. |
-| Trait or interface with a default implementation | **PARTIAL** | `UML3Core::interfaceType` | default method | trait with a provided method | mixin class | - | virtual with a body | An interfaceType operation may be non-abstract and carry a body, so the shape exists; UML3 says nothing about whether an implementor may override it, which is what default methods are about. |
-| Abstract class | **COVERED** | `KerML abstract` | abstract class | - | abc.ABC | - | class with a pure virtual | 'abstract' is native KerML, so no UML3 keyword is needed. |
-| Value type / record / data class | **COVERED** | `UML3Core::dataType`, `UML3Data::valueObject` | record | struct with derive(Clone, PartialEq) | @dataclass(frozen=True) | struct | struct / aggregate | Equality by value is the defining property and is what dataType means. |
-| Enumeration | **COVERED** | `SysML enum def` | enum | enum (fieldless) | enum.Enum | enum | enum class | Native SysML v2; UML3 adds no keyword. |
-| Enumeration carrying data (sum type / tagged union) | **PARTIAL** | `UML3IDL::union` | sealed interface + records | enum with fields | Union / match | tagged union | std::variant | #union gives the discriminated choice; associating a distinct payload shape with each case is not expressed, so a Rust enum with fields does not round trip. |
-| Generics / templates | **PARTIAL** | `UML3Core::template`, `UML3Core::templateParameter` | type parameter with bounds | generic with trait bounds | TypeVar / PEP 695 | macros | template with concepts | Parameters and binding exist; constraints on a parameter (Java bounds, Rust trait bounds, C++ concepts) have no UML3 construct, and they are what makes generic code compile. |
-| Single inheritance | **COVERED** | `KerML specialization` | extends | - | subclass | struct embedding by convention | public base | — |
-| Multiple inheritance | **COVERED** | `KerML specialization` | interfaces only | multiple traits | multiple bases, MRO | - | multiple bases | KerML specialization is multiple by nature; what each language permits is a generator concern. |
-| Static / class-level member | **COVERED** | `UML3Core::static` | static | associated item | classmethod / staticmethod | file-scope | static member | — |
-| Constant | **COVERED** | `UML3Core::final` | static final | const | Final | const / #define | constexpr | KerML rejects 'constant' on a package-level feature, so #final on a static attribute is the form that loads. |
-| Visibility | **PARTIAL** | `KerML private/protected/public` | public/protected/private/package | pub, pub(crate) | convention | static | public/protected/private | KerML has member visibility, but not Rust's pub(crate) or Java's package-private as distinct concepts. |
-| Singleton | **COVERED** | `UML3Core::singleton` | enum singleton / DI scope | OnceLock | module-level instance | static instance | function-local static | — |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Class with state and behaviour | **COVERED** | — | `UML3Core::classType` | class | struct + impl | class | struct + functions taking it | class | Rust and C separate data from behaviour; a generator emits the data type and its operations separately from one UML3 class. |
+| Interface / contract without state | **COVERED** | — | `UML3Core::interfaceType` | interface | trait | typing.Protocol or abc.ABC | struct of function pointers | abstract class / concept | Realization is specialization plus redefinition of every abstract operation. |
+| Trait or interface with a default implementation | **PARTIAL** | metadata | `UML3Core::interfaceType` | default method | trait with a provided method | mixin class | - | virtual with a body | An interfaceType operation may be non-abstract and carry a body, so the shape exists; UML3 says nothing about whether an implementor may override it, which is what default methods are about. |
+| Abstract class | **COVERED** | — | `KerML abstract` | abstract class | - | abc.ABC | - | class with a pure virtual | 'abstract' is native KerML, so no UML3 keyword is needed. |
+| Value type / record / data class | **COVERED** | — | `UML3Core::dataType`, `UML3Data::valueObject` | record | struct with derive(Clone, PartialEq) | @dataclass(frozen=True) | struct | struct / aggregate | Equality by value is the defining property and is what dataType means. |
+| Enumeration | **COVERED** | — | `SysML enum def` | enum | enum (fieldless) | enum.Enum | enum | enum class | Native SysML v2; UML3 adds no keyword. |
+| Enumeration carrying data (sum type / tagged union) | **PARTIAL** | language | `UML3IDL::union` | sealed interface + records | enum with fields | Union / match | tagged union | std::variant | #union gives the discriminated choice; associating a distinct payload shape with each case is not expressed, so a Rust enum with fields does not round trip. |
+| Generics / templates | **PARTIAL** | language | `UML3Core::template`, `UML3Core::templateParameter` | type parameter with bounds | generic with trait bounds | TypeVar / PEP 695 | macros | template with concepts | Parameters and binding exist; constraints on a parameter (Java bounds, Rust trait bounds, C++ concepts) have no UML3 construct, and they are what makes generic code compile. |
+| Single inheritance | **COVERED** | — | `KerML specialization` | extends | - | subclass | struct embedding by convention | public base | — |
+| Multiple inheritance | **COVERED** | — | `KerML specialization` | interfaces only | multiple traits | multiple bases, MRO | - | multiple bases | KerML specialization is multiple by nature; what each language permits is a generator concern. |
+| Static / class-level member | **COVERED** | — | `UML3Core::static` | static | associated item | classmethod / staticmethod | file-scope | static member | — |
+| Constant | **COVERED** | — | `UML3Core::final` | static final | const | Final | const / #define | constexpr | KerML rejects 'constant' on a package-level feature, so #final on a static attribute is the form that loads. |
+| Visibility | **PARTIAL** | metadata | `KerML private/protected/public` | public/protected/private/package | pub, pub(crate) | convention | static | public/protected/private | KerML has member visibility, but not Rust's pub(crate) or Java's package-private as distinct concepts. |
+| Singleton | **COVERED** | — | `UML3Core::singleton` | enum singleton / DI scope | OnceLock | module-level instance | static instance | function-local static | — |
 
 ## Behaviour
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Operation / method | **COVERED** | `UML3Core::operation`, `UML3Core::query` | method | fn in impl | def | function | member function | #query marks a side-effect-free operation, which maps to Rust &self and C++ const. |
-| Constructor | **COVERED** | `UML3Core::constructor` | constructor | associated fn new | __init__ | init function | constructor | — |
-| Destructor / deterministic cleanup | **GAP** | — | AutoCloseable | Drop | context manager | free function | destructor / RAII | Nothing marks an operation as the one that releases a resource, and nothing marks a type as owning one. This matters for every language in the table except Python. |
-| Exception raised by an operation | **PARTIAL** | `UML3Core::exceptionType`, `UML3IDL::raises` | throws | Result<T, E> | raise | error return code | throw / expected | The exception type exists, but #raises is a dependency from the operation rather than a feature of it, so a round trip must put it back on the operation; open point 2 of samples/uml3/README.md. |
-| Operator overloading | **GAP** | — | - | impl Add | __add__ | - | operator+ | No way to say that an operation implements an operator. Needed to generate idiomatic Rust, C++ and Python value types. |
-| Closure / function-valued parameter | **TBD** | — | functional interface | Fn traits | callable | function pointer | std::function | KerML has expressions and calculation usages; whether a feature can be typed by a function has not been checked. |
-| Asynchronous operation | **GAP** | `UML3Core::activeClass` | CompletableFuture / virtual threads | async fn | async def | - | coroutine | #activeClass says a class has its own thread of control, which is not the same as an operation returning a future. Every current language in this table has async; UML3 cannot express it. |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Operation / method | **COVERED** | — | `UML3Core::operation`, `UML3Core::query` | method | fn in impl | def | function | member function | #query marks a side-effect-free operation, which maps to Rust &self and C++ const. |
+| Constructor | **COVERED** | — | `UML3Core::constructor` | constructor | associated fn new | __init__ | init function | constructor | — |
+| Destructor / deterministic cleanup | **GAP** | metadata | — | AutoCloseable | Drop | context manager | free function | destructor / RAII | Nothing marks an operation as the one that releases a resource, and nothing marks a type as owning one. This matters for every language in the table except Python. |
+| Exception raised by an operation | **PARTIAL** | metadata | `UML3Core::exceptionType`, `UML3IDL::raises` | throws | Result<T, E> | raise | error return code | throw / expected | The exception type exists, but #raises is a dependency from the operation rather than a feature of it, so a round trip must put it back on the operation; open point 2 of samples/uml3/README.md. |
+| Operator overloading | **GAP** | metadata | — | - | impl Add | __add__ | - | operator+ | No way to say that an operation implements an operator. Needed to generate idiomatic Rust, C++ and Python value types. |
+| Closure / function-valued parameter | **TBD** | language | — | functional interface | Fn traits | callable | function pointer | std::function | KerML has expressions and calculation usages; whether a feature can be typed by a function has not been checked. |
+| Asynchronous operation | **GAP** | metadata | `UML3Core::activeClass` | CompletableFuture / virtual threads | async fn | async def | - | coroutine | #activeClass says a class has its own thread of control, which is not the same as an operation returning a future. Every current language in this table has async; UML3 cannot express it. |
 
 ## Memory
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Ownership, borrowing, lifetimes | **GAP** | — | - | &, &mut, lifetimes | - | manual | unique_ptr / shared_ptr | Composition implies ownership of a part, but not exclusive borrowing, mutability of a reference, or a lifetime. Rust cannot be generated idiomatically without this; C++ smart-pointer choice is the same question. |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Ownership, borrowing, lifetimes | **GAP** | language | — | - | &, &mut, lifetimes | - | manual | unique_ptr / shared_ptr | Composition implies ownership of a part, but not exclusive borrowing, mutability of a reference, or a lifetime. Rust cannot be generated idiomatically without this; C++ smart-pointer choice is the same question. |
 
 ## Types
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Sized primitive types | **COVERED** | `UML3Types::Int32`, `UML3Types::Uuid` | int, long | i32, u64 | int | int32_t | std::int32_t | UML3Types adds width to the mathematical ScalarValues, which is what a generator needs. |
-| Optional / nullable | **COVERED** | `KerML multiplicity [0..1]` | Optional | Option<T> | T \| None | pointer or flag | std::optional | Multiplicity carries it; no keyword needed. |
-| Collections, ordering and uniqueness | **COVERED** | `KerML multiplicity, ordered, nonunique` | List / Set | Vec / HashSet | list / set | array | vector / set | ordered and unique give the four collection kinds. |
-| Type alias | **TBD** | — | - | type X = Y | type X = Y | typedef | using | A KerML alias renames a member in a namespace; whether that is the same thing as a type alias has not been checked. |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Sized primitive types | **COVERED** | — | `UML3Types::Int32`, `UML3Types::Uuid` | int, long | i32, u64 | int | int32_t | std::int32_t | UML3Types adds width to the mathematical ScalarValues, which is what a generator needs. |
+| Optional / nullable | **COVERED** | — | `KerML multiplicity [0..1]` | Optional | Option<T> | T \| None | pointer or flag | std::optional | Multiplicity carries it; no keyword needed. |
+| Collections, ordering and uniqueness | **COVERED** | — | `KerML multiplicity, ordered, nonunique` | List / Set | Vec / HashSet | list / set | array | vector / set | ordered and unique give the four collection kinds. |
+| Type alias | **TBD** | language | — | - | type X = Y | type X = Y | typedef | using | A KerML alias renames a member in a namespace; whether that is the same thing as a type alias has not been checked. |
 
 ## Modules
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Package / module / namespace | **COVERED** | `SysML package`, `UML3Components::layer` | package | mod / crate | module / package | translation unit | namespace | — |
-| Build manifest and dependency versions | **GAP** | `UML3Components::Technology` | pom.xml / build.gradle | Cargo.toml | pyproject.toml | Makefile | CMakeLists.txt | @Technology names a technology but carries no version or dependency set, so a build file cannot be generated from the model. |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Package / module / namespace | **COVERED** | — | `SysML package`, `UML3Components::layer` | package | mod / crate | module / package | translation unit | namespace | — |
+| Build manifest and dependency versions | **GAP** | library | `UML3Components::Technology` | pom.xml / build.gradle | Cargo.toml | pyproject.toml | Makefile | CMakeLists.txt | @Technology names a technology but carries no version or dependency set, so a build file cannot be generated from the model. |
 
 ## Frameworks
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Dependency injection / component wiring | **COVERED** | `UML3Components::component`, `UML3Components::assembly`, `UML3Components::required`, `UML3Components::provided` | Spring @Autowired | constructor wiring | FastAPI Depends | - | constructor wiring | Required and provided ports with assembly connections are exactly what a DI container resolves. |
-| Object-relational mapping | **COVERED** | `UML3Data::entity`, `UML3Data::table`, `UML3Data::column`, `UML3Data::primaryKey`, `UML3Data::foreignKey`, `UML3Data::mapsTo` | JPA @Entity | Diesel / sqlx | SQLAlchemy | - | - | #mapsTo links the logical entity to the physical table, which is the mapping an ORM configuration expresses. |
-| REST endpoint | **TBD** | `UML3Components::servicePort` | @RestController | axum router | FastAPI route | - | - | A service port is the right anchor, but nothing expresses an HTTP method, a path, a status code or a media type. |
-| Serialization / wire format | **PARTIAL** | `UML3Messaging::messageType`, `UML3IDL` | Jackson | serde | pydantic | - | - | The IDL mapping is a proven wire format with a round trip; JSON field naming, optionality and versioning are not expressed. |
-| Publish / subscribe messaging | **COVERED** | `UML3Messaging::topic`, `UML3Messaging::queue`, `UML3Messaging::publishes`, `UML3Messaging::subscribes`, `UML3Messaging::broker` | Spring Kafka | rdkafka | aiokafka | - | - | — |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Dependency injection / component wiring | **COVERED** | — | `UML3Components::component`, `UML3Components::assembly`, `UML3Components::required`, `UML3Components::provided` | Spring @Autowired | constructor wiring | FastAPI Depends | - | constructor wiring | Required and provided ports with assembly connections are exactly what a DI container resolves. |
+| Object-relational mapping | **COVERED** | — | `UML3Data::entity`, `UML3Data::table`, `UML3Data::column`, `UML3Data::primaryKey`, `UML3Data::foreignKey`, `UML3Data::mapsTo` | JPA @Entity | Diesel / sqlx | SQLAlchemy | - | - | #mapsTo links the logical entity to the physical table, which is the mapping an ORM configuration expresses. |
+| REST endpoint | **TBD** | library | `UML3Components::servicePort` | @RestController | axum router | FastAPI route | - | - | A service port is the right anchor, but nothing expresses an HTTP method, a path, a status code or a media type. |
+| Serialization / wire format | **PARTIAL** | library | `UML3Messaging::messageType`, `UML3IDL` | Jackson | serde | pydantic | - | - | The IDL mapping is a proven wire format with a round trip; JSON field naming, optionality and versioning are not expressed. |
+| Publish / subscribe messaging | **COVERED** | — | `UML3Messaging::topic`, `UML3Messaging::queue`, `UML3Messaging::publishes`, `UML3Messaging::subscribes`, `UML3Messaging::broker` | Spring Kafka | rdkafka | aiokafka | - | - | — |
 
 ## Containers
 
-| Concept | Coverage | UML3 | Java | Rust | Python | C | C++ | Notes |
-|---|---|---|---|---|---|---|---|---|
-| Image built from a component | **COVERED** | `UML3Components::artifact`, `UML3Components::manifest` | - | - | - | - | - | An artifact that manifests a component is a container image; example 02 models exactly that. |
-| Container running on a host | **COVERED** | `UML3Components::executionEnvironment`, `UML3Components::node`, `UML3Components::deploy` | - | - | - | - | - | Docker 29.2.0 on this machine; a container is an execution environment on a node, and #deploy places the artifact. |
-| Environment configuration and secrets | **GAP** | — | - | - | - | - | - | Nothing expresses an environment variable, a config map or a secret, and a deployment cannot be generated without them. |
-| Replicas, health checks, resource limits | **GAP** | — | - | - | - | - | - | Scaling and liveness are the substance of a container deployment and have no UML3 construct. Candidate for a UML3Deployment library. |
-| Network between containers | **PARTIAL** | `UML3Components::communicationPath` | - | - | - | - | - | A communication path connects nodes; ports, protocols and published addresses are not expressed. |
+| Concept | Coverage | Layer | UML3 | Java | Rust | Python | C | C++ | Notes |
+|---|---|---|---|---|---|---|---|---|---|
+| Image built from a component | **COVERED** | — | `UML3Components::artifact`, `UML3Components::manifest` | - | - | - | - | - | An artifact that manifests a component is a container image; example 02 models exactly that. |
+| Container running on a host | **COVERED** | — | `UML3Components::executionEnvironment`, `UML3Components::node`, `UML3Components::deploy` | - | - | - | - | - | Docker 29.2.0 on this machine; a container is an execution environment on a node, and #deploy places the artifact. |
+| Environment configuration and secrets | **GAP** | library | — | - | - | - | - | - | Nothing expresses an environment variable, a config map or a secret, and a deployment cannot be generated without them. |
+| Replicas, health checks, resource limits | **GAP** | library | — | - | - | - | - | - | Scaling and liveness are the substance of a container deployment and have no UML3 construct. Candidate for a UML3Deployment library. |
+| Network between containers | **PARTIAL** | library | `UML3Components::communicationPath` | - | - | - | - | - | A communication path connects nodes; ports, protocols and published addresses are not expressed. |
 

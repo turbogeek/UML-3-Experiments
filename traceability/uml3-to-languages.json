@@ -87,7 +87,8 @@
         "c": "-",
         "cpp": "virtual with a body"
       },
-      "notes": "An interfaceType operation may be non-abstract and carry a body, so the shape exists; UML3 says nothing about whether an implementor may override it, which is what default methods are about."
+      "notes": "An interfaceType operation may be non-abstract and carry a body, so the shape exists; UML3 says nothing about whether an implementor may override it, which is what default methods are about.",
+      "layer": "metadata"
     },
     {
       "area": "Structure",
@@ -152,7 +153,8 @@
         "c": "tagged union",
         "cpp": "std::variant"
       },
-      "notes": "#union gives the discriminated choice; associating a distinct payload shape with each case is not expressed, so a Rust enum with fields does not round trip."
+      "notes": "#union gives the discriminated choice; associating a distinct payload shape with each case is not expressed, so a Rust enum with fields does not round trip.",
+      "layer": "language"
     },
     {
       "area": "Structure",
@@ -169,7 +171,8 @@
         "c": "macros",
         "cpp": "template with concepts"
       },
-      "notes": "Parameters and binding exist; constraints on a parameter (Java bounds, Rust trait bounds, C++ concepts) have no UML3 construct, and they are what makes generic code compile."
+      "notes": "Parameters and binding exist; constraints on a parameter (Java bounds, Rust trait bounds, C++ concepts) have no UML3 construct, and they are what makes generic code compile.",
+      "layer": "language"
     },
     {
       "area": "Structure",
@@ -249,7 +252,8 @@
         "c": "static",
         "cpp": "public/protected/private"
       },
-      "notes": "KerML has member visibility, but not Rust's pub(crate) or Java's package-private as distinct concepts."
+      "notes": "KerML has member visibility, but not Rust's pub(crate) or Java's package-private as distinct concepts.",
+      "layer": "metadata"
     },
     {
       "area": "Structure",
@@ -312,7 +316,8 @@
         "c": "free function",
         "cpp": "destructor / RAII"
       },
-      "notes": "Nothing marks an operation as the one that releases a resource, and nothing marks a type as owning one. This matters for every language in the table except Python."
+      "notes": "Nothing marks an operation as the one that releases a resource, and nothing marks a type as owning one. This matters for every language in the table except Python.",
+      "layer": "metadata"
     },
     {
       "area": "Behaviour",
@@ -329,7 +334,8 @@
         "c": "error return code",
         "cpp": "throw / expected"
       },
-      "notes": "The exception type exists, but #raises is a dependency from the operation rather than a feature of it, so a round trip must put it back on the operation; open point 2 of samples/uml3/README.md."
+      "notes": "The exception type exists, but #raises is a dependency from the operation rather than a feature of it, so a round trip must put it back on the operation; open point 2 of samples/uml3/README.md.",
+      "layer": "metadata"
     },
     {
       "area": "Behaviour",
@@ -343,7 +349,8 @@
         "c": "-",
         "cpp": "operator+"
       },
-      "notes": "No way to say that an operation implements an operator. Needed to generate idiomatic Rust, C++ and Python value types."
+      "notes": "No way to say that an operation implements an operator. Needed to generate idiomatic Rust, C++ and Python value types.",
+      "layer": "metadata"
     },
     {
       "area": "Behaviour",
@@ -357,7 +364,8 @@
         "c": "function pointer",
         "cpp": "std::function"
       },
-      "notes": "KerML has expressions and calculation usages; whether a feature can be typed by a function has not been checked."
+      "notes": "KerML has expressions and calculation usages; whether a feature can be typed by a function has not been checked.",
+      "layer": "language"
     },
     {
       "area": "Behaviour",
@@ -373,7 +381,8 @@
         "c": "-",
         "cpp": "coroutine"
       },
-      "notes": "#activeClass says a class has its own thread of control, which is not the same as an operation returning a future. Every current language in this table has async; UML3 cannot express it."
+      "notes": "#activeClass says a class has its own thread of control, which is not the same as an operation returning a future. Every current language in this table has async; UML3 cannot express it.",
+      "layer": "metadata"
     },
     {
       "area": "Memory",
@@ -387,7 +396,8 @@
         "c": "manual",
         "cpp": "unique_ptr / shared_ptr"
       },
-      "notes": "Composition implies ownership of a part, but not exclusive borrowing, mutability of a reference, or a lifetime. Rust cannot be generated idiomatically without this; C++ smart-pointer choice is the same question."
+      "notes": "Composition implies ownership of a part, but not exclusive borrowing, mutability of a reference, or a lifetime. Rust cannot be generated idiomatically without this; C++ smart-pointer choice is the same question.",
+      "layer": "language"
     },
     {
       "area": "Types",
@@ -450,7 +460,8 @@
         "c": "typedef",
         "cpp": "using"
       },
-      "notes": "A KerML alias renames a member in a namespace; whether that is the same thing as a type alias has not been checked."
+      "notes": "A KerML alias renames a member in a namespace; whether that is the same thing as a type alias has not been checked.",
+      "layer": "language"
     },
     {
       "area": "Modules",
@@ -483,7 +494,8 @@
         "c": "Makefile",
         "cpp": "CMakeLists.txt"
       },
-      "notes": "@Technology names a technology but carries no version or dependency set, so a build file cannot be generated from the model."
+      "notes": "@Technology names a technology but carries no version or dependency set, so a build file cannot be generated from the model.",
+      "layer": "library"
     },
     {
       "area": "Frameworks",
@@ -539,7 +551,8 @@
         "c": "-",
         "cpp": "-"
       },
-      "notes": "A service port is the right anchor, but nothing expresses an HTTP method, a path, a status code or a media type."
+      "notes": "A service port is the right anchor, but nothing expresses an HTTP method, a path, a status code or a media type.",
+      "layer": "library"
     },
     {
       "area": "Frameworks",
@@ -556,7 +569,8 @@
         "c": "-",
         "cpp": "-"
       },
-      "notes": "The IDL mapping is a proven wire format with a round trip; JSON field naming, optionality and versioning are not expressed."
+      "notes": "The IDL mapping is a proven wire format with a round trip; JSON field naming, optionality and versioning are not expressed.",
+      "layer": "library"
     },
     {
       "area": "Frameworks",
@@ -625,7 +639,8 @@
         "c": "-",
         "cpp": "-"
       },
-      "notes": "Nothing expresses an environment variable, a config map or a secret, and a deployment cannot be generated without them."
+      "notes": "Nothing expresses an environment variable, a config map or a secret, and a deployment cannot be generated without them.",
+      "layer": "library"
     },
     {
       "area": "Containers",
@@ -639,7 +654,8 @@
         "c": "-",
         "cpp": "-"
       },
-      "notes": "Scaling and liveness are the substance of a container deployment and have no UML3 construct. Candidate for a UML3Deployment library."
+      "notes": "Scaling and liveness are the substance of a container deployment and have no UML3 construct. Candidate for a UML3Deployment library.",
+      "layer": "library"
     },
     {
       "area": "Containers",
@@ -655,7 +671,8 @@
         "c": "-",
         "cpp": "-"
       },
-      "notes": "A communication path connects nodes; ports, protocols and published addresses are not expressed."
+      "notes": "A communication path connects nodes; ports, protocols and published addresses are not expressed.",
+      "layer": "library"
     }
   ]
 }

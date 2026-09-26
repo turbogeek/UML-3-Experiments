@@ -1,144 +1,734 @@
 {
-  "title": "UML3 to SQL DDL",
-  "description": "Can a UML3 model be turned into a schema, and can an existing schema be read back into one? Each row is something SQL DDL expresses, how the major dialects spell it, and which UML3 construct carries it. UML3Data already models the logical and physical sides and the #mapsTo link between them, so the interesting rows are the physical details a CREATE statement needs and a class diagram traditionally drops.",
+  "title": "UML3 to database schemas: SQL DDL and NoSQL",
+  "description": "Can a UML3 model be turned into a schema, and read back from one, across the engines most projects actually use? Each row is something a database expresses, how the major engines spell it, and which UML3 construct carries it. The aim is breadth of vendor coverage without breadth of language: almost every row below is a library element or a marker on an existing one, per docs/UML3-LAYERING.md, so covering another engine costs a library and not a new construct. UML3Data already models the logical and physical sides and the #mapsTo link between them; the interesting rows are the physical details a CREATE statement needs, and the ones where a document, wide-column or graph store has no relational equivalent at all.",
   "coverageLegend": {
     "COVERED": "a UML3 construct expresses it; the construct is named in the UML3 column",
     "PARTIAL": "expressible, but with loss - the note says what is lost",
     "GAP": "no UML3 construct expresses it; a requirement is needed if it matters",
     "TBD": "not yet analyzed, or the dialect's behaviour has not been confirmed"
   },
-  "versionBasis": "Dialect columns are written against PostgreSQL 17, MySQL 8.4, Microsoft SQL Server 2022 and Oracle 23ai, and against ISO/IEC 9075:2023 where the standard settles it. No database engine is installed on this machine, so unlike the Java and Rust columns of the language map nothing here has been executed; rows whose answer depends on engine behaviour are marked TBD.",
+  "versionBasis": "Relational columns are written against PostgreSQL 17, MySQL 8.4, Microsoft SQL Server 2022 and Oracle 23ai, and against ISO/IEC 9075:2023 where the standard settles it. Non-relational columns are written against MongoDB 8, Apache Cassandra 5, Amazon DynamoDB and Neo4j 5. No database engine is installed on this machine, so unlike the Java and Rust columns of the language map nothing here has been executed; rows whose answer depends on engine behaviour are marked TBD. An empty cell means the engine has no counterpart, which is itself information: it is why one relational shape cannot be assumed for every store.",
   "targets": [
-    {"id": "sql", "name": "ISO SQL", "version": "9075:2023", "evidence": "none; analysis only"},
-    {"id": "postgres", "name": "PostgreSQL", "version": "17", "evidence": "none; analysis only"},
-    {"id": "mysql", "name": "MySQL", "version": "8.4", "evidence": "none; analysis only"},
-    {"id": "mssql", "name": "SQL Server", "version": "2022", "evidence": "none; analysis only"},
-    {"id": "oracle", "name": "Oracle", "version": "23ai", "evidence": "none; analysis only"}
+    {
+      "id": "sql",
+      "name": "ISO SQL",
+      "version": "9075:2023",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "postgres",
+      "name": "PostgreSQL",
+      "version": "17",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "mysql",
+      "name": "MySQL",
+      "version": "8.4",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "mssql",
+      "name": "SQL Server",
+      "version": "2022",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "oracle",
+      "name": "Oracle",
+      "version": "23ai",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "mongo",
+      "name": "MongoDB",
+      "version": "8",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "cassandra",
+      "name": "Cassandra",
+      "version": "5",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "dynamo",
+      "name": "DynamoDB",
+      "version": "-",
+      "evidence": "none; analysis only"
+    },
+    {
+      "id": "neo4j",
+      "name": "Neo4j",
+      "version": "5",
+      "evidence": "none; analysis only"
+    }
   ],
   "rows": [
-    {"area": "Schema objects", "concept": "Database / catalog", "coverage": "COVERED",
-     "uml3": ["UML3Data::database"],
-     "targets": {"sql": "CREATE DATABASE", "postgres": "CREATE DATABASE", "mysql": "CREATE DATABASE", "mssql": "CREATE DATABASE", "oracle": "pluggable database"},
-     "notes": ""},
-    {"area": "Schema objects", "concept": "Schema / namespace inside a database", "coverage": "PARTIAL",
-     "uml3": ["SysML package"],
-     "targets": {"sql": "CREATE SCHEMA", "postgres": "CREATE SCHEMA", "mysql": "schema = database", "mssql": "CREATE SCHEMA", "oracle": "schema = user"},
-     "notes": "A package groups tables, but nothing says that the package IS a SQL schema, so a generator has to assume the convention. MySQL and Oracle conflate schema with database and user respectively, which a model should be able to state."},
-    {"area": "Schema objects", "concept": "Table", "coverage": "COVERED",
-     "uml3": ["UML3Data::table"],
-     "targets": {"sql": "CREATE TABLE", "postgres": "CREATE TABLE", "mysql": "CREATE TABLE", "mssql": "CREATE TABLE", "oracle": "CREATE TABLE"},
-     "notes": ""},
-    {"area": "Schema objects", "concept": "Column", "coverage": "COVERED",
-     "uml3": ["UML3Data::column"],
-     "targets": {"sql": "column definition", "postgres": "column", "mysql": "column", "mssql": "column", "oracle": "column"},
-     "notes": ""},
-    {"area": "Schema objects", "concept": "View", "coverage": "COVERED",
-     "uml3": ["UML3Data::dbView"],
-     "targets": {"sql": "CREATE VIEW", "postgres": "CREATE VIEW", "mysql": "CREATE VIEW", "mssql": "CREATE VIEW", "oracle": "CREATE VIEW"},
-     "notes": "The view exists as an element; the SELECT that defines it is the gap below."},
-    {"area": "Schema objects", "concept": "The query behind a view", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "AS SELECT ...", "postgres": "AS SELECT", "mysql": "AS SELECT", "mssql": "AS SELECT", "oracle": "AS SELECT"},
-     "notes": "A view without its query cannot be created. KerML has expressions, so a calculation could carry it, but nothing designates one as a view's defining query."},
-    {"area": "Schema objects", "concept": "Materialized view", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "-", "postgres": "CREATE MATERIALIZED VIEW", "mysql": "-", "mssql": "indexed view", "oracle": "materialized view"},
-     "notes": "Not distinguishable from a plain view, and the refresh policy has nowhere to live."},
-    {"area": "Constraints", "concept": "Primary key", "coverage": "COVERED",
-     "uml3": ["UML3Data::primaryKey"],
-     "targets": {"sql": "PRIMARY KEY", "postgres": "PRIMARY KEY", "mysql": "PRIMARY KEY", "mssql": "PRIMARY KEY", "oracle": "PRIMARY KEY"},
-     "notes": "Composite keys are several #primaryKey columns on one table."},
-    {"area": "Constraints", "concept": "Foreign key", "coverage": "COVERED",
-     "uml3": ["UML3Data::foreignKey"],
-     "targets": {"sql": "REFERENCES", "postgres": "REFERENCES", "mysql": "REFERENCES", "mssql": "REFERENCES", "oracle": "REFERENCES"},
-     "notes": ""},
-    {"area": "Constraints", "concept": "Referential action on delete or update", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "ON DELETE CASCADE", "postgres": "ON DELETE/UPDATE", "mysql": "ON DELETE/UPDATE", "mssql": "ON DELETE/UPDATE", "oracle": "ON DELETE only"},
-     "notes": "Composition implies that a part dies with its whole, which is the intent behind CASCADE, but the model cannot state RESTRICT, SET NULL or NO ACTION, and Oracle supports no ON UPDATE at all."},
-    {"area": "Constraints", "concept": "Unique constraint", "coverage": "COVERED",
-     "uml3": ["UML3Data::unique"],
-     "targets": {"sql": "UNIQUE", "postgres": "UNIQUE", "mysql": "UNIQUE", "mssql": "UNIQUE", "oracle": "UNIQUE"},
-     "notes": ""},
-    {"area": "Constraints", "concept": "NOT NULL", "coverage": "COVERED",
-     "uml3": ["KerML multiplicity [1] against [0..1]"],
-     "targets": {"sql": "NOT NULL", "postgres": "NOT NULL", "mysql": "NOT NULL", "mssql": "NOT NULL", "oracle": "NOT NULL"},
-     "notes": "Multiplicity carries nullability; no keyword needed."},
-    {"area": "Constraints", "concept": "CHECK constraint", "coverage": "PARTIAL",
-     "uml3": ["SysML constraint / assert constraint"],
-     "targets": {"sql": "CHECK", "postgres": "CHECK", "mysql": "CHECK", "mssql": "CHECK", "oracle": "CHECK"},
-     "notes": "A SysML constraint states the predicate, but nothing marks it as one the database should enforce rather than a tool, and the expression would have to be translated to SQL."},
-    {"area": "Constraints", "concept": "DEFAULT value", "coverage": "COVERED",
-     "uml3": ["SysML feature value (= expression)"],
-     "targets": {"sql": "DEFAULT", "postgres": "DEFAULT", "mysql": "DEFAULT", "mssql": "DEFAULT", "oracle": "DEFAULT"},
-     "notes": "A default in the model is a feature value; a server-side default such as now() is an expression the generator must map."},
-    {"area": "Types", "concept": "Sized numeric and string types", "coverage": "COVERED",
-     "uml3": ["UML3Types::Facets"],
-     "targets": {"sql": "NUMERIC(p,s), VARCHAR(n)", "postgres": "numeric, varchar", "mysql": "DECIMAL, VARCHAR", "mssql": "decimal, nvarchar", "oracle": "NUMBER, VARCHAR2"},
-     "notes": "@Facets carries precision, scale and length, which is exactly what a column needs."},
-    {"area": "Types", "concept": "Identity / auto-increment / sequence", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "GENERATED AS IDENTITY", "postgres": "identity / serial", "mysql": "AUTO_INCREMENT", "mssql": "IDENTITY", "oracle": "identity / sequence"},
-     "notes": "#id says a column identifies the row, not that the database generates its value. Almost every real schema has one."},
-    {"area": "Types", "concept": "Date, time and time zone", "coverage": "TBD",
-     "uml3": [],
-     "targets": {"sql": "TIMESTAMP WITH TIME ZONE", "postgres": "timestamptz", "mysql": "DATETIME/TIMESTAMP", "mssql": "datetimeoffset", "oracle": "TIMESTAMP WITH TIME ZONE"},
-     "notes": "The SysML standard library has time and duration types; whether UML3Types gives a column-level mapping with time-zone semantics has not been checked."},
-    {"area": "Types", "concept": "JSON column", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "JSON", "postgres": "jsonb", "mysql": "JSON", "mssql": "json / nvarchar", "oracle": "JSON"},
-     "notes": "A column whose value is a document has no UML3 form, although UML3Messaging can describe the document's shape - the two are not linked."},
-    {"area": "Types", "concept": "Enumerated column", "coverage": "PARTIAL",
-     "uml3": ["SysML enum def"],
-     "targets": {"sql": "CHECK constraint", "postgres": "CREATE TYPE ... AS ENUM", "mysql": "ENUM", "mssql": "CHECK", "oracle": "CHECK"},
-     "notes": "The enumeration exists in the model; which of the four physical encodings a dialect should use is not stated."},
-    {"area": "Types", "concept": "Array or collection column", "coverage": "TBD",
-     "uml3": [],
-     "targets": {"sql": "ARRAY", "postgres": "type[]", "mysql": "-", "mssql": "-", "oracle": "nested table"},
-     "notes": "A multi-valued attribute normally becomes a child table; when the dialect has arrays the choice is not expressible."},
-    {"area": "Performance", "concept": "Index", "coverage": "COVERED",
-     "uml3": ["UML3Data::indexed", "UML3Data::Index"],
-     "targets": {"sql": "CREATE INDEX", "postgres": "CREATE INDEX", "mysql": "CREATE INDEX", "mssql": "CREATE INDEX", "oracle": "CREATE INDEX"},
-     "notes": ""},
-    {"area": "Performance", "concept": "Index kind and options", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "-", "postgres": "btree, gin, gist, partial", "mysql": "BTREE, FULLTEXT", "mssql": "clustered, filtered", "oracle": "bitmap, function-based"},
-     "notes": "An index is either present or not; its kind, its column order, whether it is clustered and any partial predicate are not expressible, and those are the decisions that matter for performance."},
-    {"area": "Performance", "concept": "Partitioning", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "-", "postgres": "PARTITION BY", "mysql": "PARTITION BY", "mssql": "partition scheme", "oracle": "PARTITION BY"},
-     "notes": "No construct for a partition key or strategy."},
-    {"area": "Behaviour", "concept": "Trigger", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "CREATE TRIGGER", "postgres": "CREATE TRIGGER", "mysql": "CREATE TRIGGER", "mssql": "CREATE TRIGGER", "oracle": "CREATE TRIGGER"},
-     "notes": "SysML has actions and state transitions, so the behaviour is modelable, but nothing binds one to a table event."},
-    {"area": "Behaviour", "concept": "Stored procedure or function", "coverage": "PARTIAL",
-     "uml3": ["UML3Core::operation"],
-     "targets": {"sql": "CREATE PROCEDURE", "postgres": "CREATE FUNCTION", "mysql": "CREATE PROCEDURE", "mssql": "CREATE PROC", "oracle": "CREATE PROCEDURE"},
-     "notes": "The signature is expressible as an operation; nothing says it lives in the database rather than the application, and the body is not modeled."},
-    {"area": "Mapping", "concept": "Logical entity mapped to a physical table", "coverage": "COVERED",
-     "uml3": ["UML3Data::entity", "UML3Data::mapsTo"],
-     "targets": {"sql": "-", "postgres": "-", "mysql": "-", "mssql": "-", "oracle": "-"},
-     "notes": "This is UML3's own contribution rather than a DDL feature: #mapsTo records which logical entity a table realizes, which is what makes a schema traceable to a domain model."},
-    {"area": "Mapping", "concept": "Association resolved to a foreign key or join table", "coverage": "PARTIAL",
-     "uml3": ["UML3Core::association", "UML3Data::relationship"],
-     "targets": {"sql": "FK or junction table", "postgres": "same", "mysql": "same", "mssql": "same", "oracle": "same"},
-     "notes": "Both the association and the resulting keys can be modeled, but the rule that a many-to-many becomes a junction table is left to the generator rather than stated."},
-    {"area": "Operations", "concept": "Schema migration / ALTER", "coverage": "GAP",
-     "uml3": [],
-     "targets": {"sql": "ALTER TABLE", "postgres": "ALTER TABLE", "mysql": "ALTER TABLE", "mssql": "ALTER TABLE", "oracle": "ALTER TABLE"},
-     "notes": "A model states the schema now; a migration is the difference between two versions of it. Nothing expresses a version or an upgrade path, and real databases are changed by migration, not by re-creation."},
-    {"area": "Operations", "concept": "Grants, roles and row-level security", "coverage": "GAP",
-     "uml3": ["UML3Data::Sensitivity"],
-     "targets": {"sql": "GRANT", "postgres": "GRANT, RLS policy", "mysql": "GRANT", "mssql": "GRANT, RLS", "oracle": "GRANT, VPD"},
-     "notes": "Sensitivity marks data that needs care, which is the classification half; who may read or write it is not expressible."},
-    {"area": "Operations", "concept": "Column excluded from persistence", "coverage": "COVERED",
-     "uml3": ["UML3Data::transient"],
-     "targets": {"sql": "-", "postgres": "-", "mysql": "-", "mssql": "-", "oracle": "-"},
-     "notes": "#transient marks an attribute the schema must not carry, which a generator needs in order to skip it."},
-    {"area": "Operations", "concept": "Audit columns", "coverage": "COVERED",
-     "uml3": ["UML3Data::audited"],
-     "targets": {"sql": "-", "postgres": "trigger or extension", "mysql": "trigger", "mssql": "temporal table", "oracle": "flashback"},
-     "notes": "#audited states the intent; which mechanism a dialect uses is a generator decision, and SQL Server temporal tables and Oracle flashback are not equivalent."}
+    {
+      "area": "Schema objects",
+      "concept": "Database / catalog",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::database"
+      ],
+      "targets": {
+        "sql": "CREATE DATABASE",
+        "postgres": "CREATE DATABASE",
+        "mysql": "CREATE DATABASE",
+        "mssql": "CREATE DATABASE",
+        "oracle": "pluggable database",
+        "mongo": "database",
+        "cassandra": "keyspace",
+        "dynamo": "account/region",
+        "neo4j": "database"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Schema objects",
+      "concept": "Schema / namespace inside a database",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "SysML package"
+      ],
+      "targets": {
+        "sql": "CREATE SCHEMA",
+        "postgres": "CREATE SCHEMA",
+        "mysql": "schema = database",
+        "mssql": "CREATE SCHEMA",
+        "oracle": "schema = user"
+      },
+      "notes": "A package groups tables, but nothing says that the package IS a SQL schema, so a generator has to assume the convention. MySQL and Oracle conflate schema with database and user respectively, which a model should be able to state.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Schema objects",
+      "concept": "Table",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::table"
+      ],
+      "targets": {
+        "sql": "CREATE TABLE",
+        "postgres": "CREATE TABLE",
+        "mysql": "CREATE TABLE",
+        "mssql": "CREATE TABLE",
+        "oracle": "CREATE TABLE",
+        "mongo": "collection",
+        "cassandra": "table",
+        "dynamo": "table",
+        "neo4j": "node label"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Schema objects",
+      "concept": "Column",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::column"
+      ],
+      "targets": {
+        "sql": "column definition",
+        "postgres": "column",
+        "mysql": "column",
+        "mssql": "column",
+        "oracle": "column",
+        "mongo": "field",
+        "cassandra": "column",
+        "dynamo": "attribute",
+        "neo4j": "property"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Schema objects",
+      "concept": "View",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::dbView"
+      ],
+      "targets": {
+        "sql": "CREATE VIEW",
+        "postgres": "CREATE VIEW",
+        "mysql": "CREATE VIEW",
+        "mssql": "CREATE VIEW",
+        "oracle": "CREATE VIEW"
+      },
+      "notes": "The view exists as an element; the SELECT that defines it is the gap below."
+    },
+    {
+      "area": "Schema objects",
+      "concept": "The query behind a view",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "AS SELECT ...",
+        "postgres": "AS SELECT",
+        "mysql": "AS SELECT",
+        "mssql": "AS SELECT",
+        "oracle": "AS SELECT"
+      },
+      "notes": "A view without its query cannot be created. KerML has expressions, so a calculation could carry it, but nothing designates one as a view's defining query.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Schema objects",
+      "concept": "Materialized view",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "-",
+        "postgres": "CREATE MATERIALIZED VIEW",
+        "mysql": "-",
+        "mssql": "indexed view",
+        "oracle": "materialized view"
+      },
+      "notes": "Not distinguishable from a plain view, and the refresh policy has nowhere to live.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Constraints",
+      "concept": "Primary key",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::primaryKey"
+      ],
+      "targets": {
+        "sql": "PRIMARY KEY",
+        "postgres": "PRIMARY KEY",
+        "mysql": "PRIMARY KEY",
+        "mssql": "PRIMARY KEY",
+        "oracle": "PRIMARY KEY",
+        "mongo": "_id",
+        "cassandra": "PRIMARY KEY (partition, clustering)",
+        "dynamo": "partition + sort key",
+        "neo4j": "key constraint"
+      },
+      "notes": "Composite keys are several #primaryKey columns on one table."
+    },
+    {
+      "area": "Constraints",
+      "concept": "Foreign key",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::foreignKey"
+      ],
+      "targets": {
+        "sql": "REFERENCES",
+        "postgres": "REFERENCES",
+        "mysql": "REFERENCES",
+        "mssql": "REFERENCES",
+        "oracle": "REFERENCES",
+        "mongo": "reference by convention",
+        "neo4j": "relationship"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Constraints",
+      "concept": "Referential action on delete or update",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "ON DELETE CASCADE",
+        "postgres": "ON DELETE/UPDATE",
+        "mysql": "ON DELETE/UPDATE",
+        "mssql": "ON DELETE/UPDATE",
+        "oracle": "ON DELETE only"
+      },
+      "notes": "Composition implies that a part dies with its whole, which is the intent behind CASCADE, but the model cannot state RESTRICT, SET NULL or NO ACTION, and Oracle supports no ON UPDATE at all.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Constraints",
+      "concept": "Unique constraint",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::unique"
+      ],
+      "targets": {
+        "sql": "UNIQUE",
+        "postgres": "UNIQUE",
+        "mysql": "UNIQUE",
+        "mssql": "UNIQUE",
+        "oracle": "UNIQUE",
+        "mongo": "unique index",
+        "neo4j": "uniqueness constraint"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Constraints",
+      "concept": "NOT NULL",
+      "coverage": "COVERED",
+      "uml3": [
+        "KerML multiplicity [1] against [0..1]"
+      ],
+      "targets": {
+        "sql": "NOT NULL",
+        "postgres": "NOT NULL",
+        "mysql": "NOT NULL",
+        "mssql": "NOT NULL",
+        "oracle": "NOT NULL",
+        "mongo": "jsonSchema required",
+        "neo4j": "existence constraint"
+      },
+      "notes": "Multiplicity carries nullability; no keyword needed."
+    },
+    {
+      "area": "Constraints",
+      "concept": "CHECK constraint",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "SysML constraint / assert constraint"
+      ],
+      "targets": {
+        "sql": "CHECK",
+        "postgres": "CHECK",
+        "mysql": "CHECK",
+        "mssql": "CHECK",
+        "oracle": "CHECK"
+      },
+      "notes": "A SysML constraint states the predicate, but nothing marks it as one the database should enforce rather than a tool, and the expression would have to be translated to SQL.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Constraints",
+      "concept": "DEFAULT value",
+      "coverage": "COVERED",
+      "uml3": [
+        "SysML feature value (= expression)"
+      ],
+      "targets": {
+        "sql": "DEFAULT",
+        "postgres": "DEFAULT",
+        "mysql": "DEFAULT",
+        "mssql": "DEFAULT",
+        "oracle": "DEFAULT"
+      },
+      "notes": "A default in the model is a feature value; a server-side default such as now() is an expression the generator must map."
+    },
+    {
+      "area": "Types",
+      "concept": "Sized numeric and string types",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Types::Facets"
+      ],
+      "targets": {
+        "sql": "NUMERIC(p,s), VARCHAR(n)",
+        "postgres": "numeric, varchar",
+        "mysql": "DECIMAL, VARCHAR",
+        "mssql": "decimal, nvarchar",
+        "oracle": "NUMBER, VARCHAR2"
+      },
+      "notes": "@Facets carries precision, scale and length, which is exactly what a column needs."
+    },
+    {
+      "area": "Types",
+      "concept": "Identity / auto-increment / sequence",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "GENERATED AS IDENTITY",
+        "postgres": "identity / serial",
+        "mysql": "AUTO_INCREMENT",
+        "mssql": "IDENTITY",
+        "oracle": "identity / sequence"
+      },
+      "notes": "#id says a column identifies the row, not that the database generates its value. Almost every real schema has one.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Types",
+      "concept": "Date, time and time zone",
+      "coverage": "TBD",
+      "uml3": [],
+      "targets": {
+        "sql": "TIMESTAMP WITH TIME ZONE",
+        "postgres": "timestamptz",
+        "mysql": "DATETIME/TIMESTAMP",
+        "mssql": "datetimeoffset",
+        "oracle": "TIMESTAMP WITH TIME ZONE"
+      },
+      "notes": "The SysML standard library has time and duration types; whether UML3Types gives a column-level mapping with time-zone semantics has not been checked.",
+      "layer": "library"
+    },
+    {
+      "area": "Types",
+      "concept": "JSON column",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "JSON",
+        "postgres": "jsonb",
+        "mysql": "JSON",
+        "mssql": "json / nvarchar",
+        "oracle": "JSON",
+        "mongo": "native document",
+        "dynamo": "native map"
+      },
+      "notes": "A column whose value is a document has no UML3 form, although UML3Messaging can describe the document's shape - the two are not linked.",
+      "layer": "library"
+    },
+    {
+      "area": "Types",
+      "concept": "Enumerated column",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "SysML enum def"
+      ],
+      "targets": {
+        "sql": "CHECK constraint",
+        "postgres": "CREATE TYPE ... AS ENUM",
+        "mysql": "ENUM",
+        "mssql": "CHECK",
+        "oracle": "CHECK",
+        "mongo": "jsonSchema enum"
+      },
+      "notes": "The enumeration exists in the model; which of the four physical encodings a dialect should use is not stated.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Types",
+      "concept": "Array or collection column",
+      "coverage": "TBD",
+      "uml3": [],
+      "targets": {
+        "sql": "ARRAY",
+        "postgres": "type[]",
+        "mysql": "-",
+        "mssql": "-",
+        "oracle": "nested table",
+        "mongo": "array",
+        "cassandra": "list/set/map",
+        "dynamo": "list/map",
+        "neo4j": "array property"
+      },
+      "notes": "A multi-valued attribute normally becomes a child table; when the dialect has arrays the choice is not expressible.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Performance",
+      "concept": "Index",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::indexed",
+        "UML3Data::Index"
+      ],
+      "targets": {
+        "sql": "CREATE INDEX",
+        "postgres": "CREATE INDEX",
+        "mysql": "CREATE INDEX",
+        "mssql": "CREATE INDEX",
+        "oracle": "CREATE INDEX",
+        "mongo": "createIndex",
+        "cassandra": "secondary index",
+        "dynamo": "GSI/LSI",
+        "neo4j": "CREATE INDEX"
+      },
+      "notes": ""
+    },
+    {
+      "area": "Performance",
+      "concept": "Index kind and options",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "-",
+        "postgres": "btree, gin, gist, partial",
+        "mysql": "BTREE, FULLTEXT",
+        "mssql": "clustered, filtered",
+        "oracle": "bitmap, function-based"
+      },
+      "notes": "An index is either present or not; its kind, its column order, whether it is clustered and any partial predicate are not expressible, and those are the decisions that matter for performance.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Performance",
+      "concept": "Partitioning",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "-",
+        "postgres": "PARTITION BY",
+        "mysql": "PARTITION BY",
+        "mssql": "partition scheme",
+        "oracle": "PARTITION BY"
+      },
+      "notes": "No construct for a partition key or strategy.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Trigger",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "CREATE TRIGGER",
+        "postgres": "CREATE TRIGGER",
+        "mysql": "CREATE TRIGGER",
+        "mssql": "CREATE TRIGGER",
+        "oracle": "CREATE TRIGGER"
+      },
+      "notes": "SysML has actions and state transitions, so the behaviour is modelable, but nothing binds one to a table event.",
+      "layer": "library"
+    },
+    {
+      "area": "Behaviour",
+      "concept": "Stored procedure or function",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Core::operation"
+      ],
+      "targets": {
+        "sql": "CREATE PROCEDURE",
+        "postgres": "CREATE FUNCTION",
+        "mysql": "CREATE PROCEDURE",
+        "mssql": "CREATE PROC",
+        "oracle": "CREATE PROCEDURE"
+      },
+      "notes": "The signature is expressible as an operation; nothing says it lives in the database rather than the application, and the body is not modeled.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Mapping",
+      "concept": "Logical entity mapped to a physical table",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::entity",
+        "UML3Data::mapsTo"
+      ],
+      "targets": {
+        "sql": "-",
+        "postgres": "-",
+        "mysql": "-",
+        "mssql": "-",
+        "oracle": "-"
+      },
+      "notes": "This is UML3's own contribution rather than a DDL feature: #mapsTo records which logical entity a table realizes, which is what makes a schema traceable to a domain model."
+    },
+    {
+      "area": "Mapping",
+      "concept": "Association resolved to a foreign key or join table",
+      "coverage": "PARTIAL",
+      "uml3": [
+        "UML3Core::association",
+        "UML3Data::relationship"
+      ],
+      "targets": {
+        "sql": "FK or junction table",
+        "postgres": "same",
+        "mysql": "same",
+        "mssql": "same",
+        "oracle": "same"
+      },
+      "notes": "Both the association and the resulting keys can be modeled, but the rule that a many-to-many becomes a junction table is left to the generator rather than stated.",
+      "layer": "metadata"
+    },
+    {
+      "area": "Operations",
+      "concept": "Schema migration / ALTER",
+      "coverage": "GAP",
+      "uml3": [],
+      "targets": {
+        "sql": "ALTER TABLE",
+        "postgres": "ALTER TABLE",
+        "mysql": "ALTER TABLE",
+        "mssql": "ALTER TABLE",
+        "oracle": "ALTER TABLE",
+        "mongo": "schemaless; migrated in the application",
+        "cassandra": "ALTER TABLE"
+      },
+      "notes": "A model states the schema now; a migration is the difference between two versions of it. Nothing expresses a version or an upgrade path, and real databases are changed by migration, not by re-creation.",
+      "layer": "library"
+    },
+    {
+      "area": "Operations",
+      "concept": "Grants, roles and row-level security",
+      "coverage": "GAP",
+      "uml3": [
+        "UML3Data::Sensitivity"
+      ],
+      "targets": {
+        "sql": "GRANT",
+        "postgres": "GRANT, RLS policy",
+        "mysql": "GRANT",
+        "mssql": "GRANT, RLS",
+        "oracle": "GRANT, VPD"
+      },
+      "notes": "Sensitivity marks data that needs care, which is the classification half; who may read or write it is not expressible.",
+      "layer": "library"
+    },
+    {
+      "area": "Operations",
+      "concept": "Column excluded from persistence",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::transient"
+      ],
+      "targets": {
+        "sql": "-",
+        "postgres": "-",
+        "mysql": "-",
+        "mssql": "-",
+        "oracle": "-"
+      },
+      "notes": "#transient marks an attribute the schema must not carry, which a generator needs in order to skip it."
+    },
+    {
+      "area": "Operations",
+      "concept": "Audit columns",
+      "coverage": "COVERED",
+      "uml3": [
+        "UML3Data::audited"
+      ],
+      "targets": {
+        "sql": "-",
+        "postgres": "trigger or extension",
+        "mysql": "trigger",
+        "mssql": "temporal table",
+        "oracle": "flashback"
+      },
+      "notes": "#audited states the intent; which mechanism a dialect uses is a generator decision, and SQL Server temporal tables and Oracle flashback are not equivalent."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Document with a nested structure",
+      "coverage": "PARTIAL",
+      "layer": "metadata",
+      "uml3": [
+        "UML3Data::entity",
+        "KerML composite feature"
+      ],
+      "targets": {
+        "postgres": "jsonb",
+        "mysql": "JSON",
+        "mssql": "json",
+        "oracle": "JSON",
+        "mongo": "embedded document",
+        "cassandra": "user-defined type",
+        "dynamo": "map attribute"
+      },
+      "notes": "A composite feature already nests one entity inside another, which is the document shape. What is missing is the decision itself: nothing says whether a nested entity is embedded or stored as its own collection with a reference, and that is the central modelling choice in a document store."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Partition key and data distribution",
+      "coverage": "GAP",
+      "layer": "metadata",
+      "uml3": [],
+      "targets": {
+        "mongo": "shard key",
+        "cassandra": "partition key",
+        "dynamo": "partition key"
+      },
+      "notes": "Which attribute decides where a row lives determines whether a wide-column or key-value design works at all. #primaryKey says a column identifies a row, not how rows are distributed, and in Cassandra and DynamoDB the key has a partition part and a clustering part that mean different things."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Clustering and sort order within a partition",
+      "coverage": "GAP",
+      "layer": "metadata",
+      "uml3": [],
+      "targets": {
+        "mssql": "clustered index",
+        "cassandra": "clustering column",
+        "dynamo": "sort key"
+      },
+      "notes": "The order rows are stored in within a partition, which decides which range queries are possible at all."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Denormalisation for a query pattern",
+      "coverage": "GAP",
+      "layer": "library",
+      "uml3": [],
+      "targets": {
+        "mongo": "duplicated fields",
+        "cassandra": "a table per query",
+        "dynamo": "single-table design"
+      },
+      "notes": "Wide-column and key-value stores are designed backwards from the queries, so one logical entity becomes several physical tables. #mapsTo is one-to-one today and cannot express one entity realized by several tables for different access paths."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Consistency level and durability",
+      "coverage": "GAP",
+      "layer": "metadata",
+      "uml3": [],
+      "targets": {
+        "sql": "isolation level",
+        "postgres": "isolation level",
+        "mysql": "isolation level",
+        "mssql": "isolation level",
+        "oracle": "isolation level",
+        "mongo": "read/write concern",
+        "cassandra": "consistency level",
+        "dynamo": "strong or eventual"
+      },
+      "notes": "Relational isolation levels and NoSQL consistency levels are both unexpressible. This decides correctness under concurrency, and it belongs on the operation or the store rather than on the schema."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Time to live and expiry",
+      "coverage": "GAP",
+      "layer": "metadata",
+      "uml3": [],
+      "targets": {
+        "mongo": "TTL index",
+        "cassandra": "TTL",
+        "dynamo": "TTL attribute"
+      },
+      "notes": "Data that expires by itself has no model form, although retention is usually a compliance requirement rather than a technical one, which makes its absence more serious, not less."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Graph node and typed relationship",
+      "coverage": "PARTIAL",
+      "layer": "library",
+      "uml3": [
+        "UML3Core::association",
+        "UML3Data::relationship"
+      ],
+      "targets": {
+        "sql": "junction table",
+        "postgres": "junction table",
+        "mssql": "graph tables",
+        "oracle": "property graph",
+        "mongo": "graphLookup",
+        "dynamo": "adjacency list",
+        "neo4j": "(a)-[:REL]->(b)"
+      },
+      "notes": "An association with ends is close to a typed relationship, and a UML3 association can carry attributes, which is what a property-graph edge is. What is missing is traversal: nothing expresses a path query, which is the whole reason to choose a graph store."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Schema validation in a schemaless store",
+      "coverage": "PARTIAL",
+      "layer": "metadata",
+      "uml3": [
+        "UML3Data::entity"
+      ],
+      "targets": {
+        "mongo": "jsonSchema validator",
+        "neo4j": "constraints"
+      },
+      "notes": "The model knows the shape; nothing says whether the engine should enforce it, which is a choice a document store offers and a relational one does not."
+    },
+    {
+      "area": "Non-relational",
+      "concept": "Key-value entry without a declared shape",
+      "coverage": "TBD",
+      "layer": "out-of-scope",
+      "uml3": [],
+      "targets": {
+        "postgres": "hstore",
+        "dynamo": "item"
+      },
+      "notes": "Redis and similar stores hold values under keys with no declared shape. Whether that is worth modelling, or is simply outside what a modelling language should claim, has not been decided - which is why the layer is out-of-scope rather than a library yet to be written."
+    }
   ]
 }
