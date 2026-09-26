@@ -293,7 +293,7 @@ def coverage_annex(doc: OmgDocument, map_name: str, letter: str, title: str) -> 
     share = fixed + [rest] * len(targets) + [0.16]
     doc.table(["Concept", "Coverage", "UML3"] + [t["name"] for t in targets] + ["Notes"],
               [[r["concept"], r["coverage"], ", ".join(r.get("uml3", []))]
-               + [(r.get("targets") or {}).get(t["id"], "") for t in targets]
+               + [(r.get("targets") or {}).get(t["id"]) or "NA" for t in targets]
                + [cl.row_notes(r)] for r in rows],
               widths=[round(width * s, 2) for s in share])
 

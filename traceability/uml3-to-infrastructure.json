@@ -7,7 +7,7 @@
     "GAP": "no UML3 construct expresses it; a requirement is needed if it matters",
     "TBD": "not yet analyzed, or the provider's model has not been confirmed"
   },
-  "versionBasis": "Provider columns name the service that plays each role rather than an API version, because the roles are stable while the APIs are not. Nothing here has been executed: no cloud account or network device was contacted, and the only infrastructure tool on this machine is Docker 29.2.0. Treat every provider cell as analysis to be confirmed by someone who runs that platform.",
+  "versionBasis": "Provider columns name the service that plays each role rather than an API version, because the roles are stable while the APIs are not. Nothing here has been executed: no cloud account or network device was contacted, and the only infrastructure tool on this machine is Docker 29.2.0. Treat every provider cell as analysis to be confirmed by someone who runs that platform. NA in a target column means that target has no counterpart for the concept, which is a decision and not an omission; where the answer is not yet known the coverage column says TBD instead.",
   "targets": [
     {
       "id": "aws",
@@ -87,7 +87,7 @@
         "aws": "Lambda",
         "gcp": "Cloud Functions",
         "azure": "Functions",
-        "onprem": "-",
+        "onprem": "NA",
         "iac": "function resource"
       },
       "notes": "A function is an operation deployed without a durable host; the model can say where it runs but not that it has no host, nor its trigger, timeout or cold-start behaviour.",
@@ -146,11 +146,11 @@
         "UML3Components::communicationPath"
       ],
       "targets": {
-        "aws": "-",
-        "gcp": "-",
-        "azure": "-",
+        "aws": "NA",
+        "gcp": "NA",
+        "azure": "NA",
         "onprem": "cable / link",
-        "iac": "-"
+        "iac": "NA"
       },
       "notes": "The UML 2.x communication path: which nodes can talk. It carries no protocol or address."
     },

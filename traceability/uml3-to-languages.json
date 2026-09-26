@@ -7,7 +7,7 @@
     "GAP": "no UML3 construct expresses it; a requirement is needed if it matters",
     "TBD": "not yet analyzed, or the target's current behaviour has not been confirmed"
   },
-  "versionBasis": "Versions are what this machine can actually compile and run, so a claim can be tested rather than recalled: Java 21.0.8 LTS (javac 21.0.8), Rust 1.98.1 (2026-09-01), Python 3.14.4, Docker 29.2.0. No C or C++ compiler is installed here, so those two columns are analysis only and are marked TBD wherever the answer depends on compiler behaviour. Confirm the current public releases before this becomes a normative annex.",
+  "versionBasis": "Versions are what this machine can actually compile and run, so a claim can be tested rather than recalled: Java 21.0.8 LTS (javac 21.0.8), Rust 1.98.1 (2026-09-01), Python 3.14.4, Docker 29.2.0. No C or C++ compiler is installed here, so those two columns are analysis only and are marked TBD wherever the answer depends on compiler behaviour. Confirm the current public releases before this becomes a normative annex. NA in a target column means that target has no counterpart for the concept, which is a decision and not an omission; where the answer is not yet known the coverage column says TBD instead.",
   "targets": [
     {
       "id": "java",
@@ -84,7 +84,7 @@
         "java": "default method",
         "rust": "trait with a provided method",
         "python": "mixin class",
-        "c": "-",
+        "c": "NA",
         "cpp": "virtual with a body"
       },
       "notes": "An interfaceType operation may be non-abstract and carry a body, so the shape exists; UML3 says nothing about whether an implementor may override it, which is what default methods are about.",
@@ -99,9 +99,9 @@
       ],
       "targets": {
         "java": "abstract class",
-        "rust": "-",
+        "rust": "NA",
         "python": "abc.ABC",
-        "c": "-",
+        "c": "NA",
         "cpp": "class with a pure virtual"
       },
       "notes": "'abstract' is native KerML, so no UML3 keyword is needed."
@@ -183,7 +183,7 @@
       ],
       "targets": {
         "java": "extends",
-        "rust": "-",
+        "rust": "NA",
         "python": "subclass",
         "c": "struct embedding by convention",
         "cpp": "public base"
@@ -201,7 +201,7 @@
         "java": "interfaces only",
         "rust": "multiple traits",
         "python": "multiple bases, MRO",
-        "c": "-",
+        "c": "NA",
         "cpp": "multiple bases"
       },
       "notes": "KerML specialization is multiple by nature; what each language permits is a generator concern."
@@ -343,10 +343,10 @@
       "coverage": "GAP",
       "uml3": [],
       "targets": {
-        "java": "-",
+        "java": "NA",
         "rust": "impl Add",
         "python": "__add__",
-        "c": "-",
+        "c": "NA",
         "cpp": "operator+"
       },
       "notes": "No way to say that an operation implements an operator. Needed to generate idiomatic Rust, C++ and Python value types.",
@@ -378,7 +378,7 @@
         "java": "CompletableFuture / virtual threads",
         "rust": "async fn",
         "python": "async def",
-        "c": "-",
+        "c": "NA",
         "cpp": "coroutine"
       },
       "notes": "#activeClass says a class has its own thread of control, which is not the same as an operation returning a future. Every current language in this table has async; UML3 cannot express it.",
@@ -390,9 +390,9 @@
       "coverage": "GAP",
       "uml3": [],
       "targets": {
-        "java": "-",
+        "java": "NA",
         "rust": "&, &mut, lifetimes",
-        "python": "-",
+        "python": "NA",
         "c": "manual",
         "cpp": "unique_ptr / shared_ptr"
       },
@@ -454,7 +454,7 @@
       "coverage": "TBD",
       "uml3": [],
       "targets": {
-        "java": "-",
+        "java": "NA",
         "rust": "type X = Y",
         "python": "type X = Y",
         "c": "typedef",
@@ -511,7 +511,7 @@
         "java": "Spring @Autowired",
         "rust": "constructor wiring",
         "python": "FastAPI Depends",
-        "c": "-",
+        "c": "NA",
         "cpp": "constructor wiring"
       },
       "notes": "Required and provided ports with assembly connections are exactly what a DI container resolves."
@@ -532,8 +532,8 @@
         "java": "JPA @Entity",
         "rust": "Diesel / sqlx",
         "python": "SQLAlchemy",
-        "c": "-",
-        "cpp": "-"
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "#mapsTo links the logical entity to the physical table, which is the mapping an ORM configuration expresses."
     },
@@ -548,8 +548,8 @@
         "java": "@RestController",
         "rust": "axum router",
         "python": "FastAPI route",
-        "c": "-",
-        "cpp": "-"
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "A service port is the right anchor, but nothing expresses an HTTP method, a path, a status code or a media type.",
       "layer": "library"
@@ -566,8 +566,8 @@
         "java": "Jackson",
         "rust": "serde",
         "python": "pydantic",
-        "c": "-",
-        "cpp": "-"
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "The IDL mapping is a proven wire format with a round trip; JSON field naming, optionality and versioning are not expressed.",
       "layer": "library"
@@ -587,8 +587,8 @@
         "java": "Spring Kafka",
         "rust": "rdkafka",
         "python": "aiokafka",
-        "c": "-",
-        "cpp": "-"
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": ""
     },
@@ -601,11 +601,11 @@
         "UML3Components::manifest"
       ],
       "targets": {
-        "java": "-",
-        "rust": "-",
-        "python": "-",
-        "c": "-",
-        "cpp": "-"
+        "java": "NA",
+        "rust": "NA",
+        "python": "NA",
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "An artifact that manifests a component is a container image; example 02 models exactly that."
     },
@@ -619,11 +619,11 @@
         "UML3Components::deploy"
       ],
       "targets": {
-        "java": "-",
-        "rust": "-",
-        "python": "-",
-        "c": "-",
-        "cpp": "-"
+        "java": "NA",
+        "rust": "NA",
+        "python": "NA",
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "Docker 29.2.0 on this machine; a container is an execution environment on a node, and #deploy places the artifact."
     },
@@ -633,11 +633,11 @@
       "coverage": "GAP",
       "uml3": [],
       "targets": {
-        "java": "-",
-        "rust": "-",
-        "python": "-",
-        "c": "-",
-        "cpp": "-"
+        "java": "NA",
+        "rust": "NA",
+        "python": "NA",
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "Nothing expresses an environment variable, a config map or a secret, and a deployment cannot be generated without them.",
       "layer": "library"
@@ -648,11 +648,11 @@
       "coverage": "GAP",
       "uml3": [],
       "targets": {
-        "java": "-",
-        "rust": "-",
-        "python": "-",
-        "c": "-",
-        "cpp": "-"
+        "java": "NA",
+        "rust": "NA",
+        "python": "NA",
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "Scaling and liveness are the substance of a container deployment and have no UML3 construct. Candidate for a UML3Deployment library.",
       "layer": "library"
@@ -665,11 +665,11 @@
         "UML3Components::communicationPath"
       ],
       "targets": {
-        "java": "-",
-        "rust": "-",
-        "python": "-",
-        "c": "-",
-        "cpp": "-"
+        "java": "NA",
+        "rust": "NA",
+        "python": "NA",
+        "c": "NA",
+        "cpp": "NA"
       },
       "notes": "A communication path connects nodes; ports, protocols and published addresses are not expressed.",
       "layer": "library"

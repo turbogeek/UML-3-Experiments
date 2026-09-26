@@ -128,9 +128,9 @@ def render(data: dict) -> str:
     for area in dict.fromkeys(r["area"] for r in rows):
         out += [f"## {area}", "", header, sep]
         for r in (x for x in rows if x["area"] == area):
-            cells = [cell(r["concept"]), f"**{r['coverage']}**", cell(r.get("layer", "")),
+            cells = [cell(r["concept"]), f"**{r['coverage']}**", cell(r.get("layer") or "NA"),
                      cell(", ".join(f"`{n}`" for n in r.get("uml3", [])))]
-            cells += [cell((r.get("targets") or {}).get(t["id"], "")) for t in targets]
+            cells += [cell((r.get("targets") or {}).get(t["id"]) or "NA") for t in targets]
             cells.append(cell(row_notes(r)))
             out.append("| " + " | ".join(cells) + " |")
         out.append("")

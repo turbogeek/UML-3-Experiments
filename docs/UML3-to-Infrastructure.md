@@ -21,7 +21,7 @@ Can a UML3 model describe a deployable infrastructure - a configurable topology 
 | On-premises | - | none; analysis only |
 | Infrastructure as code | - | none; analysis only |
 
-Provider columns name the service that plays each role rather than an API version, because the roles are stable while the APIs are not. Nothing here has been executed: no cloud account or network device was contacted, and the only infrastructure tool on this machine is Docker 29.2.0. Treat every provider cell as analysis to be confirmed by someone who runs that platform.
+Provider columns name the service that plays each role rather than an API version, because the roles are stable while the APIs are not. Nothing here has been executed: no cloud account or network device was contacted, and the only infrastructure tool on this machine is Docker 29.2.0. Treat every provider cell as analysis to be confirmed by someone who runs that platform. NA in a target column means that target has no counterpart for the concept, which is a decision and not an omission; where the answer is not yet known the coverage column says TBD instead.
 
 ## Summary
 
@@ -44,9 +44,9 @@ Where the rows that are not COVERED would be fixed (see [UML3-LAYERING.md](UML3-
 
 | Concept | Coverage | Layer | UML3 | AWS | Google Cloud | Azure | On-premises | Infrastructure as code | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| Physical or virtual machine | **COVERED** | — | `UML3Components::node`, `UML3Components::device` | EC2 instance | Compute Engine VM | Virtual Machine | server | Terraform resource | #device is the hardware, #node the general computational resource, which is the UML 2.x distinction. |
-| Container runtime hosting an artifact | **COVERED** | — | `UML3Components::executionEnvironment`, `UML3Components::deploy` | ECS/EKS task | GKE/Cloud Run | AKS/Container Apps | Docker host | k8s Deployment | Example 02 models exactly this: an image artifact manifesting a component, deployed to an execution environment on a node. |
-| Serverless function | **PARTIAL** | library | `UML3Components::executionEnvironment`, `UML3Core::operation` | Lambda | Cloud Functions | Functions | - | function resource | A function is an operation deployed without a durable host; the model can say where it runs but not that it has no host, nor its trigger, timeout or cold-start behaviour. |
+| Physical or virtual machine | **COVERED** | NA | `UML3Components::node`, `UML3Components::device` | EC2 instance | Compute Engine VM | Virtual Machine | server | Terraform resource | #device is the hardware, #node the general computational resource, which is the UML 2.x distinction. |
+| Container runtime hosting an artifact | **COVERED** | NA | `UML3Components::executionEnvironment`, `UML3Components::deploy` | ECS/EKS task | GKE/Cloud Run | AKS/Container Apps | Docker host | k8s Deployment | Example 02 models exactly this: an image artifact manifesting a component, deployed to an execution environment on a node. |
+| Serverless function | **PARTIAL** | library | `UML3Components::executionEnvironment`, `UML3Core::operation` | Lambda | Cloud Functions | Functions | NA | function resource | A function is an operation deployed without a durable host; the model can say where it runs but not that it has no host, nor its trigger, timeout or cold-start behaviour. |
 | Replica count and autoscaling | **GAP** | library | — | ASG / desired count | MIG autoscaler | VMSS | manual | replicas, HPA | Multiplicity on a part could state how many, but nothing states a minimum, a maximum or the signal that scales between them. Same gap the language map found for containers. |
 | Health check and readiness | **GAP** | library | — | target group health check | health check | probe | monitoring | liveness/readiness probe | Nothing says how to tell whether a deployed component is alive, which every orchestrator requires. |
 | CPU and memory limits | **GAP** | library | — | task size | machine type | SKU | hardware spec | requests/limits | A node has no capacity and a deployment no resource request, so nothing can be checked for fit. |
@@ -55,7 +55,7 @@ Where the rows that are not COVERED would be fixed (see [UML3-LAYERING.md](UML3-
 
 | Concept | Coverage | Layer | UML3 | AWS | Google Cloud | Azure | On-premises | Infrastructure as code | Notes |
 |---|---|---|---|---|---|---|---|---|---|
-| Link between nodes | **COVERED** | — | `UML3Components::communicationPath` | - | - | - | cable / link | - | The UML 2.x communication path: which nodes can talk. It carries no protocol or address. |
+| Link between nodes | **COVERED** | NA | `UML3Components::communicationPath` | NA | NA | NA | cable / link | NA | The UML 2.x communication path: which nodes can talk. It carries no protocol or address. |
 | Private network and subnets | **GAP** | library | — | VPC, subnet | VPC, subnet | VNet, subnet | VLAN | network resource | There is no construct for an address range, a CIDR block, or the containment of a subnet in a network - the first thing any cloud topology declares. |
 | Region and availability zone | **GAP** | library | — | region, AZ | region, zone | region, zone | site, rack | provider region | Placement drives both latency and failure independence, and cannot be stated. A rack and a fault domain are the same idea on premises. |
 | Port and protocol on an endpoint | **PARTIAL** | metadata | `UML3Components::servicePort`, `UML3Components::provided`, `UML3Components::required` | listener | forwarding rule | listener | service port | port spec | A port says a service is offered and its interface says what is offered; the transport, the port number and the scheme are not expressible, so nothing can be generated or checked against a firewall rule. |
@@ -71,7 +71,7 @@ Where the rows that are not COVERED would be fixed (see [UML3-LAYERING.md](UML3-
 |---|---|---|---|---|---|---|---|---|---|
 | Managed database | **PARTIAL** | library | `UML3Data::database`, `UML3Components::Technology` | RDS, Aurora | Cloud SQL | Azure SQL | database server | db instance | The database and its technology are modelable, and the schema is modelable in UML3Data, but the instance class, storage, backup policy and failover are not. |
 | Object storage | **GAP** | library | — | S3 | Cloud Storage | Blob Storage | NFS/SAN | bucket resource | A bucket is neither a node nor a database; it is a storage service with a name, a region and an access policy, and none of that is expressible. |
-| Managed message broker | **COVERED** | — | `UML3Messaging::broker`, `UML3Messaging::topic`, `UML3Messaging::queue` | SNS/SQS, MSK | Pub/Sub | Service Bus | Kafka cluster | topic resource | UML3Messaging covers the brokered topology; retention, partitions and delivery guarantees are not expressed. |
+| Managed message broker | **COVERED** | NA | `UML3Messaging::broker`, `UML3Messaging::topic`, `UML3Messaging::queue` | SNS/SQS, MSK | Pub/Sub | Service Bus | Kafka cluster | topic resource | UML3Messaging covers the brokered topology; retention, partitions and delivery guarantees are not expressed. |
 
 ## Configuration
 
