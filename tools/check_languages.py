@@ -29,9 +29,17 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import check_names as cn  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
-DATA = ROOT / "traceability" / "uml3-to-languages.json"
-DOC = ROOT / "docs" / "UML3-to-Languages.md"
 COVERAGE = ("COVERED", "PARTIAL", "GAP", "TBD")
+
+# Every coverage map has the same shape, so they share one checker and one renderer. Adding a map is a data
+# file and a line here - not a second copy of this logic, which is how tools/make_omg_doc.py came to drop the
+# rationale from every PARTIAL and NOT_ADOPTED row of Annex A.
+MAPS = {
+    "languages": (ROOT / "traceability" / "uml3-to-languages.json", ROOT / "docs" / "UML3-to-Languages.md"),
+    "ddl": (ROOT / "traceability" / "uml3-to-ddl.json", ROOT / "docs" / "UML3-to-DDL.md"),
+    "infrastructure": (ROOT / "traceability" / "uml3-to-infrastructure.json",
+                       ROOT / "docs" / "UML3-to-Infrastructure.md"),
+}
 
 
 def row_notes(row: dict) -> str:
@@ -111,36 +119,51 @@ def render(data: dict) -> str:
 
 def main(argv: list[str]) -> int:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--map", default="all", choices=["all", *sorted(MAPS)], help="which coverage map to check")
     ap.add_argument("--stdlib", help="sysml.library, so cited UML3 names can be resolved")
     ap.add_argument("--write", action="store_true", help="regenerate the Markdown")
     ap.add_argument("--report")
     args = ap.parse_args(argv)
 
-    data = json.loads(DATA.read_text(encoding="utf-8"))
     idx = None
     if args.stdlib:
         idx = cn.Index()
         for f in cn.collect([args.stdlib], (".sysml", ".kerml")) + cn.collect([str(ROOT / "library")], (".sysml",)):
             idx.add(cn.index_file(f))
         idx.finalize()
-    findings = check(data, idx)
 
-    rendered = render(data)
-    if args.write:
-        DOC.write_text(rendered, encoding="utf-8")
-    elif not DOC.exists() or DOC.read_text(encoding="utf-8") != rendered:
-        findings.append({"code": "DOC", "concept": "-",
-                         "message": f"{DOC.name} is out of date; run with --write"})
+    selected = sorted(MAPS) if args.map == "all" else [args.map]
+    all_findings: list[dict] = []
+    per_map: dict[str, dict] = {}
+    for name in selected:
+        data_path, doc_path = MAPS[name]
+        if not data_path.exists():
+            all_findings.append({"code": "SCHEMA", "concept": "-", "message": f"{data_path.name} is missing"})
+            continue
+        data = json.loads(data_path.read_text(encoding="utf-8"))
+        findings = [dict(f, map=name) for f in check(data, idx)]
 
-    counts = Counter(r["coverage"] for r in data["rows"])
-    for f in findings:
-        print(f"{f['code']:7s} {f['concept'][:44]:46s} {f['message']}")
-    print(f"SUMMARY rows={len(data['rows'])} " + " ".join(f"{k}={counts.get(k, 0)}" for k in COVERAGE)
-          + f" findings={len(findings)}")
+        rendered = render(data)
+        if args.write:
+            doc_path.write_text(rendered, encoding="utf-8")
+        elif not doc_path.exists() or doc_path.read_text(encoding="utf-8") != rendered:
+            findings.append({"code": "DOC", "concept": "-", "map": name,
+                             "message": f"{doc_path.name} is out of date; run with --write"})
+
+        counts = Counter(r["coverage"] for r in data["rows"])
+        per_map[name] = {"rows": len(data["rows"]), "counts": dict(counts), "findings": findings}
+        all_findings += findings
+        for f in findings:
+            print(f"{f['code']:7s} {name:15s} {f['concept'][:36]:38s} {f['message']}")
+        print(f"MAP {name:15s} rows={len(data['rows']):3d} "
+              + " ".join(f"{k}={counts.get(k, 0)}" for k in COVERAGE) + f" findings={len(findings)}")
+
+    print(f"SUMMARY maps={len(per_map)} rows={sum(m['rows'] for m in per_map.values())} "
+          f"findings={len(all_findings)}")
     if args.report:
-        Path(args.report).write_text(json.dumps({"findings": findings, "counts": dict(counts)}, indent=2),
+        Path(args.report).write_text(json.dumps({"maps": per_map, "findings": all_findings}, indent=2),
                                      encoding="utf-8")
-    return 1 if findings else 0
+    return 1 if all_findings else 0
 
 
 if __name__ == "__main__":

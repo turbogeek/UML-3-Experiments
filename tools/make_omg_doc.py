@@ -261,33 +261,36 @@ def annex_a(doc: OmgDocument) -> None:
         widths=[round(width * s, 2) for s in share])
 
 
-def annex_h(doc: OmgDocument) -> None:
-    """Annex H, whether UML3 can describe software that is actually built, from the language coverage map."""
-    data = json.loads((ROOT / "traceability" / "uml3-to-languages.json").read_text(encoding="utf-8"))
+def coverage_annex(doc: OmgDocument, map_name: str, letter: str, title: str) -> None:
+    """Any of the coverage maps as an annex. They share a schema, so they share one renderer: a second copy is
+    how the rationale went missing from Annex A."""
+    data_path, _ = cl.MAPS[map_name]
+    data = json.loads(data_path.read_text(encoding="utf-8"))
     rows, targets = data["rows"], data["targets"]
 
-    doc.heading("UML3 coverage of implementation languages and platforms", level=1, number="Annex H")
+    doc.heading(title, level=1, number=f"Annex {letter}")
     doc.body("(informative)")
     doc.body(data["description"])
 
-    doc.heading("Targets", level=2, number="H.1")
+    doc.heading("Targets", level=2, number=f"{letter}.1")
     doc.table(["Target", "Version", "Evidence"],
-              [[t["name"], t["version"], t.get("evidence", "")] for t in targets], widths=[1.1, 1.4, 4.0])
+              [[t["name"], t["version"], t.get("evidence", "")] for t in targets], widths=[1.3, 1.2, 4.0])
     doc.body(data["versionBasis"])
 
-    doc.heading("Summary", level=2, number="H.2")
+    doc.heading("Summary", level=2, number=f"{letter}.2")
     counts = {k: sum(1 for r in rows if r["coverage"] == k) for k in cl.COVERAGE}
     doc.table(["Coverage", "Meaning", "Concepts"],
               [[k, data["coverageLegend"][k], str(counts[k])] for k in cl.COVERAGE]
               + [["Total", "", str(len(rows))]], widths=[0.9, 4.4, 1.2])
 
-    doc.heading("Coverage by concept", level=2, number="H.3")
+    doc.heading("Coverage by concept", level=2, number=f"{letter}.3")
     doc.body(f"{counts['GAP']} concepts have no UML3 construct and {counts['TBD']} are unanalyzed; those "
-             f"{counts['GAP'] + counts['TBD']} rows are what decide whether UML3 is sufficient to generate "
-             "software for these targets.")
+             f"{counts['GAP'] + counts['TBD']} rows are what decide whether UML3 is sufficient here.")
     width = doc.landscape()
     # Coverage needs room for COVERED on one line; the shares sum to 1
-    share = [0.18, 0.09, 0.15, 0.09, 0.09, 0.09, 0.07, 0.08, 0.16]
+    fixed = [0.18, 0.09, 0.15]
+    rest = (1 - sum(fixed) - 0.16) / len(targets)
+    share = fixed + [rest] * len(targets) + [0.16]
     doc.table(["Concept", "Coverage", "UML3"] + [t["name"] for t in targets] + ["Notes"],
               [[r["concept"], r["coverage"], ", ".join(r.get("uml3", []))]
                + [(r.get("targets") or {}).get(t["id"], "") for t in targets]
@@ -295,8 +298,15 @@ def annex_h(doc: OmgDocument) -> None:
               widths=[round(width * s, 2) for s in share])
 
 
-PARTS = {"annex-a": ("Annex A: UML 2.5.1 to UML3 mapping", annex_a),
-         "annex-h": ("Annex H: UML3 coverage of implementation languages", annex_h)}
+COVERAGE_ANNEXES = {
+    "annex-h": ("languages", "H", "UML3 coverage of implementation languages and platforms"),
+    "annex-i": ("ddl", "I", "UML3 coverage of SQL DDL"),
+    "annex-j": ("infrastructure", "J", "UML3 coverage of networking and cloud infrastructure"),
+}
+PARTS: dict = {"annex-a": ("Annex A: UML 2.5.1 to UML3 mapping", annex_a)}
+for _part, (_map, _letter, _title) in COVERAGE_ANNEXES.items():
+    PARTS[_part] = (f"Annex {_letter}: {_title}",
+                    (lambda m, l, ti: lambda doc: coverage_annex(doc, m, l, ti))(_map, _letter, _title))
 
 
 def to_pdf(docx_path: Path) -> Path | None:
