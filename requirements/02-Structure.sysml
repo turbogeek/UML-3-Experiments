@@ -303,7 +303,8 @@ package UML3StructureRequirements {
 
 		#traces dependency from DesignClassStructure to 'UML3-STR-001', 'UML3-STR-002', 'UML3-STR-003', 'UML3-STR-004',
 			'UML3-STR-005', 'UML3-STR-007', 'UML3-STR-009', 'UML3-STR-011', 'UML3-STR-012', 'UML3-STR-015',
-			UML3CoreRequirements::'UML3-CORE-003';
+			UML3CoreRequirements::'UML3-CORE-003',
+			'UML3-STR-016', 'UML3-STR-017', 'UML3-STR-018', 'UML3-STR-019', 'UML3-STR-020';
 		#traces dependency from AnalyzeDomainClasses to 'UML3-STR-001', 'UML3-STR-007', 'UML3-STR-008', 'UML3-STR-009',
 			'UML3-STR-010', 'UML3-STR-014';
 		#traces dependency from ExplainDesignWithInstances to 'UML3-STR-004', 'UML3-STR-013', 'UML3-STR-014';
@@ -349,5 +350,76 @@ package UML3StructureRequirements {
 		#realizes dependency from UML3Core::DataType to 'UML3-STR-015';
 		#realizes dependency from UML3Core::dataType to 'UML3-STR-015';
 		#realizes dependency from UML3Core::DataTypeKind to 'UML3-STR-015';
+	}
+
+	requirement <'UML3-STR-016'> functionValuedFeatures {
+		doc
+		/*
+		SysUML shall allow a feature to be typed by a function, so that a function can be passed as a parameter,
+		stored in an attribute and returned from an operation, and shall state the conformance rule between two
+		function types.
+		Verified by: docs/UML3-to-Languages.md (Closure / function-valued parameter).
+		*/
+		@Rationale { text = "Every language in the coverage map has first-class functions - Java functional interfaces, Rust Fn traits, Python callables, C function pointers, C++ std::function - and a model that cannot type a feature by a function cannot describe their signatures. This belongs in the language and not in a library because it changes which types conform to which, and metadata annotates an element without extending conformance (docs/UML3-LAYERING.md, step 2). KerML has functions and expressions, so this may already hold; the requirement exists so the answer is recorded rather than assumed."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
+	requirement <'UML3-STR-017'> templateParameterConstraints {
+		doc
+		/*
+		SysUML shall allow a template parameter to carry a constraint on the types that may bind it, and tooling
+		shall report a binding that does not satisfy the constraint.
+		Verified by: docs/UML3-to-Languages.md (Generics / templates).
+		*/
+		@Rationale { text = "UML3-STR-011 binds a template by redefining its parameters, which is the mechanism; what it cannot state is the bound - Java 'extends Comparable', a Rust trait bound, a C++ concept. Generic code that compiles depends on that bound, so a generator cannot emit any of the three without it. It is a language matter because the constraint decides which bindings are well-formed (docs/UML3-LAYERING.md, steps 1 and 2)."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
+	requirement <'UML3-STR-018'> discriminatedUnions {
+		doc
+		/*
+		SysUML shall express a type whose value is exactly one of a closed set of named cases, each case carrying
+		its own payload type, and tooling shall report a use of such a type that does not handle every case.
+		Verified by: docs/UML3-to-Languages.md (Enumeration carrying data); docs/UML3-to-DDL.md.
+		*/
+		@Rationale { text = "A Rust enum with fields, a Java sealed interface over records, a C++ std::variant and a C tagged union are the same concept, and it is how modern languages model a result that is one of several shapes. UML3IDL::union gives the discriminated choice but not a distinct payload per case, so a Rust enum does not round trip. Exhaustiveness is a well-formedness rule over a closed set, which a library cannot impose (docs/UML3-LAYERING.md, step 1)."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::optional; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
+	requirement <'UML3-STR-019'> referenceOwnershipAndMutability {
+		doc
+		/*
+		SysUML shall state, for a reference to an object, whether the referring element owns it, borrows it
+		exclusively or shares it, and whether the reference permits modification.
+		Verified by: docs/UML3-to-Languages.md (Ownership, borrowing, lifetimes).
+		*/
+		@Rationale { text = "Composition already says a part dies with its whole, which is ownership; what is missing is exclusive against shared borrowing and whether a reference is mutable. Rust cannot be generated idiomatically without it, and the same question decides unique_ptr against shared_ptr in C++ and whether a Java field may be published. It is a language matter because these are properties of the reference type rather than annotations on an element (docs/UML3-LAYERING.md, step 2)."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::optional; }
+		@VerificationMethod { kind = VerificationMethodKind::analyze; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
+	requirement <'UML3-STR-020'> typeAliases {
+		doc
+		/*
+		SysUML shall express a name that stands for a type, such that the alias and the type it names conform to
+		each other, and shall record whether the alias is transparent or introduces a distinct type.
+		Verified by: docs/UML3-to-Languages.md (Type alias).
+		*/
+		@Rationale { text = "Rust 'type', C 'typedef', C++ 'using' and Python 'type' all name a type, and a domain model that says OrderId rather than String reads better and generates better. A KerML alias renames a member of a namespace, which may or may not be the same thing; the distinction that matters to a generator is whether the alias is interchangeable with its type or a new type that merely looks like it, and only the language can settle conformance (docs/UML3-LAYERING.md, step 2)."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::optional; }
+		@VerificationMethod { kind = VerificationMethodKind::inspect; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
 	}
 }

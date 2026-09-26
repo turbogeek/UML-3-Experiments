@@ -281,7 +281,8 @@ package UML3BehaviorRequirements {
 		}
 
 		#traces dependency from DesignObjectBehavior to 'UML3-BHV-001', 'UML3-BHV-002', 'UML3-BHV-003', 'UML3-BHV-004',
-			'UML3-BHV-005', 'UML3-BHV-007', 'UML3-BHV-008', 'UML3-BHV-013', UML3StructureRequirements::'UML3-STR-005';
+			'UML3-BHV-005', 'UML3-BHV-007', 'UML3-BHV-008', 'UML3-BHV-013', UML3StructureRequirements::'UML3-STR-005',
+			'UML3-BHV-015', 'UML3-BHV-016', 'UML3-BHV-017';
 		#traces dependency from DesignConcurrentActiveObjects to 'UML3-BHV-006', 'UML3-BHV-009', 'UML3-BHV-010',
 			'UML3-BHV-011', UML3StructureRequirements::'UML3-STR-002';
 		#traces dependency from SpecifyObjectInteractions to 'UML3-BHV-002', 'UML3-BHV-005', 'UML3-BHV-012';
@@ -327,5 +328,49 @@ package UML3BehaviorRequirements {
 		#realizes dependency from SysML::EventOccurrenceUsage to 'UML3-BHV-012';
 		#realizes dependency from Flows::Message to 'UML3-BHV-012';
 		#realizes dependency from SysML::TextualRepresentation to 'UML3-BHV-013';
+	}
+
+	requirement <'UML3-BHV-015'> asynchronousOperations {
+		doc
+		/*
+		SysUML shall state that an operation completes asynchronously, that its result becomes available later,
+		and how a caller obtains that result, distinguishing this from an operation dispatched to an active
+		object's own thread of control.
+		Verified by: docs/UML3-to-Languages.md (Asynchronous operation).
+		*/
+		@Rationale { text = "Every language in the coverage map has asynchrony - Rust and Python 'async fn', Java virtual threads and CompletableFuture, C++ coroutines - and UML3 cannot express it. UML3Core::activeClass says an object has its own thread of control, which is a different statement: it describes where a call runs, not that the result arrives later. UML3-BHV-010 states whether concurrent calls are allowed, which is again different. Without this, generated interfaces for any current runtime are wrong at the signature."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
+	requirement <'UML3-BHV-016'> deterministicRelease {
+		doc
+		/*
+		SysUML shall state that an object holds a resource that must be released, and which operation releases
+		it, so that a generator can emit the release mechanism of the target language.
+		Verified by: docs/UML3-to-Languages.md (Destructor / deterministic cleanup).
+		*/
+		@Rationale { text = "A C++ destructor, a Rust Drop, a Java AutoCloseable and a Python context manager are one concept: a thing whose end of life must run code. Nothing in UML3 marks either the owning type or the releasing operation, so a generator cannot produce correct resource handling for four of the five languages in the coverage map. The marker itself is metadata by the layering rule, but the requirement belongs here because it constrains behavior rather than naming a domain structure."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
+	}
+
+	requirement <'UML3-BHV-017'> librarySuppliedExecutionSemantics {
+		doc
+		/*
+		An extension library shall be able to give the constructs it defines an execution semantics expressed in
+		terms of the SysUML and KerML semantic libraries, and a tool that executes or simulates a model shall use
+		it for elements marked with that library's keywords.
+		Verified by: docs/UML3-LAYERING.md; docs/UML3-to-Infrastructure.md.
+		*/
+		@Rationale { text = "This is the plumbing that makes the library architecture honest. UML3-EXT-002 lets a library add constructs, UML3-EXT-006 lets it state their constraints and UML3-BHV-014 requires SysUML behaviors to have execution semantics - but nothing lets a LIBRARY supply semantics for what it adds. Without it a library can say a message is published or a container is deployed and no tool can say what happens when it runs, which turns every domain library into documentation. The coverage maps put 32 gaps in the library layer on the assumption that a library can carry their meaning; this requirement is what that assumption rests on."; }
+		@StatusInfo { status = StatusKind::tbd; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::demo; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
 	}
 }

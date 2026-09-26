@@ -264,7 +264,7 @@ package UML3CoreRequirements {
 		#traces dependency from SupportUML3InTool to 'UML3-CORE-001', 'UML3-CORE-002', 'UML3-CORE-003', 'UML3-CORE-008',
 			'UML3-CORE-010', 'UML3-CORE-011', 'UML3-CORE-013';
 		#traces dependency from EvolveUML3Language to 'UML3-CORE-002', 'UML3-CORE-004', 'UML3-CORE-005', 'UML3-CORE-006',
-			'UML3-CORE-007', 'UML3-CORE-009', 'UML3-CORE-012';
+			'UML3-CORE-007', 'UML3-CORE-009', 'UML3-CORE-012', 'UML3-CORE-015';
 		#traces dependency from ModelTheEffortInSysUML to 'UML3-CORE-014',
 			UML3RequirementModelingRequirements::'UML3-REQ-010', UML3ImplementationRequirements::'UML3-IMPL-008';
 	}
@@ -288,5 +288,21 @@ package UML3CoreRequirements {
 		#realizes dependency from UML3Core::MarkerKeywordDesign to 'UML3-CORE-008';
 		#realizes dependency from UML3Core to 'UML3-CORE-009';
 		#realizes dependency from UML3Core to 'UML3-CORE-010';
+	}
+
+	requirement <'UML3-CORE-015'> targetCoverageEvidence {
+		doc
+		/*
+		The UML3 specification shall carry, for each implementation language, database and deployment platform it
+		claims to serve, a map of the concepts that target requires, whether a UML3 construct expresses each one,
+		and for every concept not expressed, whether the remedy is a language construct, a library element,
+		metadata, or out of scope. A concept whose remedy is a language construct shall have a requirement.
+		Verified by: tools/run_tests.py suite languages; docs/UML3-to-Languages.md; docs/UML3-to-DDL.md; docs/UML3-to-Infrastructure.md.
+		*/
+		@Rationale { text = "A language is judged by what it refused to add as much as by what it has, and neither claim can be argued without evidence. The maps are that evidence: they say which targets were examined, what each needs, and where every gap is answered. They also keep the language small on purpose - of 63 gaps found so far, 57 are a library or a marker, 1 is out of scope and only 5 need the language to grow - and that ratio is the argument that UML3 can serve more platforms without growing further. Making the maps a requirement means a reviewer can check the reasoning rather than take it on trust."; }
+		@StatusInfo { status = StatusKind::tbc; }
+		@Priority { level = PriorityKind::mandatory; }
+		@VerificationMethod { kind = VerificationMethodKind::test; }
+		@AppliesTo { implementations = (ImplementationKind::sysUML, ImplementationKind::uml3); }
 	}
 }
