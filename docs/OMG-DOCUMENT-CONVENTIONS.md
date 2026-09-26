@@ -2,7 +2,7 @@
 
 What a document has to look like to be an OMG specification, taken from a published one rather than from memory:
 **OMG Systems Modeling Language (SysML) 2.0, Part 1: Language Specification**, read at
-`E:\_Documents\_SysMLV2\Standards\SysMLv2.pdf` (the copy on hand is `formal/2025-09-03`; omg.org now lists the
+a local copy of the published PDF (the one read here was `formal/2025-09-03`; omg.org now lists the
 same version 2.0 as `formal/26-03-02` for Part 1 and `formal/26-03-03` for Part 2 — cite the current number).
 The RFP this project answers, `ad/2026-04-01`, follows the separate **Abbreviated RFP Template ab/22-09-05**,
 whose Sections 1–5 are fixed boilerplate from `ab/22-09-01` and whose Section 6 carries the RFP-specific content.
@@ -88,7 +88,7 @@ derived from the published specification; it is also how `check_docs.py` already
    [UML3-SPECIFICATION-OUTLINE.md](UML3-SPECIFICATION-OUTLINE.md) — Clause 7 the UML metamodel, 8 the UML3
    language, 9 the extension of SysML v2, then the mapping, requirements, example and tutorial annexes, which may
    be separate volumes. The traceability annex is the pilot for the renderer, because it is already generated.
-2. **The OMG specification template.** `E:\_Documents\_OMG` holds the RFP and the Policies and Procedures, but no
+2. **The OMG specification template.** The RFP and the Policies and Procedures are to hand, but no
    specification template with the real Word styles. Without it the styles here are reconstructed from the
    published PDF: close, but not authoritative.
 3. **The legal boilerplate** must be copied from a current OMG specification rather than retyped, and the
