@@ -12,6 +12,12 @@ The approach uses only the extension mechanisms SysML v2 already standardizes:
 
 The KerML/SysML grammar is not changed, so UML3 models are ordinary SysML v2.
 
+* ***TODO*** These are things to do based on an initial review by the UM3 working group for new requirements.
+- add concurrency as a first-class part of the language
+- add microservices built to API contracts and connectivity/traceability to Systems Engineering (ability to describe in configuration files like JSON YAML, XML{SOA XML}), uses and provides interfaces, etc.
+- add bit operators (if they  don't exist)
+- business interaction diagram (Logical Software mapped to the Physical deployment) to speak to deployment in DMZ etc.
+
 ```sysml
 package Shop {
     private import ScalarValues::*;
