@@ -95,7 +95,7 @@ Every Cameo run loads files in dependency order, undoes its own loads (confirmed
 | `tools/check_groovy.groovy` | Pre-flight check for scripts that run inside MagicDraw |
 | `docs/DESIGN.md` | Design, mapping, verification history and findings |
 
-## Requirements
+## Build Requirements
 
 * Sibling checkouts of `SysML-v2-Release` and `sysml-validator` (with `validator-cli/target/sysml-validator.jar` built). Override their locations with `SYSML_RELEASE` and `SYSML_VALIDATOR_JAR`.
 * Python 3, Java 17+, and Groovy for the local tools.
